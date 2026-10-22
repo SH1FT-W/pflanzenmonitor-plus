@@ -331,76 +331,31 @@
             "name": "Probleme"
           },
           "moisture_status": {
-            "name": "Bodenfeuchtigkeit",
-            "state": {
-              "Low": "Zu niedrig",
-              "High": "Zu hoch",
-              "ok": "OK"
-            }
+            "name": "Bodenfeuchtigkeit"
           },
           "conductivity_status": {
-            "name": "Leitfähigkeit",
-            "state": {
-              "Low": "Zu niedrig",
-              "High": "Zu hoch",
-              "ok": "OK"
-            }
+            "name": "Leitfähigkeit"
           },
           "temperature_status": {
-            "name": "Temperatur",
-            "state": {
-              "Low": "Zu niedrig",
-              "High": "Zu hoch",
-              "ok": "OK"
-            }
+            "name": "Temperatur"
           },
           "humidity_status": {
-            "name": "Luftfeuchtigkeit",
-            "state": {
-              "Low": "Zu niedrig",
-              "High": "Zu hoch",
-              "ok": "OK"
-            }
+            "name": "Luftfeuchtigkeit"
           },
           "co2_status": {
-            "name": "CO2",
-            "state": {
-              "Low": "Zu niedrig",
-              "High": "Zu hoch",
-              "ok": "OK"
-            }
+            "name": "CO2"
           },
           "soil_temperature_status": {
-            "name": "Bodentemperatur",
-            "state": {
-              "Low": "Zu niedrig",
-              "High": "Zu hoch",
-              "ok": "OK"
-            }
+            "name": "Bodentemperatur"
           },
           "illuminance_status": {
-            "name": "Beleuchtungsstärke",
-            "state": {
-              "Low": "Zu niedrig",
-              "High": "Zu hoch",
-              "ok": "OK"
-            }
+            "name": "Beleuchtungsstärke"
           },
           "dli_status": {
-            "name": "Tageslicht (DLI)",
-            "state": {
-              "Low": "Zu niedrig",
-              "High": "Zu hoch",
-              "ok": "OK"
-            }
+            "name": "Tageslicht (DLI)"
           },
           "vpd_status": {
-            "name": "Dampfdruckdefizit (VPD)",
-            "state": {
-              "Low": "Zu niedrig",
-              "High": "Zu hoch",
-              "ok": "OK"
-            }
+            "name": "Dampfdruckdefizit (VPD)"
           }
         }
       },

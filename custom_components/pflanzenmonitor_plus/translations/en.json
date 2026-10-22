@@ -331,76 +331,31 @@
             "name": "Problems"
           },
           "moisture_status": {
-            "name": "Soil moisture",
-            "state": {
-              "Low": "Too low",
-              "High": "Too high",
-              "ok": "OK"
-            }
+            "name": "Soil moisture"
           },
           "conductivity_status": {
-            "name": "Conductivity",
-            "state": {
-              "Low": "Too low",
-              "High": "Too high",
-              "ok": "OK"
-            }
+            "name": "Conductivity"
           },
           "temperature_status": {
-            "name": "Temperature",
-            "state": {
-              "Low": "Too low",
-              "High": "Too high",
-              "ok": "OK"
-            }
+            "name": "Temperature"
           },
           "humidity_status": {
-            "name": "Air humidity",
-            "state": {
-              "Low": "Too low",
-              "High": "Too high",
-              "ok": "OK"
-            }
+            "name": "Air humidity"
           },
           "co2_status": {
-            "name": "CO2",
-            "state": {
-              "Low": "Too low",
-              "High": "Too high",
-              "ok": "OK"
-            }
+            "name": "CO2"
           },
           "soil_temperature_status": {
-            "name": "Soil temperature",
-            "state": {
-              "Low": "Too low",
-              "High": "Too high",
-              "ok": "OK"
-            }
+            "name": "Soil temperature"
           },
           "illuminance_status": {
-            "name": "Illuminance",
-            "state": {
-              "Low": "Too low",
-              "High": "Too high",
-              "ok": "OK"
-            }
+            "name": "Illuminance"
           },
           "dli_status": {
-            "name": "Daily light integral (DLI)",
-            "state": {
-              "Low": "Too low",
-              "High": "Too high",
-              "ok": "OK"
-            }
+            "name": "Daily light integral (DLI)"
           },
           "vpd_status": {
-            "name": "Vapour pressure deficit (VPD)",
-            "state": {
-              "Low": "Too low",
-              "High": "Too high",
-              "ok": "OK"
-            }
+            "name": "Vapour pressure deficit (VPD)"
           }
         }
       },
