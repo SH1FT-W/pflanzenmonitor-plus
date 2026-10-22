@@ -548,7 +548,6 @@
     },
     "migrate": {
       "title": "Pflanzen aus dem Plant Monitor übernehmen",
-      "description": "Im Plant Monitor sind noch diese Pflanzen: {plants}. Pflanzenmonitor Plus überwacht Pflanzen jetzt selbst und kann sie übernehmen – danach braucht es den Plant Monitor nicht mehr. Zum Übernehmen hier öffnen.",
       "fix_flow": {
         "step": {
           "confirm": {

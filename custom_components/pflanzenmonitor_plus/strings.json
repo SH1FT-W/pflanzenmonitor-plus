@@ -548,7 +548,6 @@
     },
     "migrate": {
       "title": "Move plants over from Plant Monitor",
-      "description": "Plant Monitor still has these plants: {plants}. Pflanzenmonitor Plus now monitors plants itself and can take them over, so you no longer need Plant Monitor. Open this to move them.",
       "fix_flow": {
         "step": {
           "confirm": {
