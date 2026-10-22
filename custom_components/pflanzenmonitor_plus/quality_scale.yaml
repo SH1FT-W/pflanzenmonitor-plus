@@ -1,0 +1,150 @@
+# Integration Quality Scale, selbst geprüft, nicht offiziell (keine Core-Integration).
+# Regeln: https://developers.home-assistant.io/docs/core/integration-quality-scale/rules
+rules:
+  # Bronze
+  action-setup:
+    status: done
+    comment: replace_sensor wird in async_setup angemeldet (gilt auch ohne geladenen Eintrag, meldet dann not_loaded).
+  appropriate-polling:
+    status: done
+    comment: >-
+      Lernen alle 10 Min.; die Langzeitstatistik wird höchstens einmal pro Stunde gelesen (sie entsteht stündlich).
+      Messwerte, Zustand und Lichtsumme laufen auf Zustandsänderungen der echten Sensoren (kein Abfragen), die
+      Lichtsumme wird zusätzlich alle 5 Min. und um Mitternacht fortgeschrieben. Gießen wird sofort erkannt. Die KI wird je Pflanze höchstens
+      einmal in 30 Tagen automatisch gefragt, nach einem Fehler frühestens nach 6 Std., je Durchlauf höchstens eine.
+  brands:
+    status: done
+    comment: Eigenes Logo in brand/.
+  common-modules:
+    status: done
+    comment: >-
+      Koordinator in coordinator.py, Live-Werte in live.py, Grenzwerte in limits.py, Basis in entity.py, reine
+      Auswertung ohne HA in model.py (Lernen) und health.py (Zustand, VPD, Lichtsumme).
+  config-flow-test-coverage: done
+  config-flow:
+    status: done
+    comment: >-
+      Eintrag: alle Felder optional mit data_description, Wetter wird vorgeschlagen. Je Pflanze ein Unterpunkt
+      (Pflanze, Sensoren nach Geräteklasse, Probleme/Wartezeit), „draußen“ nach Raumname vorgewählt; Neu konfigurieren.
+  dependency-transparency:
+    status: done
+    comment: >-
+      Keine requirements; KI über die HA-eigene Aktion ai_task.generate_data. Ab 1.1 für alle Grenzwerte mit Sensor,
+      Schutzregeln je Wert in advice.py (100 % getestet).
+  docs-actions: done
+  docs-high-level-description: done
+  docs-installation-instructions: done
+  docs-removal-instructions: done
+  entity-event-setup:
+    status: done
+    comment: Listener (Feuchtesensoren, Entity-Registry) über entry.async_on_unload abgemeldet.
+  entity-unique-id:
+    status: done
+    comment: >-
+      <Pflanze>-<key> für Messwerte/Grenzwerte/Zustand (wie im Plant Monitor, damit der Umzug die IDs behält),
+      <Pflanze>_<key> für Gelerntes; Pflanze = ID aus dem Plant Monitor bzw. des Unterpunkts.
+  has-entity-name: done
+  runtime-data: done
+  test-before-configure:
+    status: done
+    comment: Keine Verbindung zu prüfen; Sensoren werden im Dialog nach Geräteklasse angeboten.
+  test-before-setup:
+    status: exempt
+    comment: Kein externer Dienst; gerechnet wird lokal aus dem Recorder, sobald HA gestartet ist.
+  unique-config-entry:
+    status: done
+    comment: single_config_entry – ein Eintrag, Pflanzen als Unterpunkte.
+
+  # Silver
+  action-exceptions:
+    status: done
+    comment: >-
+      Knöpfe und replace_sensor werfen ServiceValidationError (nichts offen, nichts zurückzunehmen, keine KI, keine
+      Daten, kein Messwert, Sensor fehlt, nicht geladen) bzw. HomeAssistantError, wenn die KI nicht antwortet.
+  config-entry-unloading: done
+  docs-configuration-parameters: done
+  docs-installation-parameters: done
+  entity-unavailable:
+    status: done
+    comment: >-
+      Gelerntes ist nicht verfügbar, solange für die Pflanze nichts gerechnet wurde; Spiegel zeigen „unbekannt“, wenn
+      der echte Sensor ausfällt (nach einem Neustart bis zu 10 Min. den letzten Wert).
+  integration-owner: done
+  log-when-unavailable:
+    status: done
+    comment: DataUpdateCoordinator; eine fehlende Wettervorhersage nur DEBUG (Regen/Frost dann aus bzw. unbekannt).
+  parallel-updates: done
+  reauthentication-flow:
+    status: exempt
+    comment: Keine Zugangsdaten.
+  test-coverage:
+    status: done
+    comment: 99 %.
+
+  # Gold
+  devices:
+    status: done
+    comment: Ein Gerät je Pflanze (Art als Modell, Raum beim Anlegen), am Unterpunkt der Pflanze.
+  diagnostics:
+    status: done
+    comment: Je Pflanze Einstellungen, Grenzwerte, Live-Stand, Gelerntes (Anstiege, Schwelle, Tempo), Quelle des Verlaufs, Wetter.
+  discovery-update-info:
+    status: exempt
+    comment: Nichts zu entdecken; rechnet auf vorhandenen Entitäten.
+  discovery:
+    status: exempt
+    comment: Nichts zu entdecken; rechnet auf vorhandenen Entitäten.
+  docs-data-update: done
+  docs-examples: done
+  docs-known-limitations: done
+  docs-supported-devices:
+    status: done
+    comment: Jeder Sensor mit passender Geräteklasse; Umzug aus dem Plant Monitor (HACS).
+  docs-supported-functions: done
+  docs-troubleshooting: done
+  docs-use-cases: done
+  dynamic-devices:
+    status: done
+    comment: >-
+      Pflanzen kommen als Unterpunkte dazu bzw. weg (lädt einmal neu); Umbenennen benutzter Sensoren zieht Pflanzen
+      und Optionen nach.
+  entity-category:
+    status: done
+    comment: >-
+      Lernstand, Abtrocknung, PPFD, Lichtsumme, Licht 24 Std. als Diagnose; Grenzwerte, „Zurücknehmen“ und „KI jetzt
+      fragen“ als Konfiguration.
+  entity-device-class: done
+  entity-disabled-by-default:
+    status: done
+    comment: PPFD, Lichtsumme und Licht 24 Std. sind ausgeblendet; Entitäten entstehen nur zu vorhandenen Sensoren.
+  entity-translations: done
+  exception-translations:
+    status: done
+    comment: Alle Fehler der Knöpfe und der Aktion über translation_key (exceptions in strings.json).
+  icon-translations: done
+  reconfiguration-flow:
+    status: exempt
+    comment: >-
+      Eintrag ohne Daten (alles in den Optionen); jede Pflanze lässt sich über ihren Unterpunkt neu konfigurieren.
+  repair-issues:
+    status: done
+    comment: >-
+      Umzug aus dem Plant Monitor als behebbarer Hinweis mit Dialog; Automationen/Skripte, die danach noch alte
+      plant.*-IDs nutzen; offener KI-Vorschlag mit Dialog (Übernehmen/Ablehnen). Alle verschwinden von selbst.
+  stale-devices:
+    status: done
+    comment: >-
+      Beim Einrichten werden Entitäten und Geräte entfernt, die es nicht mehr geben soll (Sensor abgewählt, KI oder
+      Wetter abgewählt, Pflanze nach drinnen); gelöschte Unterpunkte nehmen Gerät und Entitäten mit. Solange der Plant
+      Monitor noch Pflanzen hat, wird nichts weggeräumt (an dessen Geräten hängen Entitäten von Plus).
+
+  # Platinum
+  async-dependency:
+    status: exempt
+    comment: Keine Abhängigkeiten.
+  inject-websession:
+    status: exempt
+    comment: Keine HTTP-Abfragen.
+  strict-typing:
+    status: done
+    comment: mypy --strict ohne Fehler.

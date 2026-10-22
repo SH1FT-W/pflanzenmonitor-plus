@@ -1,0 +1,25 @@
+{
+  "domain": "pflanzenmonitor_plus",
+  "name": "Pflanzenmonitor Plus",
+  "after_dependencies": [
+    "ai_task",
+    "automation",
+    "logbook",
+    "script",
+    "weather"
+  ],
+  "codeowners": [
+    "@SH1FT-W"
+  ],
+  "config_flow": true,
+  "dependencies": [
+    "recorder"
+  ],
+  "documentation": "https://github.com/SH1FT-W/pflanzenmonitor-plus",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/SH1FT-W/pflanzenmonitor-plus/issues",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "26.10.1"
+}

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pflanzenmonitor Plus title shot</title>
+<!-- Illustration for the README title (docs/images/title-shot-*.png): one plant as Pflanzenmonitor Plus shows it.
+     Invented plant and values. Render: see docs/readme-images.json ($comment). ?dark renders the dark version. -->
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  :root {
+    --bg: #F2F6EF; --card: #FFFFFF; --card-2: #F5F8F2; --ink: #111A12; --ink-2: #4B5A4C; --ink-3: #7E8C7F;
+    --line: rgba(20,50,25,0.10); --accent: #2E7D32; --accent-ink: #256B29; --tint: rgba(46,125,50,0.10);
+    --water: #2F80ED; --forecast: #66BB6A; --limit: #E0A100; --warn: #B26A00; --warn-tint: rgba(224,161,0,0.14);
+    --shadow: 0 1px 2px rgba(10,40,15,0.05), 0 10px 26px -14px rgba(10,40,15,0.22);
+  }
+  .dark {
+    --bg: #0B120D; --card: #131D15; --card-2: #19251C; --ink: #ECF4ED; --ink-2: rgba(216,232,218,0.84); --ink-3: rgba(216,232,218,0.55);
+    --line: rgba(236,244,237,0.10); --accent: #6FCF7F; --accent-ink: #8EDB9A; --tint: rgba(111,207,127,0.14);
+    --water: #6FA8FF; --forecast: #6FCF7F; --limit: #F2B830; --warn: #F2B830; --warn-tint: rgba(242,184,48,0.14);
+    --shadow: 0 10px 26px -14px rgba(0,0,0,0.7);
+  }
+  body { width: 1100px; background: var(--bg); color: var(--ink); padding: 34px;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
+  .card { background: var(--card); border-radius: 22px; box-shadow: var(--shadow); padding: 24px 26px; }
+  .head { display: flex; align-items: center; gap: 18px; }
+  .pic { width: 64px; height: 64px; border-radius: 18px; background: var(--tint); display: grid; place-items: center; color: var(--accent); }
+  .pic svg { width: 34px; height: 34px; }
+  .head h1 { font-size: 30px; font-weight: 750; letter-spacing: -0.02em; }
+  .head p { color: var(--ink-3); font-size: 16px; margin-top: 3px; font-style: italic; }
+  .status { margin-left: auto; display: inline-flex; align-items: center; gap: 9px; padding: 9px 16px; border-radius: 999px;
+    background: var(--tint); color: var(--accent-ink); font-weight: 650; font-size: 16px; }
+  .status i { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 18px; }
+  .tile { background: var(--card); border-radius: 18px; box-shadow: var(--shadow); padding: 16px 18px; }
+  .tile span { display: block; font-size: 13px; color: var(--ink-3); }
+  .tile b { display: block; font-size: 26px; font-weight: 700; letter-spacing: -0.02em; margin-top: 6px; }
+  .tile b small { font-size: 15px; font-weight: 500; color: var(--ink-2); margin-left: 3px; }
+  .tile em { display: inline-block; margin-top: 8px; font-style: normal; font-size: 12px; font-weight: 600; padding: 3px 9px;
+    border-radius: 999px; background: var(--tint); color: var(--accent-ink); }
+  .row { display: grid; grid-template-columns: 1.45fr 1fr; gap: 14px; margin-top: 14px; }
+  .water h2 { font-size: 15px; color: var(--ink-3); font-weight: 600; }
+  .big { display: flex; align-items: baseline; gap: 10px; margin-top: 6px; }
+  .big b { font-size: 46px; font-weight: 800; letter-spacing: -0.03em; }
+  .big span { color: var(--ink-2); font-size: 17px; }
+  svg.chart { display: block; width: 100%; height: auto; margin-top: 12px; }
+  .chart .grid { stroke: var(--line); stroke-width: 1; }
+  .chart .ax { fill: var(--ink-3); font: 500 11px ui-monospace, "SF Mono", Menlo, monospace; }
+  .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+  .facts div { background: var(--card-2); border-radius: 14px; padding: 10px 12px; }
+  .facts span { display: block; font-size: 12px; color: var(--ink-3); }
+  .facts b { font-size: 15px; font-weight: 650; }
+  .ai h2 { display: flex; align-items: center; gap: 8px; font-size: 15px; color: var(--ink-3); font-weight: 600; }
+  .ai h2 svg { width: 18px; height: 18px; color: var(--accent); }
+  .ai .state { display: inline-block; margin-top: 10px; font-size: 13px; font-weight: 650; padding: 5px 11px; border-radius: 999px;
+    background: var(--warn-tint); color: var(--warn); }
+  .change { margin-top: 14px; padding: 14px 16px; background: var(--card-2); border-radius: 14px; }
+  .change b { display: block; font-size: 16px; }
+  .change .v { font-size: 22px; font-weight: 750; margin-top: 4px; letter-spacing: -0.01em; }
+  .change .v s { color: var(--ink-3); text-decoration: none; font-weight: 500; }
+  .change p { margin-top: 8px; color: var(--ink-2); font-size: 14px; line-height: 1.4; }
+  .btns { display: flex; gap: 10px; margin-top: 16px; }
+  .btn { flex: 1; text-align: center; padding: 11px 0; border-radius: 999px; font-weight: 650; font-size: 15px; background: var(--card-2); color: var(--ink); }
+  .btn.go { background: var(--accent); color: var(--card); }
+</style>
+</head>
+<body>
+  <div class="card head">
+    <div class="pic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V9"/><path d="M12 13c-3.5 0-6-2.5-6-6.5 3.5 0 6 2.5 6 6.5z"/><path d="M12 11c0-4 2.5-6.5 6-6.5 0 4-2.5 6.5-6 6.5z"/><path d="M8 21h8"/></svg></div>
+    <div><h1>Snake plant</h1><p>Dracaena trifasciata</p></div>
+    <div class="status"><i></i>OK</div>
+  </div>
+  <div class="tiles">
+    <div class="tile"><span>Soil moisture</span><b>42<small>%</small></b><em>OK</em></div>
+    <div class="tile"><span>Temperature</span><b>21.4<small>°C</small></b><em>OK</em></div>
+    <div class="tile"><span>Daily light (yesterday)</span><b>3.2<small>mol/m²</small></b><em>OK</em></div>
+    <div class="tile"><span>Air humidity</span><b>48<small>%</small></b><em>OK</em></div>
+  </div>
+  <div class="row">
+    <div class="card water">
+      <h2>Water in</h2>
+      <div class="big"><b>4 days</b><span>due on Monday</span></div>
+      <svg class="chart" id="chart" viewBox="0 0 560 190"></svg>
+      <div class="facts">
+        <div><span>Last watered</span><b>6 days ago</b></div>
+        <div><span>Drying rate</span><b>6.1 %/day</b></div>
+        <div><span>Learning</span><b>Learned</b></div>
+      </div>
+    </div>
+    <div class="card ai">
+      <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8L20 9l-4.9 3.6L17 18.5 12 15l-5 3.5 1.9-5.9L4 9l6.1-.2z"/></svg>AI suggestion</h2>
+      <span class="state">Waiting for approval</span>
+      <div class="change"><b>Min soil moisture</b><div class="v"><s>25 %</s> → 15 %</div><p>Succulent: let the soil dry almost completely; watered at 16 % so far without damage.</p></div>
+      <div class="change"><b>Max illuminance</b><div class="v"><s>100,000 lx</s> → 20,000 lx</div><p>Daily peaks around 3,000 lx at this spot.</p></div>
+      <div class="btns"><span class="btn go">Accept</span><span class="btn">Reject</span></div>
+    </div>
+  </div>
+<script>
+  if (location.search.indexOf('dark') >= 0) document.documentElement.classList.add('dark');
+  // Invented history: watered on day 0, 10 and 18; today day 24; forecast to the lower limit 25 % on day 28.
+  (function () {
+    var svg = document.getElementById('chart');
+    var W = 560, H = 190, L = 30, R = 10, T = 8, B = 24, D = 28, LIMIT = 25;
+    function x(d) { return L + (W - L - R) * d / D; }
+    function y(v) { return T + (H - T - B) * (1 - v / 100); }
+    function path(p) { return p.map(function (q, k) { return (k ? 'L' : 'M') + x(q[0]).toFixed(1) + ' ' + y(q[1]).toFixed(1); }).join(' '); }
+    var measured = [[0, 78], [9.6, 22], [10, 80], [17.8, 33], [18, 76], [24, 49]];
+    var out = '';
+    [0, 50, 100].forEach(function (v) { out += '<line class="grid" x1="' + L + '" x2="' + (W - R) + '" y1="' + y(v) + '" y2="' + y(v) + '"/><text class="ax" x="0" y="' + (y(v) + 4) + '">' + v + '</text>'; });
+    [0, 7, 14, 21, 28].forEach(function (d) { out += '<text class="ax" text-anchor="middle" x="' + x(d) + '" y="' + (H - 4) + '">' + (d < 24 ? (d - 24) + 'd' : d === 24 ? '' : '+4d') + '</text>'; });
+    out += '<path d="' + path(measured) + ' L' + x(24) + ' ' + y(0) + ' L' + x(0) + ' ' + y(0) + 'Z" fill="var(--water)" opacity="0.08"/>';
+    out += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(LIMIT) + '" y2="' + y(LIMIT) + '" stroke="var(--limit)" stroke-width="1.6" stroke-dasharray="2 4"/>';
+    out += '<path d="' + path(measured) + '" fill="none" stroke="var(--water)" stroke-width="3" stroke-linejoin="round"/>';
+    out += '<path d="' + path([[24, 49], [28, LIMIT]]) + '" fill="none" stroke="var(--forecast)" stroke-width="3" stroke-dasharray="7 6"/>';
+    out += '<circle cx="' + x(24) + '" cy="' + y(49) + '" r="5.5" fill="var(--water)" stroke="var(--card)" stroke-width="2.5"/>';
+    out += '<circle cx="' + x(28) + '" cy="' + y(LIMIT) + '" r="5.5" fill="var(--forecast)" stroke="var(--card)" stroke-width="2.5"/>';
+    svg.innerHTML = out;
+  })();
+</script>
+</body>
+</html>

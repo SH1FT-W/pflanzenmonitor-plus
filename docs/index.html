@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title data-de="Pflanzenmonitor Plus für Home Assistant">Pflanzenmonitor Plus for Home Assistant</title>
+<script src="https://sh1ft-w.github.io/bar.js" data-project="pflanzenmonitor-plus" defer></script>
+<meta name="description" content="Pflanzenmonitor Plus is the plant integration for Home Assistant that learns: status and limits for every plant, a watering forecast from each plant's own history and AI-suggested limits you approve. Moves your Plant Monitor plants over in one step.">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#F5F8F2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#080D09" media="(prefers-color-scheme: dark)">
+<meta property="og:title" content="Pflanzenmonitor Plus for Home Assistant">
+<meta property="og:description" content="Status, limits and a learned watering forecast for every plant, with AI-suggested limits you approve. Local, no cloud.">
+<meta property="og:image" content="https://sh1ft-w.github.io/pflanzenmonitor-plus/logo.png">
+<link rel="icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Shared SH1FT-W design (tokens, glass navigation, light/dark, DE/EN, reveal) -->
+<link rel="stylesheet" href="https://sh1ft-w.github.io/theme/v1/theme.css">
+<script src="https://sh1ft-w.github.io/theme/v1/theme.js"></script>
+<style>
+/* Plant palette: leaf green as accent, fresh green as second colour, soft daylight by day, a dark greenhouse by night */
+:root {
+  --accent: #2E7D32; --accent-ink: #256B29; --on-accent: #ffffff;
+  --sea: #2E7D32; --sea-tint: rgba(46,125,50,0.10); --sea-glow: rgba(46,125,50,0.30); --aqua: #66BB6A;
+  --soil: #8D6E63; --water: #2F80ED; --limit: #E0A100;
+  --font: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --display: "Archivo", "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --bg: #F5F8F2; --bg-2: #E9F0E4; --card: #FFFFFF; --card-2: #F2F6EF;
+  --ink: #111A12; --ink-2: #4B5A4C; --ink-3: rgba(17,34,18,0.52);
+  --line: rgba(20,50,25,0.11); --chip: rgba(20,60,25,0.06);
+  --glass: rgba(251,254,250,0.72); --glass-line: rgba(255,255,255,0.75);
+  --shadow: 0 1px 2px rgba(10,40,15,0.05), 0 12px 32px -14px rgba(10,40,15,0.22);
+  --shadow-lg: 0 2px 6px rgba(10,40,15,0.05), 0 48px 100px -36px rgba(10,40,15,0.40);
+  --radius: 26px; --radius-lg: 36px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --accent: #6FCF7F; --accent-ink: #8EDB9A; --on-accent: #06180A;
+  --sea: #6FCF7F; --sea-tint: rgba(111,207,127,0.14); --sea-glow: rgba(111,207,127,0.28); --water: #6FA8FF;
+  --bg: #080D09; --bg-2: #0D150F; --card: #111A13; --card-2: #17231A;
+  --ink: #ECF4ED; --ink-2: rgba(216,232,218,0.84); --ink-3: rgba(216,232,218,0.52);
+  --line: rgba(236,244,237,0.1); --chip: rgba(236,244,237,0.07);
+  --glass: rgba(14,30,18,0.62); --glass-line: rgba(255,255,255,0.08);
+  --shadow: 0 14px 34px -16px rgba(0,0,0,0.6); --shadow-lg: 0 48px 100px -36px rgba(0,0,0,0.85);
+} }
+:root[data-theme="dark"] {
+  --accent: #6FCF7F; --accent-ink: #8EDB9A; --on-accent: #06180A;
+  --sea: #6FCF7F; --sea-tint: rgba(111,207,127,0.14); --sea-glow: rgba(111,207,127,0.28); --water: #6FA8FF;
+  --bg: #080D09; --bg-2: #0D150F; --card: #111A13; --card-2: #17231A;
+  --ink: #ECF4ED; --ink-2: rgba(216,232,218,0.84); --ink-3: rgba(216,232,218,0.52);
+  --line: rgba(236,244,237,0.1); --chip: rgba(236,244,237,0.07);
+  --glass: rgba(14,30,18,0.62); --glass-line: rgba(255,255,255,0.08);
+  --shadow: 0 14px 34px -16px rgba(0,0,0,0.6); --shadow-lg: 0 48px 100px -36px rgba(0,0,0,0.85);
+}
+body { background: var(--bg); color: var(--ink); }
+
+a { color: var(--accent-ink); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+.narrow { max-width: 780px; }
+p { margin: 0; }
+.muted { color: var(--ink-2); }
+.center { text-align: center; }
+.center .lead { margin-left: auto; margin-right: auto; max-width: 680px; }
+code, .k { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.brand { font-family: var(--display); font-weight: 800; }
+.brand img { border-radius: 8px; }
+
+/* Knöpfe */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 24px; border-radius: 999px;
+  font-family: inherit; font-size: 15px; font-weight: 600; line-height: 1; background: var(--sea); color: var(--on-accent); border: 0; cursor: pointer;
+  box-shadow: 0 12px 28px -12px var(--sea-glow); transition: transform .2s ease, filter .2s ease;
+}
+.btn:hover { text-decoration: none; filter: brightness(1.1); transform: translateY(-1px); }
+.btn.ghost { background: var(--card); color: var(--ink); box-shadow: var(--shadow); }
+.btn.small { height: 36px; padding: 0 16px; font-size: 14px; }
+
+/* Schrift */
+.eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-ink); margin: 0 0 18px; }
+.eyebrow::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--aqua); box-shadow: 0 0 0 4px var(--sea-tint); }
+h1, h2, h3 { margin: 0; color: var(--ink); font-family: var(--display); font-weight: 800; text-wrap: balance; }
+h1 { font-size: clamp(44px, 8vw, 100px); line-height: 0.96; letter-spacing: -0.04em; font-weight: 900; }
+h1 em, h2 em { font-style: normal; color: var(--accent-ink); }
+h2 { font-size: clamp(34px, 5vw, 60px); line-height: 1.03; letter-spacing: -0.035em; }
+h3 { font-size: 20px; line-height: 1.2; letter-spacing: -0.015em; font-weight: 700; }
+.lead { font-size: clamp(18px, 2vw, 22px); line-height: 1.5; color: var(--ink-2); margin: 22px 0 0; }
+.lead strong { color: var(--ink); font-weight: 600; }
+
+section { padding: clamp(72px, 9vw, 120px) 0; position: relative; }
+section.tint { background: var(--bg-2); }
+.head { margin-bottom: clamp(36px, 5vw, 60px); }
+.cap { margin-top: 20px; font-size: 15px; color: var(--ink-3); text-align: center; }
+
+/* Hero */
+.hero { padding: clamp(56px, 9vw, 112px) 0 clamp(64px, 8vw, 104px); text-align: center; overflow: hidden; }
+.hero .glow { position: absolute; inset: -20% -10% auto; height: 90%; pointer-events: none;
+  background: radial-gradient(40% 36% at 30% 30%, rgba(102,187,106,0.20), transparent 70%), radial-gradient(36% 34% at 72% 24%, rgba(46,125,50,0.16), transparent 70%);
+  filter: blur(50px); }
+.hero .wrap { position: relative; }
+.hero .lead { max-width: 660px; margin-left: auto; margin-right: auto; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 34px; }
+.meta { margin-top: 22px; font-size: 14px; color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 8px 14px; justify-content: center; align-items: center; }
+.pill { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 999px; background: var(--card); box-shadow: var(--shadow); font-weight: 600; color: var(--ink-2); font-size: 13px; }
+.pill i { width: 7px; height: 7px; border-radius: 50%; background: var(--aqua); display: inline-block; }
+
+/* Bühne: das README-Titelbild */
+.stage { position: relative; margin: clamp(48px, 7vw, 84px) auto 0; max-width: 1100px; }
+.stage .photo { display: block; width: 100%; height: auto; aspect-ratio: 2 / 1; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); }
+
+/* Bento: Gerade neu */
+.bento { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
+.b { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 26px 28px 28px; min-width: 0; }
+.b .tag { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-ink); background: var(--sea-tint); padding: 4px 10px; border-radius: 999px; margin-bottom: 14px; }
+.b h3 { margin-bottom: 8px; }
+.b p { color: var(--ink-2); font-size: 16px; }
+.b code { font-size: 14px; background: var(--chip); padding: 2px 6px; border-radius: 6px; color: var(--ink); }
+.b.s4 { grid-column: span 4; } .b.s6 { grid-column: span 6; } .b.s8 { grid-column: span 8; }
+
+/* Funktionen */
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.tile { background: var(--card); border-radius: var(--radius); padding: 28px; box-shadow: var(--shadow); min-width: 0; }
+.tile h3 { margin-bottom: 8px; }
+.tile p { color: var(--ink-2); font-size: 16px; }
+.tile code { font-size: 14px; background: var(--chip); padding: 2px 6px; border-radius: 6px; }
+.tile .ico { width: 46px; height: 46px; border-radius: 15px; background: var(--sea-tint); color: var(--accent-ink); display: grid; place-items: center; margin-bottom: 18px; }
+.tile .ico svg { width: 23px; height: 23px; }
+
+/* Profil-Illustration */
+.split { display: grid; grid-template-columns: 1fr 1.05fr; gap: clamp(36px, 6vw, 80px); align-items: center; }
+.points { list-style: none; padding: 0; margin: 26px 0 0; display: grid; gap: 16px; }
+.points li { display: grid; gap: 2px; }
+.points b { font-family: var(--display); font-size: 17px; font-weight: 700; color: var(--ink); }
+.points span { color: var(--ink-2); font-size: 16px; }
+.prof { background: var(--card); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); padding: clamp(22px, 4vw, 36px); min-width: 0; }
+.prof-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.prof-head b { font-family: var(--display); font-size: 18px; }
+.days { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 16px; }
+.days > span { font-size: 12px; font-weight: 600; padding: 6px 11px; border-radius: 999px; background: var(--chip); color: var(--ink-2); }
+.days > span.on { background: var(--sea); color: var(--on-accent); }
+.curve { display: block; width: 100%; height: auto; margin-top: 22px; }
+.curve .grid { stroke: var(--line); stroke-width: 1; }
+.curve .ax { fill: var(--ink-3); font: 500 11px var(--mono); }
+.curve .now { stroke: var(--accent-ink); stroke-width: 1.5; stroke-dasharray: 4 4; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 12px; font-size: 13px; color: var(--ink-2); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: -1px; }
+.prof-foot { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 22px; }
+.prof-foot div { background: var(--card-2); border-radius: 16px; padding: 12px 14px; min-width: 0; }
+.prof-foot > div > span { display: block; font-size: 12px; color: var(--ink-3); }
+.prof-foot b { font-weight: 600; font-size: 15px; }
+
+/* Entitäten-Tabelle */
+.tbl { width: 100%; border-collapse: separate; border-spacing: 0; background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; font-size: 15px; }
+.tbl th, .tbl td { text-align: left; padding: 14px 18px; border-top: 1px solid var(--line); vertical-align: top; }
+.tbl thead th { border-top: 0; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent-ink); background: var(--card-2); }
+.tbl td:first-child { font-weight: 600; white-space: nowrap; }
+.tbl code { font-size: 13px; background: var(--chip); padding: 2px 6px; border-radius: 6px; overflow-wrap: anywhere; }
+.tbl td:last-child { color: var(--ink-2); }
+
+/* Wie es funktioniert */
+.flow { display: grid; gap: 12px; max-width: 900px; margin: 0 auto; }
+.lane { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: center; background: var(--card); border-radius: 22px; box-shadow: var(--shadow); padding: 18px 22px; }
+.lane .end b { display: block; font-family: var(--display); font-size: 16px; }
+.lane .end span { font-size: 14px; color: var(--ink-2); }
+.lane .end.r { text-align: right; }
+.arrow { display: grid; justify-items: center; gap: 4px; font: 500 12px/1.2 var(--mono); color: var(--accent-ink); text-align: center; }
+.arrow svg { width: 120px; height: 14px; }
+
+/* Installation */
+.install { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; }
+.panel { background: var(--card); border-radius: var(--radius); padding: clamp(26px, 4vw, 42px); box-shadow: var(--shadow); min-width: 0; }
+.panel h3 { margin-bottom: 6px; }
+.panel code { font-size: 14px; background: var(--chip); padding: 2px 6px; border-radius: 6px; overflow-wrap: anywhere; }
+.repo { margin-top: 10px; display: flex; align-items: center; gap: 8px; background: var(--chip); border-radius: 18px; padding: 8px 8px 8px 18px; }
+.repo code { flex: 1; min-width: 0; font-size: 15px; background: none; padding: 0; color: var(--ink); overflow-wrap: anywhere; }
+.copy { flex: none; height: 34px; padding: 0 14px; border-radius: 999px; border: 0; background: var(--card); color: var(--ink); font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.12); }
+.steps { list-style: none; padding: 0; margin: 28px 0 0; display: grid; gap: 20px; counter-reset: s; }
+.steps li { position: relative; padding-left: 50px; color: var(--ink-2); }
+.steps li::before { counter-increment: s; content: counter(s); position: absolute; left: 0; top: -3px; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: var(--sea-tint); color: var(--accent-ink); font-weight: 700; font-size: 15px; }
+.steps li b { color: var(--ink); font-weight: 600; }
+.req { list-style: none; padding: 0; margin: 20px 0 0; }
+.req li { display: flex; gap: 14px; align-items: baseline; padding: 14px 0; border-top: 1px solid var(--line); font-size: 16px; }
+.req li:first-child { border-top: 0; padding-top: 6px; }
+.req .name { color: var(--ink); font-weight: 600; flex: 1; min-width: 0; }
+.tg { flex: none; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; background: var(--sea-tint); color: var(--accent-ink); }
+.tg.opt { background: var(--chip); color: var(--ink-3); }
+.note { margin-top: 20px; font-size: 14px; color: var(--ink-3); }
+.full { grid-column: 1 / -1; }
+
+/* FAQ */
+.faq { display: grid; gap: 10px; }
+.faq details { background: var(--card); border-radius: 20px; box-shadow: var(--shadow); padding: 0 22px; }
+.faq summary { cursor: pointer; list-style: none; padding: 18px 0; font-family: var(--display); font-weight: 700; font-size: 17px; display: flex; gap: 12px; align-items: center; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; margin-left: auto; font-size: 22px; color: var(--accent-ink); font-weight: 600; }
+.faq details[open] summary::after { content: "\2212"; }
+.faq details p { padding: 0 0 18px; color: var(--ink-2); font-size: 16px; }
+.faq code { font-size: 13px; background: var(--chip); padding: 2px 6px; border-radius: 6px; }
+
+/* Schluss, Fuß */
+.finale { text-align: center; }
+.finale h2 { font-size: clamp(40px, 6.5vw, 84px); }
+footer { border-top: 1px solid var(--line); padding: 44px 0 56px; font-size: 14px; color: var(--ink-3); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 20px 32px; align-items: center; }
+footer nav { display: flex; flex-wrap: wrap; gap: 8px 26px; }
+footer nav a { color: var(--ink-2); font-weight: 500; }
+footer .fine { flex-basis: 100%; line-height: 1.6; }
+
+@media (max-width: 960px) {
+  .split, .install { grid-template-columns: 1fr; }
+  .grid3 { grid-template-columns: 1fr 1fr; }
+  .b.s4, .b.s8 { grid-column: span 6; }
+}
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  :root { --radius: 22px; --radius-lg: 28px; }
+  .nav { padding: 0 8px 0 14px; }
+  .nav .btn { margin-left: auto; }
+  .grid3 { grid-template-columns: 1fr; }
+  .b.s4, .b.s6, .b.s8 { grid-column: span 12; }
+  .tile, .b { padding: 24px; }
+  .panel { padding: 24px 20px; }
+  .repo { flex-wrap: wrap; padding: 12px 14px; gap: 10px; }
+  .repo code { flex-basis: 100%; font-size: clamp(12px, 3.4vw, 14px); }
+  .copy { margin-left: auto; }
+  .prof-foot { grid-template-columns: 1fr 1fr; }
+  .lane { grid-template-columns: 1fr; gap: 8px; text-align: left; }
+  .lane .end.r { text-align: left; }
+  .arrow { justify-items: start; text-align: left; }
+  .arrow svg { width: 80px; }
+  .tbl, .tbl tbody, .tbl tr, .tbl td { display: block; }
+  .tbl thead { display: none; }
+  .tbl tr { border-top: 1px solid var(--line); padding: 12px 16px; }
+  .tbl tr:first-child { border-top: 0; }
+  .tbl td { border: 0; padding: 2px 0; }
+  .tbl td:first-child { white-space: normal; }
+}
+</style>
+</head>
+<body>
+
+<div class="navwrap">
+  <nav class="nav" aria-label="Site">
+    <a class="brand" href="#top"><img src="logo.png" alt="">Pflanzenmonitor Plus</a>
+    <div class="nav-links">
+      <a href="#features"><span class="en">Features</span><span class="de">Funktionen</span></a>
+      <a href="#learning"><span class="en">Learning</span><span class="de">Lernen</span></a>
+      <a href="#move"><span class="en">Plant Monitor</span><span class="de">Plant Monitor</span></a>
+      <a href="#entities" class="opt"><span class="en">Entities</span><span class="de">Entitäten</span></a>
+      <a href="#faq" class="opt"><span class="en">Good to know</span><span class="de">Gut zu wissen</span></a>
+      <a href="https://github.com/SH1FT-W/pflanzenmonitor-plus">GitHub</a>
+    </div>
+    <button class="iconbtn" id="theme" type="button" aria-label="Light or dark">
+      <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <div class="lang" role="group" aria-label="Language"><button type="button" data-l="de">DE</button><button type="button" data-l="en">EN</button></div>
+    <a class="btn small" href="#install"><span class="en">Install</span><span class="de">Installieren</span></a>
+  </nav>
+</div>
+
+<section class="hero" id="top">
+  <div class="glow" aria-hidden="true"></div>
+  <div class="wrap">
+    <p class="eyebrow reveal"><span class="en">Plants in Home Assistant</span><span class="de">Pflanzen in Home Assistant</span></p>
+    <h1 class="reveal d1"><span class="en">Your plants,<br><em>understood.</em></span><span class="de">Deine Pflanzen,<br><em>verstanden.</em></span></h1>
+    <p class="lead reveal d2"><span class="en">Pflanzenmonitor Plus watches every plant against its limits, <strong>learns from the soil moisture when it was watered and when it needs water again</strong>, and lets an AI suggest limits for the species, approved by you. It does everything Plant Monitor does and moves its plants over in one step.</span><span class="de">Pflanzenmonitor Plus prüft jede Pflanze gegen ihre Grenzwerte, <strong>lernt aus der Bodenfeuchte, wann gegossen wurde und wann sie wieder Wasser braucht</strong>, und lässt eine KI Grenzwerte nach Pflanzenart vorschlagen, freigegeben von dir. Es kann alles, was der Plant Monitor kann, und zieht dessen Pflanzen in einem Schritt um.</span></p>
+    <div class="cta reveal d3">
+      <a class="btn" href="#install"><span class="en">Install with HACS</span><span class="de">Mit HACS installieren</span></a>
+      <a class="btn ghost" href="https://github.com/SH1FT-W/pflanzenmonitor-plus#readme"><span class="en">Read the README</span><span class="de">Zur Anleitung</span></a>
+    </div>
+    <p class="meta reveal d3">
+      <span class="pill"><i></i><span id="hl-version">Version 26.10.1</span></span>
+      <span class="en">Home Assistant 2026.9 or newer &middot; English and German &middot; Apache 2.0</span><span class="de">Home Assistant 2026.9 oder neuer &middot; Deutsch und Englisch &middot; Apache 2.0</span>
+    </p>
+
+    <div class="stage reveal d3">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="images/readme-title-dark.png">
+        <img class="photo" src="images/readme-title-light.png" width="2560" height="1280" alt="Pflanzenmonitor Plus: Your plants, understood.">
+      </picture>
+    </div>
+  </div>
+</section>
+
+<section id="features" class="tint">
+  <div class="wrap">
+    <div class="head center reveal">
+      <p class="eyebrow"><span class="en">What it does</span><span class="de">Was es kann</span></p>
+      <h2><span class="en">Every plant, every reading.<br>Right in Home Assistant.</span><span class="de">Jede Pflanze, jeder Messwert.<br>Direkt in Home Assistant.</span></h2>
+      <p class="lead"><span class="en">Works with any sensor Home Assistant knows: Zigbee, Bluetooth, Matter or a room sensor nearby.</span><span class="de">Arbeitet mit jedem Sensor, den Home Assistant kennt: Zigbee, Bluetooth, Matter oder ein Raumsensor in der Nähe.</span></p>
+    </div>
+    <div class="grid3">
+      <div class="tile reveal"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c4-3 7-7 7-12a7 7 0 0 0-14 0c0 5 3 9 7 12z"/><path d="M9 11l2 2 4-4"/></svg></div><h3><span class="en">Status like <code>plant.*</code></span><span class="de">Zustand wie <code>plant.*</code></span></h3><p><span class="en">OK or problem per plant, with <code>problems</code>, the status of every reading and the species, so cards and templates keep working.</span><span class="de">OK oder Problem je Pflanze, mit <code>problems</code>, dem Zustand jedes Messwerts und der Art, damit Karten und Vorlagen weiterlaufen.</span></p></div>
+      <div class="tile reveal d1"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.7C8 7.5 6 10.9 6 14a6 6 0 0 0 12 0c0-3.1-2-6.5-6-11.3z"/></svg></div><h3><span class="en">Water in X days</span><span class="de">Gießen in X Tagen</span></h3><p><span class="en">A forecast from the plant's own past cycles, scaled to how fast the soil dries today. In autumn it dries more slowly than in summer.</span><span class="de">Eine Vorhersage aus den früheren Zyklen der Pflanze, umgerechnet auf das heutige Abtrocknungstempo. Im Herbst trocknet es langsamer als im Sommer.</span></p></div>
+      <div class="tile reveal d2"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8L20 9l-4.9 3.6L17 18.5 12 15l-5 3.5 1.9-5.9L4 9l6.1-.2z"/></svg></div><h3><span class="en">AI suggestions you approve</span><span class="de">KI-Vorschläge mit Freigabe</span></h3><p><span class="en">Limits for the species with reasons. Safety rules live in code, nothing changes until you accept, and every change can be undone.</span><span class="de">Grenzwerte nach Pflanzenart mit Begründung. Die Schutzregeln stehen im Code, nichts ändert sich vor deiner Freigabe, und jede Änderung lässt sich zurücknehmen.</span></p></div>
+      <div class="tile reveal"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></div><h3><span class="en">Light the plant gets</span><span class="de">Licht, das die Pflanze bekommt</span></h3><p><span class="en">PPFD from lux (or straight from a PPFD sensor), the daily light integral for today, yesterday and the last 24 hours, plus VPD.</span><span class="de">PPFD aus Lux (oder direkt vom PPFD-Sensor), das Tageslicht für heute, gestern und die letzten 24 Stunden, dazu das Dampfdruckdefizit.</span></p></div>
+      <div class="tile reveal d1"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 16.6A5 5 0 0 0 18 7h-1.3A8 8 0 1 0 4 15.3"/><path d="M8 19v2M8 13v2M16 19v2M16 13v2M12 21v2M12 15v2"/></svg></div><h3><span class="en">Rain and frost outdoors</span><span class="de">Regen und Frost draußen</span></h3><p><span class="en">Rain does not count as watering. "Rain expected" and "Frost risk" from the hourly forecast against the plant's minimum temperature.</span><span class="de">Regen zählt nicht als Gießen. „Regen erwartet“ und „Frostgefahr“ aus der stündlichen Vorhersage gegen die Mindesttemperatur der Pflanze.</span></p></div>
+      <div class="tile reveal d2"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></div><h3><span class="en">Automations</span><span class="de">Automationen</span></h3><p><span class="en">43 triggers and 35 conditions: a problem started, a reading became too low or too high, a sensor became stale. Target plants by area or label.</span><span class="de">43 Auslöser und 35 Bedingungen: ein Problem beginnt, ein Messwert wird zu niedrig oder zu hoch, ein Sensor veraltet. Pflanzen auch über Raum oder Label wählen.</span></p></div>
+    </div>
+  </div>
+</section>
+
+<section id="learning">
+  <div class="wrap split">
+    <div class="reveal">
+      <p class="eyebrow"><span class="en">Learning</span><span class="de">Lernen</span></p>
+      <h2><span class="en">It watches<br>how you water.</span><span class="de">Es schaut zu,<br>wie du gießt.</span></h2>
+      <ul class="points">
+        <li><b><span class="en">Watering, detected</span><span class="de">Gießen, erkannt</span></b><span><span class="en">A jump of 10 points or more in soil moisture is a watering. Nothing to press, nothing to enter; spikes and restarts are ignored.</span><span class="de">Ein Sprung der Bodenfeuchte um 10 Punkte oder mehr ist Gießen. Nichts drücken, nichts eintragen; Ausreißer und Neustarts zählen nicht.</span></span></li>
+        <li><b><span class="en">Cycles of its own</span><span class="de">Eigene Zyklen</span></b><span><span class="en">From the hourly statistics of up to 120 days. After two full cycles the plant is learned.</span><span class="de">Aus der stündlichen Statistik von bis zu 120 Tagen. Nach zwei vollen Zyklen ist die Pflanze gelernt.</span></span></li>
+        <li><b><span class="en">Forecast to the lower limit</span><span class="de">Vorhersage bis zur Untergrenze</span></b><span><span class="en">How long the last cycles took from today's level, scaled by today's drying rate. Typically 1 to 3 days off in a back test.</span><span class="de">Wie lange die letzten Zyklen vom heutigen Stand brauchten, umgerechnet aufs heutige Tempo. Im Rückblick-Test meist 1 bis 3 Tage daneben.</span></span></li>
+      </ul>
+    </div>
+    <div class="prof reveal d1">
+      <div class="prof-head"><b><span class="en">Soil moisture</span><span class="de">Bodenfeuchte</span></b><span class="pill"><i></i><span class="en">Water in 4 days</span><span class="de">Gießen in 4 Tagen</span></span></div>
+      <svg class="curve" id="curve" viewBox="0 0 480 200" role="img" aria-label="Soil moisture drying between waterings, with the forecast to the lower limit"></svg>
+      <div class="legend"><span><i style="background: var(--water)"></i><span class="en">Measured</span><span class="de">Gemessen</span></span><span><i style="background: var(--aqua)"></i><span class="en">Forecast</span><span class="de">Vorhersage</span></span><span><i style="background: var(--limit)"></i><span class="en">Lower limit</span><span class="de">Untergrenze</span></span></div>
+      <div class="prof-foot">
+        <div><span><span class="en">Last watered</span><span class="de">Zuletzt gegossen</span></span><b><span class="en">6 days ago</span><span class="de">vor 6 Tagen</span></b></div>
+        <div><span><span class="en">Drying rate</span><span class="de">Abtrocknung</span></span><b>6.1 %/d</b></div>
+        <div><span><span class="en">Learning status</span><span class="de">Lernstand</span></span><b><span class="en">Learned</span><span class="de">Gelernt</span></b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="move" class="tint">
+  <div class="wrap">
+    <div class="head center reveal">
+      <p class="eyebrow"><span class="en">Coming from Plant Monitor</span><span class="de">Umstieg vom Plant Monitor</span></p>
+      <h2><span class="en">One click.<br>Nothing to redo.</span><span class="de">Ein Klick.<br>Nichts neu einrichten.</span></h2>
+      <p class="lead"><span class="en">A repair under Settings moves every plant over. Afterwards Plant Monitor can be uninstalled.</span><span class="de">Ein Eintrag unter Reparaturen zieht alle Pflanzen um. Danach lässt sich der Plant Monitor deinstallieren.</span></p>
+    </div>
+    <div class="bento">
+      <div class="b s6 reveal"><span class="tag"><span class="en">Same IDs</span><span class="de">Gleiche IDs</span></span><h3><span class="en">History continues</span><span class="de">Der Verlauf läuft weiter</span></h3><p><span class="en">Every entity keeps its ID; only <code>plant.&#8203;name</code> becomes <code>sensor.&#8203;name</code>, with the same states and attributes.</span><span class="de">Jede Entität behält ihre ID; nur aus <code>plant.&#8203;name</code> wird <code>sensor.&#8203;name</code>, mit gleichen Zuständen und Attributen.</span></p></div>
+      <div class="b s6 reveal d1"><span class="tag"><span class="en">Real limits</span><span class="de">Echte Grenzwerte</span></span><h3><span class="en">What you set, not the defaults</span><span class="de">Was du eingestellt hast, nicht die Startwerte</span></h3><p><span class="en">The limits come from the live values, together with sensors, species, picture, problems, wait after watering and outdoors.</span><span class="de">Die Grenzwerte kommen aus den aktuellen Werten, zusammen mit Sensoren, Art, Bild, Problemen, Wartezeit und „draußen“.</span></p></div>
+      <div class="b s6 reveal"><span class="tag"><span class="en">Your settings</span><span class="de">Deine Einstellungen</span></span><h3><span class="en">Names, labels, rooms</span><span class="de">Namen, Labels, Räume</span></h3><p><span class="en">Custom names and icons, labels, hidden or disabled entities, display and voice assistant settings come along, and the live light sums too.</span><span class="de">Eigene Namen und Symbole, Labels, ausgeblendete oder deaktivierte Entitäten, Anzeige- und Assist-Einstellungen ziehen mit, die Lichtsummen auch.</span></p></div>
+      <div class="b s6 reveal d1"><span class="tag"><span class="en">Safe</span><span class="de">Sicher</span></span><h3><span class="en">Nothing half done</span><span class="de">Nichts halb erledigt</span></h3><p><span class="en">The move runs on even if you close the dialog, only starts when Plant Monitor is running, and lists automations that still use old IDs.</span><span class="de">Der Umzug läuft weiter, auch wenn du den Dialog schließt, startet nur bei laufendem Plant Monitor und nennt Automationen, die noch alte IDs nutzen.</span></p></div>
+    </div>
+  </div>
+</section>
+
+<section id="entities">
+  <div class="wrap">
+    <div class="head center reveal">
+      <p class="eyebrow"><span class="en">Entities</span><span class="de">Entitäten</span></p>
+      <h2><span class="en">Everything on<br>the plant's device.</span><span class="de">Alles auf dem<br>Gerät der Pflanze.</span></h2>
+    </div>
+    <table class="tbl reveal">
+      <thead><tr><th><span class="en">Entity</span><span class="de">Entität</span></th><th><span class="en">What it shows</span><span class="de">Was sie zeigt</span></th></tr></thead>
+      <tbody>
+        <tr><td><span class="en">Plant (status)</span><span class="de">Pflanze (Zustand)</span></td><td><span class="en">OK or problem, the status of every reading, the problems with value and limits, the species.</span><span class="de">OK oder Problem, der Zustand jedes Messwerts, die Probleme mit Wert und Grenzen, die Art.</span></td></tr>
+        <tr><td><span class="en">Readings</span><span class="de">Messwerte</span></td><td><span class="en">Soil moisture, temperature, soil temperature, humidity, illuminance, conductivity, CO2 from your sensors; VPD, PPFD and daily light.</span><span class="de">Bodenfeuchte, Temperatur, Bodentemperatur, Luftfeuchte, Helligkeit, Leitfähigkeit, CO2 von deinen Sensoren; VPD, PPFD und Tageslicht.</span></td></tr>
+        <tr><td><span class="en">Limits</span><span class="de">Grenzwerte</span></td><td><span class="en">Min and max for every measurement and the lux-to-PPFD factor.</span><span class="de">Min und Max je Messgröße und der Lux-zu-PPFD-Faktor.</span></td></tr>
+        <tr><td><span class="en">Watering</span><span class="de">Gießen</span></td><td><span class="en">Water in, watering due, last watered, drying rate, learning status.</span><span class="de">Gießen in, Gießen fällig, zuletzt gegossen, Abtrocknung, Lernstand.</span></td></tr>
+        <tr><td><span class="en">Outdoors</span><span class="de">Draußen</span></td><td><span class="en">Rain expected, frost risk.</span><span class="de">Regen erwartet, Frostgefahr.</span></td></tr>
+        <tr><td><span class="en">AI (optional)</span><span class="de">KI (optional)</span></td><td><span class="en">The suggestion with "old → new" and reasons, buttons to accept, reject, undo and ask.</span><span class="de">Der Vorschlag mit „alt → neu“ und Gründen, Knöpfe zum Übernehmen, Ablehnen, Zurücknehmen und Fragen.</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="install" class="tint">
+  <div class="wrap">
+    <div class="head center reveal">
+      <p class="eyebrow"><span class="en">Install</span><span class="de">Installieren</span></p>
+      <h2><span class="en">Ready in<br>two minutes.</span><span class="de">In zwei Minuten<br>bereit.</span></h2>
+    </div>
+    <div class="install">
+      <div class="panel reveal">
+        <h3><span class="en">With HACS</span><span class="de">Mit HACS</span></h3>
+        <ol class="steps">
+          <li class="en"><b>Add a custom repository</b> in HACS (three dots menu), type Integration:</li>
+          <li class="de"><b>Füge ein benutzerdefiniertes Repository</b> in HACS hinzu (Drei-Punkte-Menü), Typ Integration:</li>
+        </ol>
+        <div class="repo"><code id="repo">https://github.com/SH1FT-W/pflanzenmonitor-plus</code><button class="copy" type="button" data-copy="repo"><span class="en">Copy</span><span class="de">Kopieren</span></button></div>
+        <ol class="steps" style="counter-reset: s 1">
+          <li class="en"><b>Download Pflanzenmonitor Plus</b> and restart Home Assistant.</li>
+          <li class="en"><b>Add the integration</b>, then add your plants, or move them over from Plant Monitor under Repairs.</li>
+          <li class="de"><b>Lade Pflanzenmonitor Plus herunter</b> und starte Home Assistant neu.</li>
+          <li class="de"><b>Füge die Integration hinzu</b>, dann deine Pflanzen, oder zieh sie unter Reparaturen aus dem Plant Monitor um.</li>
+        </ol>
+      </div>
+      <div class="panel reveal d1">
+        <h3><span class="en">What you need</span><span class="de">Was du brauchst</span></h3>
+        <p class="muted"><span class="en">No cloud account, no YAML, no extra packages.</span><span class="de">Kein Cloud-Konto, kein YAML, keine zusätzlichen Pakete.</span></p>
+        <ul class="req">
+          <li><span class="name">Home Assistant 2026.9+</span><span class="tg"><span class="en">Required</span><span class="de">Nötig</span></span></li>
+          <li><span class="name"><span class="en">A soil moisture sensor per plant</span><span class="de">Ein Bodenfeuchtesensor je Pflanze</span></span><span class="tg"><span class="en">For learning</span><span class="de">Fürs Lernen</span></span></li>
+          <li><span class="name"><span class="en">Temperature, humidity, light sensors</span><span class="de">Temperatur-, Luftfeuchte-, Lichtsensoren</span></span><span class="tg opt"><span class="en">Optional</span><span class="de">Optional</span></span></li>
+          <li><span class="name"><span class="en">An AI task entity (e.g. Claude)</span><span class="de">Eine KI-Aufgaben-Entität (z. B. Claude)</span></span><span class="tg opt"><span class="en">Optional</span><span class="de">Optional</span></span></li>
+          <li><span class="name"><span class="en">Weather and rain sensor for plants outdoors</span><span class="de">Wetter und Regensensor für Pflanzen draußen</span></span><span class="tg opt"><span class="en">Optional</span><span class="de">Optional</span></span></li>
+        </ul>
+      </div>
+      <div class="panel full reveal">
+        <h3><span class="en">Without HACS</span><span class="de">Ohne HACS</span></h3>
+        <p class="muted"><span class="en">Download the <a href="https://github.com/SH1FT-W/pflanzenmonitor-plus/releases/latest">latest release</a>, copy its <code>custom_components/pflanzenmonitor_plus</code> folder into <code>/config/custom_components/</code> and restart Home Assistant.</span><span class="de">Lade das <a href="https://github.com/SH1FT-W/pflanzenmonitor-plus/releases/latest">neueste Release</a> herunter, kopiere den Ordner <code>custom_components/pflanzenmonitor_plus</code> nach <code>/config/custom_components/</code> und starte Home Assistant neu.</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap narrow">
+    <div class="head center reveal">
+      <p class="eyebrow"><span class="en">Good to know</span><span class="de">Gut zu wissen</span></p>
+      <h2><span class="en">Plants take<br>their time.</span><span class="de">Pflanzen lassen<br>sich Zeit.</span></h2>
+    </div>
+    <div class="faq reveal">
+      <details open><summary><span class="en">When does the forecast appear?</span><span class="de">Wann gibt es eine Vorhersage?</span></summary><p><span class="en">Right away from the current drying rate, from past cycles once two waterings were seen. In the first 24 hours after watering there is no rate, because excess water drains.</span><span class="de">Sofort aus dem aktuellen Tempo, aus früheren Zyklen, sobald zweimal gegossen wurde. In den ersten 24 Stunden nach dem Gießen gibt es kein Tempo, weil überschüssiges Wasser abläuft.</span></p></details>
+      <details><summary><span class="en">What does the AI see?</span><span class="de">Was sieht die KI?</span></summary><p><span class="en">Plant name, species, room, indoors or outdoors, month, country, the limits and 30-day summaries of the readings. No locations, no people. It only runs if you pick an AI task entity.</span><span class="de">Pflanzenname, Art, Raum, drinnen oder draußen, Monat, Land, die Grenzwerte und 30-Tage-Zusammenfassungen der Messwerte. Keine Orte, keine Personen. Sie läuft nur, wenn du eine KI-Aufgaben-Entität wählst.</span></p></details>
+      <details><summary><span class="en">I repotted my plant.</span><span class="de">Ich habe umgetopft.</span></summary><p><span class="en">The old cycles fit less for a while; the forecast adapts through today's drying rate and is reliable again after two new cycles.</span><span class="de">Die alten Zyklen passen eine Weile weniger; die Vorhersage gleicht sich über das heutige Tempo an und ist nach zwei neuen Zyklen wieder verlässlich.</span></p></details>
+      <details><summary><span class="en">Can I keep using Plant Monitor?</span><span class="de">Kann ich den Plant Monitor behalten?</span></summary><p><span class="en">You don't need it anymore. Until you move the plants, Plus shows the move under Repairs and leaves everything else alone.</span><span class="de">Du brauchst ihn nicht mehr. Bis du die Pflanzen umziehst, zeigt Plus den Umzug unter Reparaturen und lässt alles andere in Ruhe.</span></p></details>
+      <details><summary><span class="en">How do I report a bug?</span><span class="de">Wie melde ich einen Fehler?</span></summary><p><span class="en">Download the diagnostics (Settings, Devices &amp; services, Pflanzenmonitor Plus, three dots) and attach them to a <a href="https://github.com/SH1FT-W/pflanzenmonitor-plus/issues">GitHub issue</a>. AI texts are redacted; check the file for plant names first.</span><span class="de">Diagnose herunterladen (Einstellungen, Geräte &amp; Dienste, Pflanzenmonitor Plus, drei Punkte) und an ein <a href="https://github.com/SH1FT-W/pflanzenmonitor-plus/issues">GitHub-Issue</a> hängen. KI-Texte sind geschwärzt; Pflanzennamen vorher prüfen.</span></p></details>
+    </div>
+  </div>
+</section>
+
+<section class="finale">
+  <div class="wrap narrow reveal">
+    <p class="eyebrow">Pflanzenmonitor Plus</p>
+    <h2><span class="en">Water when it's due.<br><em>Not before.</em></span><span class="de">Gießen, wenn's fällig ist.<br><em>Nicht vorher.</em></span></h2>
+    <p class="lead"><span class="en">One integration for every plant, local and free.</span><span class="de">Eine Integration für jede Pflanze, lokal und kostenlos.</span></p>
+    <div class="cta">
+      <a class="btn" href="#install"><span class="en">Install Pflanzenmonitor Plus</span><span class="de">Pflanzenmonitor Plus installieren</span></a>
+      <a class="btn ghost" href="https://github.com/SH1FT-W/pflanzenmonitor-plus/releases"><span class="en">Releases</span><span class="de">Releases</span></a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span class="brand"><img src="logo.png" alt="">Pflanzenmonitor Plus</span>
+    <nav>
+      <a href="https://github.com/SH1FT-W/pflanzenmonitor-plus#readme">README</a>
+      <a href="https://github.com/SH1FT-W/pflanzenmonitor-plus/blob/main/CHANGELOG.md">Changelog</a>
+      <a href="https://github.com/SH1FT-W/pflanzenmonitor-plus/releases">Releases</a>
+      <a href="https://github.com/SH1FT-W/pflanzenmonitor-plus/issues"><span class="en">Issues</span><span class="de">Fehler melden</span></a>
+      <a href="https://hacs.xyz">HACS</a>
+      <a href="https://github.com/SH1FT-W/pflanzenmonitor-plus">GitHub</a>
+      <a href="https://github.com/SH1FT-W/pflanzenmonitor-plus/blob/main/LICENSE"><span class="en">Apache 2.0 License</span><span class="de">Apache-2.0-Lizenz</span></a>
+    </nav>
+    <p class="fine"><span class="en">This integration is an independent project. It is compatible with Plant Monitor (Olen/homeassistant-plant) but contains none of its code, and it is not affiliated with, endorsed by or sponsored by Plant Monitor, Home Assistant or Nabu Casa.</span><span class="de">Diese Integration ist ein unabhängiges Projekt. Sie ist mit dem Plant Monitor (Olen/homeassistant-plant) kompatibel, enthält aber keinen Code daraus und gehört weder zum Plant Monitor, zu Home Assistant noch zu Nabu Casa und wird von ihnen nicht unterstützt.</span></p>
+  </div>
+</footer>
+
+<script>
+  // Kopieren der Repo-Adresse
+  document.querySelectorAll('[data-copy]').forEach(function (b) {
+    var label = b.innerHTML;
+    b.addEventListener('click', function () {
+      var t = document.getElementById(b.dataset.copy).textContent;
+      (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () {
+        b.innerHTML = '<span class="en">Copied</span><span class="de">Kopiert</span>';
+        setTimeout(function () { b.innerHTML = label; }, 1600);
+      }, function () {});
+    });
+  });
+
+  // Versionszeile: manifest.json aus dem Repo, sonst das letzte GitHub-Release; der Text oben ist der Fallback.
+  (function () {
+    var el = document.getElementById('hl-version');
+    function show(v) { if (v && el) el.textContent = 'Version ' + v; }
+    fetch('https://raw.githubusercontent.com/SH1FT-W/pflanzenmonitor-plus/main/custom_components/pflanzenmonitor_plus/manifest.json', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { if (j && j.version) show(String(j.version)); else throw 0; })
+      .catch(function () {
+        fetch('https://api.github.com/repos/SH1FT-W/pflanzenmonitor-plus/releases/latest')
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(function (j) { show(j && String(j.tag_name || '').replace(/^v/, '')); })
+          .catch(function () {});
+      });
+  })();
+
+  // Lern-Illustration mit erfundenen Werten: Bodenfeuchte über 24 Tage, gegossen an Tag 0, 10 und 18,
+  // gestrichelt die Vorhersage bis zur Untergrenze 25 %.
+  (function () {
+    var svg = document.getElementById('curve'); if (!svg) return;
+    var W = 480, H = 200, L = 30, R = 14, T = 10, B = 26, D = 28, LIMIT = 25;
+    function x(d) { return L + (W - L - R) * d / D; }
+    function y(v) { return T + (H - T - B) * (1 - v / 100); }
+    var measured = [[0, 78], [9.6, 22], [10, 80], [17.8, 33], [18, 76], [24, 49]];
+    var forecast = [[24, 49], [28, LIMIT]];
+    function path(p) { return p.map(function (q, k) { return (k ? 'L' : 'M') + x(q[0]).toFixed(1) + ' ' + y(q[1]).toFixed(1); }).join(' '); }
+    var out = '';
+    [0, 50, 100].forEach(function (v) { out += '<line class="grid" x1="' + L + '" x2="' + (W - R) + '" y1="' + y(v) + '" y2="' + y(v) + '"/><text class="ax" x="0" y="' + (y(v) + 4) + '">' + v + '</text>'; });
+    [0, 7, 14, 21, 28].forEach(function (d) { out += '<text class="ax" text-anchor="middle" x="' + x(d) + '" y="' + (H - 6) + '">' + (d - 24 < 0 ? d - 24 : '+' + (d - 24)) + 'd</text>'; });
+    out += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + y(LIMIT) + '" y2="' + y(LIMIT) + '" stroke="var(--limit)" stroke-width="1.5" stroke-dasharray="2 4"/>';
+    out += '<path d="' + path(measured) + '" fill="none" stroke="var(--water)" stroke-width="2.5" stroke-linejoin="round"/>';
+    out += '<path d="' + path(forecast) + '" fill="none" stroke="var(--aqua)" stroke-width="2.5" stroke-dasharray="6 5"/>';
+    out += '<line class="now" x1="' + x(24) + '" x2="' + x(24) + '" y1="' + T + '" y2="' + (H - B) + '"/>';
+    svg.innerHTML = out;
+  })();
+</script>
+</body>
+</html>

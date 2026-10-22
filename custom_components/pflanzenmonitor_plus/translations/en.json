@@ -1,0 +1,1571 @@
+{
+  "config": {
+    "abort": {
+      "single_instance_allowed": "Pflanzenmonitor Plus is already set up; add plants to it with \"Add plant\"."
+    },
+    "step": {
+      "user": {
+        "title": "Pflanzenmonitor Plus",
+        "description": "Monitors your plants, learns from the soil moisture history when they were watered and when they need water again, and optionally lets an AI suggest better limits. All fields are optional. Add plants afterwards with \"Add plant\" (or move them over from Plant Monitor under Repairs).",
+        "data": {
+          "ai_task": "AI for limit suggestions",
+          "weather": "Weather",
+          "rain_sensor": "Rain sensor"
+        },
+        "data_description": {
+          "ai_task": "AI task entity (e.g. Claude). Once a plant is learned, it suggests suitable limits for the species at most once a month (soil moisture, temperature, soil temperature, humidity, illuminance, daily light; only values with a sensor). Nothing changes until you accept. Leave empty to turn suggestions off.",
+          "weather": "Hourly forecast for rain and frost warnings of plants outdoors.",
+          "rain_sensor": "Measured rain intensity (mm/h). Lets Plus tell rain from watering for plants outdoors; without it (or before it has history), rises outdoors count as unknown and \"Last watered\" stays empty there."
+        }
+      }
+    }
+  },
+  "config_subentries": {
+    "plant": {
+      "entry_type": "Plant",
+      "initiate_flow": {
+        "user": "Add plant",
+        "reconfigure": "Edit plant"
+      },
+      "abort": {
+        "reconfigure_successful": "The plant was changed."
+      },
+      "step": {
+        "user": {
+          "title": "Plant",
+          "description": "Name and species. The species helps the AI with its suggestions (e.g. \"Dracaena trifasciata\").",
+          "data": {
+            "name": "Name",
+            "species": "Species",
+            "area": "Room",
+            "image": "Picture"
+          },
+          "data_description": {
+            "species": "Botanical or common name. Shown as model on the device page.",
+            "area": "Room of the plant. Rooms like terrace, balcony or garden suggest \"outdoors\" in the next step.",
+            "image": "URL or path of a picture, e.g. /local/images/plants/yucca.jpg (optional)."
+          }
+        },
+        "reconfigure": {
+          "title": "Plant",
+          "description": "Name and species. The species helps the AI with its suggestions (e.g. \"Dracaena trifasciata\").",
+          "data": {
+            "name": "Name",
+            "species": "Species",
+            "image": "Picture"
+          },
+          "data_description": {
+            "species": "Botanical or common name. Shown as model on the device page.",
+            "image": "URL or path of a picture, e.g. /local/images/plants/yucca.jpg (optional)."
+          }
+        },
+        "sensors": {
+          "title": "Sensors",
+          "description": "The real sensors of this plant. Plus mirrors them on the plant's device page and checks them against the limits. Only soil moisture is needed for learning and watering forecasts; everything else is optional.",
+          "data": {
+            "moisture_sensor": "Soil moisture",
+            "temperature_sensor": "Air temperature",
+            "soil_temperature_sensor": "Soil temperature",
+            "humidity_sensor": "Air humidity",
+            "illuminance_sensor": "Illuminance (lx) or PPFD",
+            "conductivity_sensor": "Conductivity",
+            "co2_sensor": "CO2",
+            "outdoor": "Outdoors"
+          },
+          "data_description": {
+            "outdoor": "Gets rain and frost sensors (with a weather entity in the options); rain does not count as watering.",
+            "illuminance_sensor": "Illuminance in lx (converted to PPFD and daily light with the plant's lux to PPFD factor) or a sensor that already measures PPFD (µmol/m²/s)."
+          }
+        },
+        "problems": {
+          "title": "Problems",
+          "description": "Which readings make the plant show \"Problem\" when they leave their limits. The status of every reading (too low, too high, OK) is shown either way. Illuminance only counts when it is too bright (it is dark every night), daily light is checked against yesterday.",
+          "data": {
+            "problems": "Counts as problem",
+            "moisture_grace": "Wait after watering"
+          },
+          "data_description": {
+            "moisture_grace": "After a watering (soil moisture jumps by 10 points or more), \"soil moisture too high\" is not reported for this long. 0 = off."
+          }
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Pflanzenmonitor Plus",
+        "description": "All fields are optional. Changes reload the integration.",
+        "data": {
+          "ai_task": "AI for limit suggestions",
+          "weather": "Weather",
+          "rain_sensor": "Rain sensor"
+        },
+        "data_description": {
+          "ai_task": "AI task entity (e.g. Claude). Once a plant is learned, it suggests suitable limits for the species at most once a month (soil moisture, temperature, soil temperature, humidity, illuminance, daily light; only values with a sensor). Nothing changes until you accept. Leave empty to turn suggestions off.",
+          "weather": "Hourly forecast for rain and frost warnings of plants outdoors.",
+          "rain_sensor": "Measured rain intensity (mm/h). Lets Plus tell rain from watering for plants outdoors; without it (or before it has history), rises outdoors count as unknown and \"Last watered\" stays empty there."
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "rain_expected": {
+        "name": "Rain expected",
+        "state": {
+          "on": "Yes",
+          "off": "No"
+        },
+        "state_attributes": {
+          "amount": {
+            "name": "Amount (mm)"
+          },
+          "until": {
+            "name": "Until"
+          }
+        }
+      },
+      "frost": {
+        "name": "Frost risk",
+        "state": {
+          "on": "Risk",
+          "off": "None"
+        },
+        "state_attributes": {
+          "lowest": {
+            "name": "Lowest temperature (°C)"
+          },
+          "at": {
+            "name": "At"
+          },
+          "limit": {
+            "name": "Plant minimum (°C)"
+          }
+        }
+      }
+    },
+    "sensor": {
+      "learning": {
+        "name": "Learning status",
+        "state": {
+          "keine_daten": "No data",
+          "lernt": "Still learning",
+          "bereit": "Learned"
+        },
+        "state_attributes": {
+          "cycles": {
+            "name": "Cycles observed"
+          },
+          "cycles_needed": {
+            "name": "Cycles needed"
+          },
+          "habit": {
+            "name": "Usually watered at (%)"
+          }
+        }
+      },
+      "next_watering": {
+        "name": "Water in",
+        "state_attributes": {
+          "due": {
+            "name": "Due on"
+          },
+          "target": {
+            "name": "Lower limit (%)"
+          },
+          "method": {
+            "name": "Based on",
+            "state": {
+              "zyklen": "Past cycles",
+              "tempo": "Current drying rate"
+            }
+          }
+        }
+      },
+      "last_watered": {
+        "name": "Last watered",
+        "state_attributes": {
+          "last_rain": {
+            "name": "Last rain"
+          },
+          "rain_data": {
+            "name": "Rain history",
+            "state": {
+              "vorhanden": "Available",
+              "fehlt": "None yet – rain and watering cannot be told apart outdoors"
+            }
+          },
+          "rain_data_since": {
+            "name": "Rain history since"
+          }
+        }
+      },
+      "drying_rate": {
+        "name": "Drying rate"
+      },
+      "suggestion": {
+        "name": "AI suggestion",
+        "state": {
+          "keiner": "None yet",
+          "offen": "Waiting for approval",
+          "keine_aenderung": "Limits fit",
+          "uebernommen": "Accepted",
+          "abgelehnt": "Rejected",
+          "zurueckgenommen": "Undone"
+        },
+        "state_attributes": {
+          "summary": {
+            "name": "Summary"
+          },
+          "min_moisture": {
+            "name": "Soil moisture min"
+          },
+          "min_moisture_reason": {
+            "name": "Reason (Soil moisture min)"
+          },
+          "max_moisture": {
+            "name": "Soil moisture max"
+          },
+          "max_moisture_reason": {
+            "name": "Reason (Soil moisture max)"
+          },
+          "min_temperature": {
+            "name": "Temperature min"
+          },
+          "min_temperature_reason": {
+            "name": "Reason (Temperature min)"
+          },
+          "max_temperature": {
+            "name": "Temperature max"
+          },
+          "max_temperature_reason": {
+            "name": "Reason (Temperature max)"
+          },
+          "min_soil_temperature": {
+            "name": "Soil temperature min"
+          },
+          "min_soil_temperature_reason": {
+            "name": "Reason (Soil temperature min)"
+          },
+          "max_soil_temperature": {
+            "name": "Soil temperature max"
+          },
+          "max_soil_temperature_reason": {
+            "name": "Reason (Soil temperature max)"
+          },
+          "min_humidity": {
+            "name": "Humidity min"
+          },
+          "min_humidity_reason": {
+            "name": "Reason (Humidity min)"
+          },
+          "max_humidity": {
+            "name": "Humidity max"
+          },
+          "max_humidity_reason": {
+            "name": "Reason (Humidity max)"
+          },
+          "min_illuminance": {
+            "name": "Illuminance min"
+          },
+          "min_illuminance_reason": {
+            "name": "Reason (Illuminance min)"
+          },
+          "max_illuminance": {
+            "name": "Illuminance max"
+          },
+          "max_illuminance_reason": {
+            "name": "Reason (Illuminance max)"
+          },
+          "min_dli": {
+            "name": "Daily light min"
+          },
+          "min_dli_reason": {
+            "name": "Reason (Daily light min)"
+          },
+          "max_dli": {
+            "name": "Daily light max"
+          },
+          "max_dli_reason": {
+            "name": "Reason (Daily light max)"
+          },
+          "confidence": {
+            "name": "Confidence",
+            "state": {
+              "low": "Low",
+              "medium": "Medium",
+              "high": "High"
+            }
+          },
+          "species": {
+            "name": "Species (recognised by AI)"
+          },
+          "asked": {
+            "name": "Asked"
+          },
+          "next_check": {
+            "name": "Next check"
+          },
+          "applied": {
+            "name": "Last accepted"
+          },
+          "error": {
+            "name": "Last error"
+          }
+        }
+      },
+      "next_watering_due": {
+        "name": "Water due"
+      },
+      "status": {
+        "state": {
+          "ok": "OK",
+          "problem": "Problem"
+        },
+        "state_attributes": {
+          "species": {
+            "name": "Species"
+          },
+          "problems": {
+            "name": "Problems"
+          },
+          "moisture_status": {
+            "name": "Soil moisture",
+            "state": {
+              "Low": "Too low",
+              "High": "Too high",
+              "ok": "OK"
+            }
+          },
+          "conductivity_status": {
+            "name": "Conductivity",
+            "state": {
+              "Low": "Too low",
+              "High": "Too high",
+              "ok": "OK"
+            }
+          },
+          "temperature_status": {
+            "name": "Temperature",
+            "state": {
+              "Low": "Too low",
+              "High": "Too high",
+              "ok": "OK"
+            }
+          },
+          "humidity_status": {
+            "name": "Air humidity",
+            "state": {
+              "Low": "Too low",
+              "High": "Too high",
+              "ok": "OK"
+            }
+          },
+          "co2_status": {
+            "name": "CO2",
+            "state": {
+              "Low": "Too low",
+              "High": "Too high",
+              "ok": "OK"
+            }
+          },
+          "soil_temperature_status": {
+            "name": "Soil temperature",
+            "state": {
+              "Low": "Too low",
+              "High": "Too high",
+              "ok": "OK"
+            }
+          },
+          "illuminance_status": {
+            "name": "Illuminance",
+            "state": {
+              "Low": "Too low",
+              "High": "Too high",
+              "ok": "OK"
+            }
+          },
+          "dli_status": {
+            "name": "Daily light integral (DLI)",
+            "state": {
+              "Low": "Too low",
+              "High": "Too high",
+              "ok": "OK"
+            }
+          },
+          "vpd_status": {
+            "name": "Vapour pressure deficit (VPD)",
+            "state": {
+              "Low": "Too low",
+              "High": "Too high",
+              "ok": "OK"
+            }
+          }
+        }
+      },
+      "moisture": {
+        "name": "Soil moisture",
+        "state_attributes": {
+          "external_sensor": {
+            "name": "Source sensor"
+          }
+        }
+      },
+      "temperature": {
+        "name": "Temperature",
+        "state_attributes": {
+          "external_sensor": {
+            "name": "Source sensor"
+          }
+        }
+      },
+      "soil_temperature": {
+        "name": "Soil temperature",
+        "state_attributes": {
+          "external_sensor": {
+            "name": "Source sensor"
+          }
+        }
+      },
+      "humidity": {
+        "name": "Air humidity",
+        "state_attributes": {
+          "external_sensor": {
+            "name": "Source sensor"
+          }
+        }
+      },
+      "illuminance": {
+        "name": "Illuminance",
+        "state_attributes": {
+          "external_sensor": {
+            "name": "Source sensor"
+          }
+        }
+      },
+      "conductivity": {
+        "name": "Conductivity",
+        "state_attributes": {
+          "external_sensor": {
+            "name": "Source sensor"
+          }
+        }
+      },
+      "co2": {
+        "name": "CO2",
+        "state_attributes": {
+          "external_sensor": {
+            "name": "Source sensor"
+          }
+        }
+      },
+      "vpd": {
+        "name": "Vapour pressure deficit"
+      },
+      "ppfd": {
+        "name": "PPFD"
+      },
+      "total_light_integral": {
+        "name": "Total light integral"
+      },
+      "dli": {
+        "name": "Daily light integral",
+        "state_attributes": {
+          "last_period": {
+            "name": "Yesterday"
+          }
+        }
+      },
+      "dli_24h": {
+        "name": "Light last 24 h"
+      }
+    },
+    "button": {
+      "accept": {
+        "name": "Accept suggestion"
+      },
+      "reject": {
+        "name": "Reject suggestion"
+      },
+      "undo": {
+        "name": "Undo suggestion"
+      },
+      "ask": {
+        "name": "Ask AI now"
+      }
+    },
+    "number": {
+      "max_moisture": {
+        "name": "Max Soil moisture"
+      },
+      "min_moisture": {
+        "name": "Min Soil moisture"
+      },
+      "max_conductivity": {
+        "name": "Max Conductivity"
+      },
+      "min_conductivity": {
+        "name": "Min Conductivity"
+      },
+      "max_temperature": {
+        "name": "Max Temperature"
+      },
+      "min_temperature": {
+        "name": "Min Temperature"
+      },
+      "max_humidity": {
+        "name": "Max Air humidity"
+      },
+      "min_humidity": {
+        "name": "Min Air humidity"
+      },
+      "max_co2": {
+        "name": "Max CO2"
+      },
+      "min_co2": {
+        "name": "Min CO2"
+      },
+      "max_soil_temperature": {
+        "name": "Max Soil temperature"
+      },
+      "min_soil_temperature": {
+        "name": "Min Soil temperature"
+      },
+      "max_illuminance": {
+        "name": "Max Illuminance"
+      },
+      "min_illuminance": {
+        "name": "Min Illuminance"
+      },
+      "max_dli": {
+        "name": "Max DLI"
+      },
+      "min_dli": {
+        "name": "Min DLI"
+      },
+      "max_vpd": {
+        "name": "Max VPD"
+      },
+      "min_vpd": {
+        "name": "Min VPD"
+      },
+      "lux_to_ppfd": {
+        "name": "Lux to PPFD factor"
+      }
+    }
+  },
+  "selector": {
+    "measurement": {
+      "options": {
+        "moisture": "Soil moisture",
+        "conductivity": "Conductivity",
+        "temperature": "Temperature",
+        "humidity": "Air humidity",
+        "co2": "CO2",
+        "soil_temperature": "Soil temperature",
+        "illuminance": "Illuminance",
+        "dli": "Daily light integral (DLI)",
+        "vpd": "Vapour pressure deficit (VPD)"
+      }
+    }
+  },
+  "issues": {
+    "suggestion": {
+      "title": "{plant}: new AI suggestion for the limits",
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "{plant}: AI suggestion",
+            "description": "{summary}\n\n{reasons}\n\n{note}\n\nConfidence: {confidence}\n\n**Accept** writes the values to the plant's limits. The previous values are kept: \"Undo suggestion\" on the plant's device page restores them. **Reject** keeps everything as it is; the AI is asked again in 30 days.",
+            "menu_options": {
+              "accept": "Accept",
+              "reject": "Reject"
+            }
+          }
+        },
+        "abort": {
+          "no_suggestion": "There is no open suggestion for this plant (anymore).",
+          "suggestion_outdated": "The limits were changed since the suggestion was made. Ask the AI again on the plant's device page.",
+          "busy": "The AI is still working on a suggestion. Please try again in a moment."
+        }
+      }
+    },
+    "migrate": {
+      "title": "Move plants over from Plant Monitor",
+      "description": "Plant Monitor still has these plants: {plants}. Pflanzenmonitor Plus now monitors plants itself and can take them over, so you no longer need Plant Monitor. Open this to move them.",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Move plants from Plant Monitor",
+            "description": "Moves these plants: {plants}.\n\nTaken over: sensors, the current limits, species, picture, which readings count as problem, the wait after watering, room, labels, names, icons and display settings. Entity IDs stay the same (history continues), only `plant.bogenhanf` becomes `sensor.bogenhanf` (same states ok/problem and attributes). What Plus has learned and the AI history stay.\n\nAfterwards the plants are **removed from Plant Monitor**. Automations, scripts and dashboards that use `plant.…` must then use the new ID `sensor.…`; Plus lists the automations and scripts under Repairs. After that, Plant Monitor can be uninstalled in HACS."
+          }
+        },
+        "abort": {
+          "nothing_to_migrate": "There are no plants in Plant Monitor (anymore).",
+          "legacy_not_loaded": "Plant Monitor is not running (disabled or failed to start). Only a running Plant Monitor has the current limits – start it (or restart Home Assistant) and try again. Nothing was changed.",
+          "legacy_unload_failed": "Plant Monitor could not be stopped. Restart Home Assistant and try again. Nothing was removed."
+        }
+      }
+    },
+    "references": {
+      "title": "Automations still use the old plant entities",
+      "description": "These automations or scripts still use the entities of Plant Monitor, which no longer exist. Replace them with the new ones:\n\n{references}\n\nThis notice disappears once nothing uses them anymore (checked when Pflanzenmonitor Plus is loaded)."
+    }
+  },
+  "exceptions": {
+    "no_ai": {
+      "message": "No AI task entity is set in the options of Pflanzenmonitor Plus."
+    },
+    "no_data": {
+      "message": "There is no moisture history for this plant yet."
+    },
+    "no_suggestion": {
+      "message": "There is no open suggestion for this plant."
+    },
+    "nothing_to_undo": {
+      "message": "No accepted suggestion to undo."
+    },
+    "ask_failed": {
+      "message": "The AI could not make a suggestion: {error}"
+    },
+    "busy": {
+      "message": "The AI is still working on a suggestion. Please try again in a moment."
+    },
+    "suggestion_outdated": {
+      "message": "The limits were changed since the suggestion was made. Ask the AI again."
+    },
+    "changed_since": {
+      "message": "The limits were changed since the suggestion was accepted; undo would overwrite them."
+    },
+    "not_loaded": {
+      "message": "Pflanzenmonitor Plus is not loaded."
+    },
+    "not_a_meter": {
+      "message": "{entity} is not a reading of a plant of Pflanzenmonitor Plus."
+    },
+    "sensor_not_found": {
+      "message": "The sensor {entity} does not exist."
+    },
+    "legacy_not_loaded": {
+      "message": "Plant Monitor is not running (disabled or failed to start). Only a running Plant Monitor has the current limits – start it (or restart Home Assistant) and try again. Nothing was changed."
+    },
+    "legacy_unload_failed": {
+      "message": "Plant Monitor could not be stopped. Restart Home Assistant and try again. Nothing was removed."
+    }
+  },
+  "services": {
+    "replace_sensor": {
+      "name": "Replace sensor",
+      "description": "Gives a reading of a plant another real sensor, or removes it.",
+      "fields": {
+        "meter_entity": {
+          "name": "Reading",
+          "description": "The reading of the plant (e.g. its soil moisture) whose sensor is replaced."
+        },
+        "new_sensor": {
+          "name": "New sensor",
+          "description": "The real sensor to use from now on. Leave empty to remove the sensor."
+        }
+      }
+    }
+  },
+  "triggers": {
+    "problem_detected": {
+      "name": "Plant problem detected",
+      "description": "Triggers when a plant gets a problem (a reading that counts as problem leaves its limits).",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "problem_cleared": {
+      "name": "Plant problem cleared",
+      "description": "Triggers when a plant is OK again.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "moisture_became_low": {
+      "name": "Soil moisture became too low",
+      "description": "Triggers when the soil moisture of a plant drops below its lower limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "moisture_became_high": {
+      "name": "Soil moisture became too high",
+      "description": "Triggers when the soil moisture of a plant rises above its upper limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "moisture_became_ok": {
+      "name": "Soil moisture became OK",
+      "description": "Triggers when the soil moisture of a plant is back within its limits.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "conductivity_became_low": {
+      "name": "Conductivity became too low",
+      "description": "Triggers when the conductivity of a plant drops below its lower limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "conductivity_became_high": {
+      "name": "Conductivity became too high",
+      "description": "Triggers when the conductivity of a plant rises above its upper limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "conductivity_became_ok": {
+      "name": "Conductivity became OK",
+      "description": "Triggers when the conductivity of a plant is back within its limits.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "temperature_became_low": {
+      "name": "Temperature became too low",
+      "description": "Triggers when the temperature of a plant drops below its lower limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "temperature_became_high": {
+      "name": "Temperature became too high",
+      "description": "Triggers when the temperature of a plant rises above its upper limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "temperature_became_ok": {
+      "name": "Temperature became OK",
+      "description": "Triggers when the temperature of a plant is back within its limits.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "humidity_became_low": {
+      "name": "Air humidity became too low",
+      "description": "Triggers when the air humidity of a plant drops below its lower limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "humidity_became_high": {
+      "name": "Air humidity became too high",
+      "description": "Triggers when the air humidity of a plant rises above its upper limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "humidity_became_ok": {
+      "name": "Air humidity became OK",
+      "description": "Triggers when the air humidity of a plant is back within its limits.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "co2_became_low": {
+      "name": "CO2 became too low",
+      "description": "Triggers when the CO2 of a plant drops below its lower limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "co2_became_high": {
+      "name": "CO2 became too high",
+      "description": "Triggers when the CO2 of a plant rises above its upper limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "co2_became_ok": {
+      "name": "CO2 became OK",
+      "description": "Triggers when the CO2 of a plant is back within its limits.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "soil_temperature_became_low": {
+      "name": "Soil temperature became too low",
+      "description": "Triggers when the soil temperature of a plant drops below its lower limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "soil_temperature_became_high": {
+      "name": "Soil temperature became too high",
+      "description": "Triggers when the soil temperature of a plant rises above its upper limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "soil_temperature_became_ok": {
+      "name": "Soil temperature became OK",
+      "description": "Triggers when the soil temperature of a plant is back within its limits.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "illuminance_became_low": {
+      "name": "Illuminance became too low",
+      "description": "Triggers when the illuminance of a plant drops below its lower limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "illuminance_became_high": {
+      "name": "Illuminance became too high",
+      "description": "Triggers when the illuminance of a plant rises above its upper limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "illuminance_became_ok": {
+      "name": "Illuminance became OK",
+      "description": "Triggers when the illuminance of a plant is back within its limits.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "dli_became_low": {
+      "name": "Daily light integral (DLI) became too low",
+      "description": "Triggers when the daily light integral (DLI) of a plant drops below its lower limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "dli_became_high": {
+      "name": "Daily light integral (DLI) became too high",
+      "description": "Triggers when the daily light integral (DLI) of a plant rises above its upper limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "dli_became_ok": {
+      "name": "Daily light integral (DLI) became OK",
+      "description": "Triggers when the daily light integral (DLI) of a plant is back within its limits.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "vpd_became_low": {
+      "name": "Vapour pressure deficit (VPD) became too low",
+      "description": "Triggers when the vapour pressure deficit (VPD) of a plant drops below its lower limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "vpd_became_high": {
+      "name": "Vapour pressure deficit (VPD) became too high",
+      "description": "Triggers when the vapour pressure deficit (VPD) of a plant rises above its upper limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "vpd_became_ok": {
+      "name": "Vapour pressure deficit (VPD) became OK",
+      "description": "Triggers when the vapour pressure deficit (VPD) of a plant is back within its limits.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "moisture_sensor_became_stale": {
+      "name": "Soil moisture sensor became stale",
+      "description": "Triggers when the soil moisture sensor of a plant is unavailable or stops sending updates.",
+      "fields": {
+        "for": {
+          "name": "Without update for",
+          "description": "Counts as stale when the sensor has not sent an update for this long (or is unavailable)."
+        }
+      }
+    },
+    "moisture_sensor_became_fresh": {
+      "name": "Soil moisture sensor reports again",
+      "description": "Triggers when a stale soil moisture sensor of a plant reports again.",
+      "fields": {
+        "for": {
+          "name": "Without update for",
+          "description": "Counts as stale when the sensor has not sent an update for this long (or is unavailable)."
+        }
+      }
+    },
+    "temperature_sensor_became_stale": {
+      "name": "Temperature sensor became stale",
+      "description": "Triggers when the temperature sensor of a plant is unavailable or stops sending updates.",
+      "fields": {
+        "for": {
+          "name": "Without update for",
+          "description": "Counts as stale when the sensor has not sent an update for this long (or is unavailable)."
+        }
+      }
+    },
+    "temperature_sensor_became_fresh": {
+      "name": "Temperature sensor reports again",
+      "description": "Triggers when a stale temperature sensor of a plant reports again.",
+      "fields": {
+        "for": {
+          "name": "Without update for",
+          "description": "Counts as stale when the sensor has not sent an update for this long (or is unavailable)."
+        }
+      }
+    },
+    "soil_temperature_sensor_became_stale": {
+      "name": "Soil temperature sensor became stale",
+      "description": "Triggers when the soil temperature sensor of a plant is unavailable or stops sending updates.",
+      "fields": {
+        "for": {
+          "name": "Without update for",
+          "description": "Counts as stale when the sensor has not sent an update for this long (or is unavailable)."
+        }
+      }
+    },
+    "soil_temperature_sensor_became_fresh": {
+      "name": "Soil temperature sensor reports again",
+      "description": "Triggers when a stale soil temperature sensor of a plant reports again.",
+      "fields": {
+        "for": {
+          "name": "Without update for",
+          "description": "Counts as stale when the sensor has not sent an update for this long (or is unavailable)."
+        }
+      }
+    },
+    "humidity_sensor_became_stale": {
+      "name": "Air humidity sensor became stale",
+      "description": "Triggers when the air humidity sensor of a plant is unavailable or stops sending updates.",
+      "fields": {
+        "for": {
+          "name": "Without update for",
+          "description": "Counts as stale when the sensor has not sent an update for this long (or is unavailable)."
+        }
+      }
+    },
+    "humidity_sensor_became_fresh": {
+      "name": "Air humidity sensor reports again",
+      "description": "Triggers when a stale air humidity sensor of a plant reports again.",
+      "fields": {
+        "for": {
+          "name": "Without update for",
+          "description": "Counts as stale when the sensor has not sent an update for this long (or is unavailable)."
+        }
+      }
+    },
+    "illuminance_sensor_became_stale": {
+      "name": "Illuminance sensor became stale",
+      "description": "Triggers when the illuminance sensor of a plant is unavailable or stops sending updates.",
+      "fields": {
+        "for": {
+          "name": "Without update for",
+          "description": "Counts as stale when the sensor has not sent an update for this long (or is unavailable)."
+        }
+      }
+    },
+    "illuminance_sensor_became_fresh": {
+      "name": "Illuminance sensor reports again",
+      "description": "Triggers when a stale illuminance sensor of a plant reports again.",
+      "fields": {
+        "for": {
+          "name": "Without update for",
+          "description": "Counts as stale when the sensor has not sent an update for this long (or is unavailable)."
+        }
+      }
+    },
+    "conductivity_sensor_became_stale": {
+      "name": "Conductivity sensor became stale",
+      "description": "Triggers when the conductivity sensor of a plant is unavailable or stops sending updates.",
+      "fields": {
+        "for": {
+          "name": "Without update for",
+          "description": "Counts as stale when the sensor has not sent an update for this long (or is unavailable)."
+        }
+      }
+    },
+    "conductivity_sensor_became_fresh": {
+      "name": "Conductivity sensor reports again",
+      "description": "Triggers when a stale conductivity sensor of a plant reports again.",
+      "fields": {
+        "for": {
+          "name": "Without update for",
+          "description": "Counts as stale when the sensor has not sent an update for this long (or is unavailable)."
+        }
+      }
+    },
+    "co2_sensor_became_stale": {
+      "name": "CO2 sensor became stale",
+      "description": "Triggers when the CO2 sensor of a plant is unavailable or stops sending updates.",
+      "fields": {
+        "for": {
+          "name": "Without update for",
+          "description": "Counts as stale when the sensor has not sent an update for this long (or is unavailable)."
+        }
+      }
+    },
+    "co2_sensor_became_fresh": {
+      "name": "CO2 sensor reports again",
+      "description": "Triggers when a stale CO2 sensor of a plant reports again.",
+      "fields": {
+        "for": {
+          "name": "Without update for",
+          "description": "Counts as stale when the sensor has not sent an update for this long (or is unavailable)."
+        }
+      }
+    }
+  },
+  "conditions": {
+    "has_problem": {
+      "name": "Plant has a problem",
+      "description": "Tests if a plant has a problem.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "moisture_is_low": {
+      "name": "Soil moisture is too low",
+      "description": "Tests if the soil moisture of a plant is below its lower limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "moisture_is_high": {
+      "name": "Soil moisture is too high",
+      "description": "Tests if the soil moisture of a plant is above its upper limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "moisture_is_ok": {
+      "name": "Soil moisture is OK",
+      "description": "Tests if the soil moisture of a plant is within its limits.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "conductivity_is_low": {
+      "name": "Conductivity is too low",
+      "description": "Tests if the conductivity of a plant is below its lower limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "conductivity_is_high": {
+      "name": "Conductivity is too high",
+      "description": "Tests if the conductivity of a plant is above its upper limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "conductivity_is_ok": {
+      "name": "Conductivity is OK",
+      "description": "Tests if the conductivity of a plant is within its limits.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "temperature_is_low": {
+      "name": "Temperature is too low",
+      "description": "Tests if the temperature of a plant is below its lower limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "temperature_is_high": {
+      "name": "Temperature is too high",
+      "description": "Tests if the temperature of a plant is above its upper limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "temperature_is_ok": {
+      "name": "Temperature is OK",
+      "description": "Tests if the temperature of a plant is within its limits.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "humidity_is_low": {
+      "name": "Air humidity is too low",
+      "description": "Tests if the air humidity of a plant is below its lower limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "humidity_is_high": {
+      "name": "Air humidity is too high",
+      "description": "Tests if the air humidity of a plant is above its upper limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "humidity_is_ok": {
+      "name": "Air humidity is OK",
+      "description": "Tests if the air humidity of a plant is within its limits.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "co2_is_low": {
+      "name": "CO2 is too low",
+      "description": "Tests if the CO2 of a plant is below its lower limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "co2_is_high": {
+      "name": "CO2 is too high",
+      "description": "Tests if the CO2 of a plant is above its upper limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "co2_is_ok": {
+      "name": "CO2 is OK",
+      "description": "Tests if the CO2 of a plant is within its limits.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "soil_temperature_is_low": {
+      "name": "Soil temperature is too low",
+      "description": "Tests if the soil temperature of a plant is below its lower limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "soil_temperature_is_high": {
+      "name": "Soil temperature is too high",
+      "description": "Tests if the soil temperature of a plant is above its upper limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "soil_temperature_is_ok": {
+      "name": "Soil temperature is OK",
+      "description": "Tests if the soil temperature of a plant is within its limits.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "illuminance_is_low": {
+      "name": "Illuminance is too low",
+      "description": "Tests if the illuminance of a plant is below its lower limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "illuminance_is_high": {
+      "name": "Illuminance is too high",
+      "description": "Tests if the illuminance of a plant is above its upper limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "illuminance_is_ok": {
+      "name": "Illuminance is OK",
+      "description": "Tests if the illuminance of a plant is within its limits.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "dli_is_low": {
+      "name": "Daily light integral (DLI) is too low",
+      "description": "Tests if the daily light integral (DLI) of a plant is below its lower limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "dli_is_high": {
+      "name": "Daily light integral (DLI) is too high",
+      "description": "Tests if the daily light integral (DLI) of a plant is above its upper limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "dli_is_ok": {
+      "name": "Daily light integral (DLI) is OK",
+      "description": "Tests if the daily light integral (DLI) of a plant is within its limits.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "vpd_is_low": {
+      "name": "Vapour pressure deficit (VPD) is too low",
+      "description": "Tests if the vapour pressure deficit (VPD) of a plant is below its lower limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "vpd_is_high": {
+      "name": "Vapour pressure deficit (VPD) is too high",
+      "description": "Tests if the vapour pressure deficit (VPD) of a plant is above its upper limit.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "vpd_is_ok": {
+      "name": "Vapour pressure deficit (VPD) is OK",
+      "description": "Tests if the vapour pressure deficit (VPD) of a plant is within its limits.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior"
+        },
+        "for": {
+          "name": "For at least"
+        }
+      }
+    },
+    "moisture_sensor_is_stale": {
+      "name": "Soil moisture sensor is stale",
+      "description": "Tests if the soil moisture sensor of a plant is unavailable or has not sent an update for a while.",
+      "fields": {
+        "for": {
+          "name": "Without update for",
+          "description": "Counts as stale when the sensor has not sent an update for this long (or is unavailable)."
+        }
+      }
+    },
+    "temperature_sensor_is_stale": {
+      "name": "Temperature sensor is stale",
+      "description": "Tests if the temperature sensor of a plant is unavailable or has not sent an update for a while.",
+      "fields": {
+        "for": {
+          "name": "Without update for",
+          "description": "Counts as stale when the sensor has not sent an update for this long (or is unavailable)."
+        }
+      }
+    },
+    "soil_temperature_sensor_is_stale": {
+      "name": "Soil temperature sensor is stale",
+      "description": "Tests if the soil temperature sensor of a plant is unavailable or has not sent an update for a while.",
+      "fields": {
+        "for": {
+          "name": "Without update for",
+          "description": "Counts as stale when the sensor has not sent an update for this long (or is unavailable)."
+        }
+      }
+    },
+    "humidity_sensor_is_stale": {
+      "name": "Air humidity sensor is stale",
+      "description": "Tests if the air humidity sensor of a plant is unavailable or has not sent an update for a while.",
+      "fields": {
+        "for": {
+          "name": "Without update for",
+          "description": "Counts as stale when the sensor has not sent an update for this long (or is unavailable)."
+        }
+      }
+    },
+    "illuminance_sensor_is_stale": {
+      "name": "Illuminance sensor is stale",
+      "description": "Tests if the illuminance sensor of a plant is unavailable or has not sent an update for a while.",
+      "fields": {
+        "for": {
+          "name": "Without update for",
+          "description": "Counts as stale when the sensor has not sent an update for this long (or is unavailable)."
+        }
+      }
+    },
+    "conductivity_sensor_is_stale": {
+      "name": "Conductivity sensor is stale",
+      "description": "Tests if the conductivity sensor of a plant is unavailable or has not sent an update for a while.",
+      "fields": {
+        "for": {
+          "name": "Without update for",
+          "description": "Counts as stale when the sensor has not sent an update for this long (or is unavailable)."
+        }
+      }
+    },
+    "co2_sensor_is_stale": {
+      "name": "CO2 sensor is stale",
+      "description": "Tests if the CO2 sensor of a plant is unavailable or has not sent an update for a while.",
+      "fields": {
+        "for": {
+          "name": "Without update for",
+          "description": "Counts as stale when the sensor has not sent an update for this long (or is unavailable)."
+        }
+      }
+    }
+  }
+}

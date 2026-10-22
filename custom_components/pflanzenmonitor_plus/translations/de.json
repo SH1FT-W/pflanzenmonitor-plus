@@ -1,0 +1,1571 @@
+{
+  "config": {
+    "abort": {
+      "single_instance_allowed": "Pflanzenmonitor Plus ist schon eingerichtet; Pflanzen dort mit „Pflanze hinzufügen“ anlegen."
+    },
+    "step": {
+      "user": {
+        "title": "Pflanzenmonitor Plus",
+        "description": "Überwacht deine Pflanzen, lernt aus dem Bodenfeuchte-Verlauf, wann gegossen wurde und wann sie wieder Wasser brauchen, und lässt auf Wunsch eine KI bessere Grenzwerte vorschlagen. Alle Felder sind optional. Pflanzen danach mit „Pflanze hinzufügen“ anlegen (oder unter Reparaturen aus dem Plant Monitor übernehmen).",
+        "data": {
+          "ai_task": "KI für Grenzwert-Vorschläge",
+          "weather": "Wetter",
+          "rain_sensor": "Regensensor"
+        },
+        "data_description": {
+          "ai_task": "KI-Aufgaben-Entität (z. B. Claude). Sobald eine Pflanze gelernt ist, schlägt sie höchstens einmal im Monat passende Grenzwerte nach Pflanzenart vor (Bodenfeuchte, Temperatur, Bodentemperatur, Luftfeuchte, Helligkeit, Tageslicht; nur Werte mit Sensor). Es ändert sich nichts, bis du übernimmst. Leer lassen = keine Vorschläge.",
+          "weather": "Stündliche Vorhersage für Regen- und Frosthinweise bei Pflanzen draußen.",
+          "rain_sensor": "Gemessene Regenintensität (mm/h). Damit unterscheidet Plus bei Pflanzen draußen Regen vom Gießen; ohne (oder bevor er Verlauf hat) zählen Anstiege draußen als unbekannt und „Zuletzt gegossen“ bleibt dort leer."
+        }
+      }
+    }
+  },
+  "config_subentries": {
+    "plant": {
+      "entry_type": "Pflanze",
+      "initiate_flow": {
+        "user": "Pflanze hinzufügen",
+        "reconfigure": "Pflanze ändern"
+      },
+      "abort": {
+        "reconfigure_successful": "Die Pflanze wurde geändert."
+      },
+      "step": {
+        "user": {
+          "title": "Pflanze",
+          "description": "Name und Art. Die Art hilft der KI bei ihren Vorschlägen (z. B. „Dracaena trifasciata“).",
+          "data": {
+            "name": "Name",
+            "species": "Art",
+            "area": "Raum",
+            "image": "Bild"
+          },
+          "data_description": {
+            "species": "Botanischer oder deutscher Name. Steht als Modell auf der Geräteseite.",
+            "area": "Raum der Pflanze. Bei Räumen wie Terrasse, Balkon oder Garten ist im nächsten Schritt „Draußen“ vorgewählt.",
+            "image": "URL oder Pfad eines Bildes, z. B. /local/images/plants/yucca.jpg (optional)."
+          }
+        },
+        "reconfigure": {
+          "title": "Pflanze",
+          "description": "Name und Art. Die Art hilft der KI bei ihren Vorschlägen (z. B. „Dracaena trifasciata“).",
+          "data": {
+            "name": "Name",
+            "species": "Art",
+            "image": "Bild"
+          },
+          "data_description": {
+            "species": "Botanischer oder deutscher Name. Steht als Modell auf der Geräteseite.",
+            "image": "URL oder Pfad eines Bildes, z. B. /local/images/plants/yucca.jpg (optional)."
+          }
+        },
+        "sensors": {
+          "title": "Sensoren",
+          "description": "Die echten Sensoren dieser Pflanze. Plus spiegelt sie auf der Geräteseite der Pflanze und prüft sie gegen die Grenzwerte. Fürs Lernen und die Gieß-Vorhersage reicht die Bodenfeuchte; alles andere ist optional.",
+          "data": {
+            "moisture_sensor": "Bodenfeuchte",
+            "temperature_sensor": "Lufttemperatur",
+            "soil_temperature_sensor": "Bodentemperatur",
+            "humidity_sensor": "Luftfeuchte",
+            "illuminance_sensor": "Helligkeit (lx) oder PPFD",
+            "conductivity_sensor": "Leitfähigkeit",
+            "co2_sensor": "CO2",
+            "outdoor": "Draußen"
+          },
+          "data_description": {
+            "outdoor": "Bekommt Regen- und Frost-Sensoren (mit Wetter-Entität in den Optionen); Regen zählt nicht als Gießen.",
+            "illuminance_sensor": "Helligkeit in lx (mit dem Lux-zu-PPFD-Faktor der Pflanze in PPFD und Tageslicht umgerechnet) oder ein Sensor, der schon PPFD misst (µmol/m²/s)."
+          }
+        },
+        "problems": {
+          "title": "Probleme",
+          "description": "Welche Messwerte die Pflanze auf „Problem“ setzen, wenn sie ihre Grenzen verlassen. Den Zustand jedes Messwerts (zu niedrig, zu hoch, OK) zeigt Plus in jedem Fall. Helligkeit zählt nur, wenn es zu hell ist (dunkel ist es jede Nacht), Tageslicht wird gegen den Vortag geprüft.",
+          "data": {
+            "problems": "Zählt als Problem",
+            "moisture_grace": "Wartezeit nach dem Gießen"
+          },
+          "data_description": {
+            "moisture_grace": "Nach dem Gießen (Bodenfeuchte springt um 10 Punkte oder mehr) wird „Bodenfeuchte zu hoch“ so lange nicht gemeldet. 0 = aus."
+          }
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Pflanzenmonitor Plus",
+        "description": "Alle Felder sind optional. Änderungen laden die Integration neu.",
+        "data": {
+          "ai_task": "KI für Grenzwert-Vorschläge",
+          "weather": "Wetter",
+          "rain_sensor": "Regensensor"
+        },
+        "data_description": {
+          "ai_task": "KI-Aufgaben-Entität (z. B. Claude). Sobald eine Pflanze gelernt ist, schlägt sie höchstens einmal im Monat passende Grenzwerte nach Pflanzenart vor (Bodenfeuchte, Temperatur, Bodentemperatur, Luftfeuchte, Helligkeit, Tageslicht; nur Werte mit Sensor). Es ändert sich nichts, bis du übernimmst. Leer lassen = keine Vorschläge.",
+          "weather": "Stündliche Vorhersage für Regen- und Frosthinweise bei Pflanzen draußen.",
+          "rain_sensor": "Gemessene Regenintensität (mm/h). Damit unterscheidet Plus bei Pflanzen draußen Regen vom Gießen; ohne (oder bevor er Verlauf hat) zählen Anstiege draußen als unbekannt und „Zuletzt gegossen“ bleibt dort leer."
+        }
+      }
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "rain_expected": {
+        "name": "Regen erwartet",
+        "state": {
+          "on": "Ja",
+          "off": "Nein"
+        },
+        "state_attributes": {
+          "amount": {
+            "name": "Menge (mm)"
+          },
+          "until": {
+            "name": "Bis"
+          }
+        }
+      },
+      "frost": {
+        "name": "Frostgefahr",
+        "state": {
+          "on": "Droht",
+          "off": "Keine"
+        },
+        "state_attributes": {
+          "lowest": {
+            "name": "Tiefstwert (°C)"
+          },
+          "at": {
+            "name": "Zeitpunkt"
+          },
+          "limit": {
+            "name": "Mindesttemperatur der Pflanze (°C)"
+          }
+        }
+      }
+    },
+    "sensor": {
+      "learning": {
+        "name": "Lernstand",
+        "state": {
+          "keine_daten": "Keine Daten",
+          "lernt": "Lernt noch",
+          "bereit": "Gelernt"
+        },
+        "state_attributes": {
+          "cycles": {
+            "name": "Beobachtete Zyklen"
+          },
+          "cycles_needed": {
+            "name": "Benötigte Zyklen"
+          },
+          "habit": {
+            "name": "Meist gegossen bei (%)"
+          }
+        }
+      },
+      "next_watering": {
+        "name": "Gießen in",
+        "state_attributes": {
+          "due": {
+            "name": "Fällig am"
+          },
+          "target": {
+            "name": "Untergrenze (%)"
+          },
+          "method": {
+            "name": "Grundlage",
+            "state": {
+              "zyklen": "Frühere Zyklen",
+              "tempo": "Aktuelles Abtrocknungstempo"
+            }
+          }
+        }
+      },
+      "last_watered": {
+        "name": "Zuletzt gegossen",
+        "state_attributes": {
+          "last_rain": {
+            "name": "Letzter Regen"
+          },
+          "rain_data": {
+            "name": "Regenverlauf",
+            "state": {
+              "vorhanden": "Vorhanden",
+              "fehlt": "Noch keiner – draußen sind Regen und Gießen nicht unterscheidbar"
+            }
+          },
+          "rain_data_since": {
+            "name": "Regenverlauf seit"
+          }
+        }
+      },
+      "drying_rate": {
+        "name": "Abtrocknung"
+      },
+      "suggestion": {
+        "name": "KI-Vorschlag",
+        "state": {
+          "keiner": "Noch keiner",
+          "offen": "Wartet auf Freigabe",
+          "keine_aenderung": "Grenzwerte passen",
+          "uebernommen": "Übernommen",
+          "abgelehnt": "Abgelehnt",
+          "zurueckgenommen": "Zurückgenommen"
+        },
+        "state_attributes": {
+          "summary": {
+            "name": "Zusammenfassung"
+          },
+          "min_moisture": {
+            "name": "Bodenfeuchte min"
+          },
+          "min_moisture_reason": {
+            "name": "Grund (Bodenfeuchte min)"
+          },
+          "max_moisture": {
+            "name": "Bodenfeuchte max"
+          },
+          "max_moisture_reason": {
+            "name": "Grund (Bodenfeuchte max)"
+          },
+          "min_temperature": {
+            "name": "Temperatur min"
+          },
+          "min_temperature_reason": {
+            "name": "Grund (Temperatur min)"
+          },
+          "max_temperature": {
+            "name": "Temperatur max"
+          },
+          "max_temperature_reason": {
+            "name": "Grund (Temperatur max)"
+          },
+          "min_soil_temperature": {
+            "name": "Bodentemperatur min"
+          },
+          "min_soil_temperature_reason": {
+            "name": "Grund (Bodentemperatur min)"
+          },
+          "max_soil_temperature": {
+            "name": "Bodentemperatur max"
+          },
+          "max_soil_temperature_reason": {
+            "name": "Grund (Bodentemperatur max)"
+          },
+          "min_humidity": {
+            "name": "Luftfeuchte min"
+          },
+          "min_humidity_reason": {
+            "name": "Grund (Luftfeuchte min)"
+          },
+          "max_humidity": {
+            "name": "Luftfeuchte max"
+          },
+          "max_humidity_reason": {
+            "name": "Grund (Luftfeuchte max)"
+          },
+          "min_illuminance": {
+            "name": "Helligkeit min"
+          },
+          "min_illuminance_reason": {
+            "name": "Grund (Helligkeit min)"
+          },
+          "max_illuminance": {
+            "name": "Helligkeit max"
+          },
+          "max_illuminance_reason": {
+            "name": "Grund (Helligkeit max)"
+          },
+          "min_dli": {
+            "name": "Tageslicht min"
+          },
+          "min_dli_reason": {
+            "name": "Grund (Tageslicht min)"
+          },
+          "max_dli": {
+            "name": "Tageslicht max"
+          },
+          "max_dli_reason": {
+            "name": "Grund (Tageslicht max)"
+          },
+          "confidence": {
+            "name": "Sicherheit",
+            "state": {
+              "low": "Niedrig",
+              "medium": "Mittel",
+              "high": "Hoch"
+            }
+          },
+          "species": {
+            "name": "Pflanzenart (von der KI erkannt)"
+          },
+          "asked": {
+            "name": "Gefragt"
+          },
+          "next_check": {
+            "name": "Nächste Prüfung"
+          },
+          "applied": {
+            "name": "Zuletzt übernommen"
+          },
+          "error": {
+            "name": "Letzter Fehler"
+          }
+        }
+      },
+      "next_watering_due": {
+        "name": "Gießen fällig"
+      },
+      "status": {
+        "state": {
+          "ok": "OK",
+          "problem": "Problem"
+        },
+        "state_attributes": {
+          "species": {
+            "name": "Art"
+          },
+          "problems": {
+            "name": "Probleme"
+          },
+          "moisture_status": {
+            "name": "Bodenfeuchtigkeit",
+            "state": {
+              "Low": "Zu niedrig",
+              "High": "Zu hoch",
+              "ok": "OK"
+            }
+          },
+          "conductivity_status": {
+            "name": "Leitfähigkeit",
+            "state": {
+              "Low": "Zu niedrig",
+              "High": "Zu hoch",
+              "ok": "OK"
+            }
+          },
+          "temperature_status": {
+            "name": "Temperatur",
+            "state": {
+              "Low": "Zu niedrig",
+              "High": "Zu hoch",
+              "ok": "OK"
+            }
+          },
+          "humidity_status": {
+            "name": "Luftfeuchtigkeit",
+            "state": {
+              "Low": "Zu niedrig",
+              "High": "Zu hoch",
+              "ok": "OK"
+            }
+          },
+          "co2_status": {
+            "name": "CO2",
+            "state": {
+              "Low": "Zu niedrig",
+              "High": "Zu hoch",
+              "ok": "OK"
+            }
+          },
+          "soil_temperature_status": {
+            "name": "Bodentemperatur",
+            "state": {
+              "Low": "Zu niedrig",
+              "High": "Zu hoch",
+              "ok": "OK"
+            }
+          },
+          "illuminance_status": {
+            "name": "Beleuchtungsstärke",
+            "state": {
+              "Low": "Zu niedrig",
+              "High": "Zu hoch",
+              "ok": "OK"
+            }
+          },
+          "dli_status": {
+            "name": "Tageslicht (DLI)",
+            "state": {
+              "Low": "Zu niedrig",
+              "High": "Zu hoch",
+              "ok": "OK"
+            }
+          },
+          "vpd_status": {
+            "name": "Dampfdruckdefizit (VPD)",
+            "state": {
+              "Low": "Zu niedrig",
+              "High": "Zu hoch",
+              "ok": "OK"
+            }
+          }
+        }
+      },
+      "moisture": {
+        "name": "Bodenfeuchtigkeit",
+        "state_attributes": {
+          "external_sensor": {
+            "name": "Quellsensor"
+          }
+        }
+      },
+      "temperature": {
+        "name": "Temperatur",
+        "state_attributes": {
+          "external_sensor": {
+            "name": "Quellsensor"
+          }
+        }
+      },
+      "soil_temperature": {
+        "name": "Bodentemperatur",
+        "state_attributes": {
+          "external_sensor": {
+            "name": "Quellsensor"
+          }
+        }
+      },
+      "humidity": {
+        "name": "Luftfeuchtigkeit",
+        "state_attributes": {
+          "external_sensor": {
+            "name": "Quellsensor"
+          }
+        }
+      },
+      "illuminance": {
+        "name": "Beleuchtungsstärke",
+        "state_attributes": {
+          "external_sensor": {
+            "name": "Quellsensor"
+          }
+        }
+      },
+      "conductivity": {
+        "name": "Leitfähigkeit",
+        "state_attributes": {
+          "external_sensor": {
+            "name": "Quellsensor"
+          }
+        }
+      },
+      "co2": {
+        "name": "CO2",
+        "state_attributes": {
+          "external_sensor": {
+            "name": "Quellsensor"
+          }
+        }
+      },
+      "vpd": {
+        "name": "Dampfdruckdefizit"
+      },
+      "ppfd": {
+        "name": "PPFD"
+      },
+      "total_light_integral": {
+        "name": "Lichtsumme gesamt"
+      },
+      "dli": {
+        "name": "Tageslicht (DLI)",
+        "state_attributes": {
+          "last_period": {
+            "name": "Gestern"
+          }
+        }
+      },
+      "dli_24h": {
+        "name": "Licht letzte 24 Std."
+      }
+    },
+    "button": {
+      "accept": {
+        "name": "Vorschlag übernehmen"
+      },
+      "reject": {
+        "name": "Vorschlag ablehnen"
+      },
+      "undo": {
+        "name": "Vorschlag zurücknehmen"
+      },
+      "ask": {
+        "name": "KI jetzt fragen"
+      }
+    },
+    "number": {
+      "max_moisture": {
+        "name": "Max Bodenfeuchtigkeit"
+      },
+      "min_moisture": {
+        "name": "Min Bodenfeuchtigkeit"
+      },
+      "max_conductivity": {
+        "name": "Max Leitfähigkeit"
+      },
+      "min_conductivity": {
+        "name": "Min Leitfähigkeit"
+      },
+      "max_temperature": {
+        "name": "Max Temperatur"
+      },
+      "min_temperature": {
+        "name": "Min Temperatur"
+      },
+      "max_humidity": {
+        "name": "Max Luftfeuchtigkeit"
+      },
+      "min_humidity": {
+        "name": "Min Luftfeuchtigkeit"
+      },
+      "max_co2": {
+        "name": "Max CO2"
+      },
+      "min_co2": {
+        "name": "Min CO2"
+      },
+      "max_soil_temperature": {
+        "name": "Max Bodentemperatur"
+      },
+      "min_soil_temperature": {
+        "name": "Min Bodentemperatur"
+      },
+      "max_illuminance": {
+        "name": "Max Beleuchtungsstärke"
+      },
+      "min_illuminance": {
+        "name": "Min Beleuchtungsstärke"
+      },
+      "max_dli": {
+        "name": "Max DLI"
+      },
+      "min_dli": {
+        "name": "Min DLI"
+      },
+      "max_vpd": {
+        "name": "Max VPD"
+      },
+      "min_vpd": {
+        "name": "Min VPD"
+      },
+      "lux_to_ppfd": {
+        "name": "Lux-zu-PPFD-Faktor"
+      }
+    }
+  },
+  "selector": {
+    "measurement": {
+      "options": {
+        "moisture": "Bodenfeuchtigkeit",
+        "conductivity": "Leitfähigkeit",
+        "temperature": "Temperatur",
+        "humidity": "Luftfeuchtigkeit",
+        "co2": "CO2",
+        "soil_temperature": "Bodentemperatur",
+        "illuminance": "Beleuchtungsstärke",
+        "dli": "Tageslicht (DLI)",
+        "vpd": "Dampfdruckdefizit (VPD)"
+      }
+    }
+  },
+  "issues": {
+    "suggestion": {
+      "title": "{plant}: neuer KI-Vorschlag für die Grenzwerte",
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "{plant}: KI-Vorschlag",
+            "description": "{summary}\n\n{reasons}\n\n{note}\n\nSicherheit: {confidence}\n\n**Übernehmen** schreibt die Werte in die Grenzwerte der Pflanze. Die alten Werte bleiben gemerkt: „Vorschlag zurücknehmen“ auf der Geräteseite der Pflanze stellt sie wieder her. **Ablehnen** lässt alles, wie es ist; die KI wird in 30 Tagen erneut gefragt.",
+            "menu_options": {
+              "accept": "Übernehmen",
+              "reject": "Ablehnen"
+            }
+          }
+        },
+        "abort": {
+          "no_suggestion": "Für diese Pflanze gibt es (nicht mehr) einen offenen Vorschlag.",
+          "suggestion_outdated": "Die Grenzwerte wurden seit dem Vorschlag geändert. Bitte auf der Geräteseite der Pflanze die KI neu fragen.",
+          "busy": "Die KI arbeitet noch an einem Vorschlag. Bitte gleich noch einmal versuchen."
+        }
+      }
+    },
+    "migrate": {
+      "title": "Pflanzen aus dem Plant Monitor übernehmen",
+      "description": "Im Plant Monitor sind noch diese Pflanzen: {plants}. Pflanzenmonitor Plus überwacht Pflanzen jetzt selbst und kann sie übernehmen – danach braucht es den Plant Monitor nicht mehr. Zum Übernehmen hier öffnen.",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Pflanzen aus dem Plant Monitor übernehmen",
+            "description": "Übernimmt diese Pflanzen: {plants}.\n\nMit dabei: Sensoren, die aktuellen Grenzwerte, Art, Bild, welche Messwerte als Problem zählen, die Wartezeit nach dem Gießen, Raum, Labels, Namen, Symbole und Anzeige-Einstellungen. Die Entitäts-IDs bleiben gleich (der Verlauf läuft weiter), nur aus `plant.bogenhanf` wird `sensor.bogenhanf` (gleiche Zustände ok/problem und Attribute). Was Plus gelernt hat und der KI-Verlauf bleiben erhalten.\n\nDanach werden die Pflanzen **aus dem Plant Monitor entfernt**. Automationen, Skripte und Dashboards mit `plant.…` müssen dann die neue ID `sensor.…` nutzen; Automationen und Skripte listet Plus unter Reparaturen auf. Anschließend lässt sich der Plant Monitor in HACS deinstallieren."
+          }
+        },
+        "abort": {
+          "nothing_to_migrate": "Im Plant Monitor gibt es (keine) Pflanzen mehr.",
+          "legacy_not_loaded": "Der Plant Monitor läuft nicht (deaktiviert oder Fehler beim Start). Nur ein laufender Plant Monitor kennt die aktuellen Grenzwerte – ihn starten (oder Home Assistant neu starten) und noch einmal versuchen. Es wurde nichts geändert.",
+          "legacy_unload_failed": "Der Plant Monitor ließ sich nicht anhalten. Home Assistant neu starten und noch einmal versuchen. Es wurde nichts entfernt."
+        }
+      }
+    },
+    "references": {
+      "title": "Automationen nutzen noch die alten Pflanzen-Entitäten",
+      "description": "Diese Automationen oder Skripte nutzen noch Entitäten des Plant Monitor, die es nicht mehr gibt. Durch die neuen ersetzen:\n\n{references}\n\nDer Hinweis verschwindet, sobald sie niemand mehr nutzt (geprüft beim Laden von Pflanzenmonitor Plus)."
+    }
+  },
+  "exceptions": {
+    "no_ai": {
+      "message": "In den Optionen von Pflanzenmonitor Plus ist keine KI-Entität eingestellt."
+    },
+    "no_data": {
+      "message": "Für diese Pflanze gibt es noch keinen Feuchteverlauf."
+    },
+    "no_suggestion": {
+      "message": "Für diese Pflanze gibt es keinen offenen Vorschlag."
+    },
+    "nothing_to_undo": {
+      "message": "Kein übernommener Vorschlag zum Zurücknehmen."
+    },
+    "ask_failed": {
+      "message": "Die KI konnte keinen Vorschlag machen: {error}"
+    },
+    "busy": {
+      "message": "Die KI arbeitet noch an einem Vorschlag. Bitte gleich noch einmal versuchen."
+    },
+    "suggestion_outdated": {
+      "message": "Die Grenzwerte wurden seit dem Vorschlag geändert. Bitte die KI neu fragen."
+    },
+    "changed_since": {
+      "message": "Die Grenzwerte wurden seit der Übernahme geändert; Zurücknehmen würde das überschreiben."
+    },
+    "not_loaded": {
+      "message": "Pflanzenmonitor Plus ist nicht geladen."
+    },
+    "not_a_meter": {
+      "message": "{entity} ist kein Messwert einer Pflanze von Pflanzenmonitor Plus."
+    },
+    "sensor_not_found": {
+      "message": "Den Sensor {entity} gibt es nicht."
+    },
+    "legacy_not_loaded": {
+      "message": "Der Plant Monitor läuft nicht (deaktiviert oder Fehler beim Start). Nur ein laufender Plant Monitor kennt die aktuellen Grenzwerte – ihn starten (oder Home Assistant neu starten) und noch einmal versuchen. Es wurde nichts geändert."
+    },
+    "legacy_unload_failed": {
+      "message": "Der Plant Monitor ließ sich nicht anhalten. Home Assistant neu starten und noch einmal versuchen. Es wurde nichts entfernt."
+    }
+  },
+  "services": {
+    "replace_sensor": {
+      "name": "Sensor tauschen",
+      "description": "Gibt einem Messwert einer Pflanze einen anderen echten Sensor oder entfernt ihn.",
+      "fields": {
+        "meter_entity": {
+          "name": "Messwert",
+          "description": "Der Messwert der Pflanze (z. B. ihre Bodenfeuchtigkeit), dessen Sensor ersetzt wird."
+        },
+        "new_sensor": {
+          "name": "Neuer Sensor",
+          "description": "Der echte Sensor, der ab jetzt gilt. Leer lassen, um den Sensor zu entfernen."
+        }
+      }
+    }
+  },
+  "triggers": {
+    "problem_detected": {
+      "name": "Pflanze hat ein Problem",
+      "description": "Löst aus, wenn eine Pflanze ein Problem bekommt (ein Messwert, der als Problem zählt, verlässt seine Grenzen).",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "problem_cleared": {
+      "name": "Pflanze wieder OK",
+      "description": "Löst aus, wenn eine Pflanze wieder in Ordnung ist.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "moisture_became_low": {
+      "name": "Bodenfeuchtigkeit zu niedrig geworden",
+      "description": "Löst aus, wenn die Bodenfeuchtigkeit einer Pflanze unter die Untergrenze fällt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "moisture_became_high": {
+      "name": "Bodenfeuchtigkeit zu hoch geworden",
+      "description": "Löst aus, wenn die Bodenfeuchtigkeit einer Pflanze über die Obergrenze steigt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "moisture_became_ok": {
+      "name": "Bodenfeuchtigkeit wieder OK",
+      "description": "Löst aus, wenn die Bodenfeuchtigkeit einer Pflanze wieder in den Grenzen liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "conductivity_became_low": {
+      "name": "Leitfähigkeit zu niedrig geworden",
+      "description": "Löst aus, wenn die Leitfähigkeit einer Pflanze unter die Untergrenze fällt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "conductivity_became_high": {
+      "name": "Leitfähigkeit zu hoch geworden",
+      "description": "Löst aus, wenn die Leitfähigkeit einer Pflanze über die Obergrenze steigt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "conductivity_became_ok": {
+      "name": "Leitfähigkeit wieder OK",
+      "description": "Löst aus, wenn die Leitfähigkeit einer Pflanze wieder in den Grenzen liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "temperature_became_low": {
+      "name": "Temperatur zu niedrig geworden",
+      "description": "Löst aus, wenn die Temperatur einer Pflanze unter die Untergrenze fällt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "temperature_became_high": {
+      "name": "Temperatur zu hoch geworden",
+      "description": "Löst aus, wenn die Temperatur einer Pflanze über die Obergrenze steigt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "temperature_became_ok": {
+      "name": "Temperatur wieder OK",
+      "description": "Löst aus, wenn die Temperatur einer Pflanze wieder in den Grenzen liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "humidity_became_low": {
+      "name": "Luftfeuchtigkeit zu niedrig geworden",
+      "description": "Löst aus, wenn die Luftfeuchtigkeit einer Pflanze unter die Untergrenze fällt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "humidity_became_high": {
+      "name": "Luftfeuchtigkeit zu hoch geworden",
+      "description": "Löst aus, wenn die Luftfeuchtigkeit einer Pflanze über die Obergrenze steigt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "humidity_became_ok": {
+      "name": "Luftfeuchtigkeit wieder OK",
+      "description": "Löst aus, wenn die Luftfeuchtigkeit einer Pflanze wieder in den Grenzen liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "co2_became_low": {
+      "name": "CO2 zu niedrig geworden",
+      "description": "Löst aus, wenn der CO2-Wert einer Pflanze unter die Untergrenze fällt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "co2_became_high": {
+      "name": "CO2 zu hoch geworden",
+      "description": "Löst aus, wenn der CO2-Wert einer Pflanze über die Obergrenze steigt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "co2_became_ok": {
+      "name": "CO2 wieder OK",
+      "description": "Löst aus, wenn der CO2-Wert einer Pflanze wieder in den Grenzen liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "soil_temperature_became_low": {
+      "name": "Bodentemperatur zu niedrig geworden",
+      "description": "Löst aus, wenn die Bodentemperatur einer Pflanze unter die Untergrenze fällt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "soil_temperature_became_high": {
+      "name": "Bodentemperatur zu hoch geworden",
+      "description": "Löst aus, wenn die Bodentemperatur einer Pflanze über die Obergrenze steigt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "soil_temperature_became_ok": {
+      "name": "Bodentemperatur wieder OK",
+      "description": "Löst aus, wenn die Bodentemperatur einer Pflanze wieder in den Grenzen liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "illuminance_became_low": {
+      "name": "Beleuchtungsstärke zu niedrig geworden",
+      "description": "Löst aus, wenn die Beleuchtungsstärke einer Pflanze unter die Untergrenze fällt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "illuminance_became_high": {
+      "name": "Beleuchtungsstärke zu hoch geworden",
+      "description": "Löst aus, wenn die Beleuchtungsstärke einer Pflanze über die Obergrenze steigt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "illuminance_became_ok": {
+      "name": "Beleuchtungsstärke wieder OK",
+      "description": "Löst aus, wenn die Beleuchtungsstärke einer Pflanze wieder in den Grenzen liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "dli_became_low": {
+      "name": "Tageslicht (DLI) zu niedrig geworden",
+      "description": "Löst aus, wenn das Tageslicht (DLI) einer Pflanze unter die Untergrenze fällt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "dli_became_high": {
+      "name": "Tageslicht (DLI) zu hoch geworden",
+      "description": "Löst aus, wenn das Tageslicht (DLI) einer Pflanze über die Obergrenze steigt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "dli_became_ok": {
+      "name": "Tageslicht (DLI) wieder OK",
+      "description": "Löst aus, wenn das Tageslicht (DLI) einer Pflanze wieder in den Grenzen liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "vpd_became_low": {
+      "name": "Dampfdruckdefizit (VPD) zu niedrig geworden",
+      "description": "Löst aus, wenn das Dampfdruckdefizit (VPD) einer Pflanze unter die Untergrenze fällt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "vpd_became_high": {
+      "name": "Dampfdruckdefizit (VPD) zu hoch geworden",
+      "description": "Löst aus, wenn das Dampfdruckdefizit (VPD) einer Pflanze über die Obergrenze steigt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "vpd_became_ok": {
+      "name": "Dampfdruckdefizit (VPD) wieder OK",
+      "description": "Löst aus, wenn das Dampfdruckdefizit (VPD) einer Pflanze wieder in den Grenzen liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "moisture_sensor_became_stale": {
+      "name": "Bodenfeuchtigkeit: Sensor veraltet",
+      "description": "Löst aus, wenn der Sensor für die Bodenfeuchtigkeit einer Pflanze nicht verfügbar ist oder sich nicht mehr meldet.",
+      "fields": {
+        "for": {
+          "name": "Ohne Meldung seit",
+          "description": "Gilt als veraltet, wenn sich der Sensor so lange nicht gemeldet hat (oder nicht verfügbar ist)."
+        }
+      }
+    },
+    "moisture_sensor_became_fresh": {
+      "name": "Bodenfeuchtigkeit: Sensor meldet wieder",
+      "description": "Löst aus, wenn sich ein veralteter Sensor für die Bodenfeuchtigkeit einer Pflanze wieder meldet.",
+      "fields": {
+        "for": {
+          "name": "Ohne Meldung seit",
+          "description": "Gilt als veraltet, wenn sich der Sensor so lange nicht gemeldet hat (oder nicht verfügbar ist)."
+        }
+      }
+    },
+    "temperature_sensor_became_stale": {
+      "name": "Temperatur: Sensor veraltet",
+      "description": "Löst aus, wenn der Sensor für die Temperatur einer Pflanze nicht verfügbar ist oder sich nicht mehr meldet.",
+      "fields": {
+        "for": {
+          "name": "Ohne Meldung seit",
+          "description": "Gilt als veraltet, wenn sich der Sensor so lange nicht gemeldet hat (oder nicht verfügbar ist)."
+        }
+      }
+    },
+    "temperature_sensor_became_fresh": {
+      "name": "Temperatur: Sensor meldet wieder",
+      "description": "Löst aus, wenn sich ein veralteter Sensor für die Temperatur einer Pflanze wieder meldet.",
+      "fields": {
+        "for": {
+          "name": "Ohne Meldung seit",
+          "description": "Gilt als veraltet, wenn sich der Sensor so lange nicht gemeldet hat (oder nicht verfügbar ist)."
+        }
+      }
+    },
+    "soil_temperature_sensor_became_stale": {
+      "name": "Bodentemperatur: Sensor veraltet",
+      "description": "Löst aus, wenn der Sensor für die Bodentemperatur einer Pflanze nicht verfügbar ist oder sich nicht mehr meldet.",
+      "fields": {
+        "for": {
+          "name": "Ohne Meldung seit",
+          "description": "Gilt als veraltet, wenn sich der Sensor so lange nicht gemeldet hat (oder nicht verfügbar ist)."
+        }
+      }
+    },
+    "soil_temperature_sensor_became_fresh": {
+      "name": "Bodentemperatur: Sensor meldet wieder",
+      "description": "Löst aus, wenn sich ein veralteter Sensor für die Bodentemperatur einer Pflanze wieder meldet.",
+      "fields": {
+        "for": {
+          "name": "Ohne Meldung seit",
+          "description": "Gilt als veraltet, wenn sich der Sensor so lange nicht gemeldet hat (oder nicht verfügbar ist)."
+        }
+      }
+    },
+    "humidity_sensor_became_stale": {
+      "name": "Luftfeuchtigkeit: Sensor veraltet",
+      "description": "Löst aus, wenn der Sensor für die Luftfeuchtigkeit einer Pflanze nicht verfügbar ist oder sich nicht mehr meldet.",
+      "fields": {
+        "for": {
+          "name": "Ohne Meldung seit",
+          "description": "Gilt als veraltet, wenn sich der Sensor so lange nicht gemeldet hat (oder nicht verfügbar ist)."
+        }
+      }
+    },
+    "humidity_sensor_became_fresh": {
+      "name": "Luftfeuchtigkeit: Sensor meldet wieder",
+      "description": "Löst aus, wenn sich ein veralteter Sensor für die Luftfeuchtigkeit einer Pflanze wieder meldet.",
+      "fields": {
+        "for": {
+          "name": "Ohne Meldung seit",
+          "description": "Gilt als veraltet, wenn sich der Sensor so lange nicht gemeldet hat (oder nicht verfügbar ist)."
+        }
+      }
+    },
+    "illuminance_sensor_became_stale": {
+      "name": "Beleuchtungsstärke: Sensor veraltet",
+      "description": "Löst aus, wenn der Sensor für die Beleuchtungsstärke einer Pflanze nicht verfügbar ist oder sich nicht mehr meldet.",
+      "fields": {
+        "for": {
+          "name": "Ohne Meldung seit",
+          "description": "Gilt als veraltet, wenn sich der Sensor so lange nicht gemeldet hat (oder nicht verfügbar ist)."
+        }
+      }
+    },
+    "illuminance_sensor_became_fresh": {
+      "name": "Beleuchtungsstärke: Sensor meldet wieder",
+      "description": "Löst aus, wenn sich ein veralteter Sensor für die Beleuchtungsstärke einer Pflanze wieder meldet.",
+      "fields": {
+        "for": {
+          "name": "Ohne Meldung seit",
+          "description": "Gilt als veraltet, wenn sich der Sensor so lange nicht gemeldet hat (oder nicht verfügbar ist)."
+        }
+      }
+    },
+    "conductivity_sensor_became_stale": {
+      "name": "Leitfähigkeit: Sensor veraltet",
+      "description": "Löst aus, wenn der Sensor für die Leitfähigkeit einer Pflanze nicht verfügbar ist oder sich nicht mehr meldet.",
+      "fields": {
+        "for": {
+          "name": "Ohne Meldung seit",
+          "description": "Gilt als veraltet, wenn sich der Sensor so lange nicht gemeldet hat (oder nicht verfügbar ist)."
+        }
+      }
+    },
+    "conductivity_sensor_became_fresh": {
+      "name": "Leitfähigkeit: Sensor meldet wieder",
+      "description": "Löst aus, wenn sich ein veralteter Sensor für die Leitfähigkeit einer Pflanze wieder meldet.",
+      "fields": {
+        "for": {
+          "name": "Ohne Meldung seit",
+          "description": "Gilt als veraltet, wenn sich der Sensor so lange nicht gemeldet hat (oder nicht verfügbar ist)."
+        }
+      }
+    },
+    "co2_sensor_became_stale": {
+      "name": "CO2: Sensor veraltet",
+      "description": "Löst aus, wenn der Sensor für der CO2-Wert einer Pflanze nicht verfügbar ist oder sich nicht mehr meldet.",
+      "fields": {
+        "for": {
+          "name": "Ohne Meldung seit",
+          "description": "Gilt als veraltet, wenn sich der Sensor so lange nicht gemeldet hat (oder nicht verfügbar ist)."
+        }
+      }
+    },
+    "co2_sensor_became_fresh": {
+      "name": "CO2: Sensor meldet wieder",
+      "description": "Löst aus, wenn sich ein veralteter Sensor für der CO2-Wert einer Pflanze wieder meldet.",
+      "fields": {
+        "for": {
+          "name": "Ohne Meldung seit",
+          "description": "Gilt als veraltet, wenn sich der Sensor so lange nicht gemeldet hat (oder nicht verfügbar ist)."
+        }
+      }
+    }
+  },
+  "conditions": {
+    "has_problem": {
+      "name": "Pflanze hat ein Problem",
+      "description": "Prüft, ob eine Pflanze ein Problem hat.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "moisture_is_low": {
+      "name": "Bodenfeuchtigkeit ist zu niedrig",
+      "description": "Prüft, ob die Bodenfeuchtigkeit einer Pflanze unter der Untergrenze liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "moisture_is_high": {
+      "name": "Bodenfeuchtigkeit ist zu hoch",
+      "description": "Prüft, ob die Bodenfeuchtigkeit einer Pflanze über der Obergrenze liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "moisture_is_ok": {
+      "name": "Bodenfeuchtigkeit ist OK",
+      "description": "Prüft, ob die Bodenfeuchtigkeit einer Pflanze in den Grenzen liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "conductivity_is_low": {
+      "name": "Leitfähigkeit ist zu niedrig",
+      "description": "Prüft, ob die Leitfähigkeit einer Pflanze unter der Untergrenze liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "conductivity_is_high": {
+      "name": "Leitfähigkeit ist zu hoch",
+      "description": "Prüft, ob die Leitfähigkeit einer Pflanze über der Obergrenze liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "conductivity_is_ok": {
+      "name": "Leitfähigkeit ist OK",
+      "description": "Prüft, ob die Leitfähigkeit einer Pflanze in den Grenzen liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "temperature_is_low": {
+      "name": "Temperatur ist zu niedrig",
+      "description": "Prüft, ob die Temperatur einer Pflanze unter der Untergrenze liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "temperature_is_high": {
+      "name": "Temperatur ist zu hoch",
+      "description": "Prüft, ob die Temperatur einer Pflanze über der Obergrenze liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "temperature_is_ok": {
+      "name": "Temperatur ist OK",
+      "description": "Prüft, ob die Temperatur einer Pflanze in den Grenzen liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "humidity_is_low": {
+      "name": "Luftfeuchtigkeit ist zu niedrig",
+      "description": "Prüft, ob die Luftfeuchtigkeit einer Pflanze unter der Untergrenze liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "humidity_is_high": {
+      "name": "Luftfeuchtigkeit ist zu hoch",
+      "description": "Prüft, ob die Luftfeuchtigkeit einer Pflanze über der Obergrenze liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "humidity_is_ok": {
+      "name": "Luftfeuchtigkeit ist OK",
+      "description": "Prüft, ob die Luftfeuchtigkeit einer Pflanze in den Grenzen liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "co2_is_low": {
+      "name": "CO2 ist zu niedrig",
+      "description": "Prüft, ob der CO2-Wert einer Pflanze unter der Untergrenze liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "co2_is_high": {
+      "name": "CO2 ist zu hoch",
+      "description": "Prüft, ob der CO2-Wert einer Pflanze über der Obergrenze liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "co2_is_ok": {
+      "name": "CO2 ist OK",
+      "description": "Prüft, ob der CO2-Wert einer Pflanze in den Grenzen liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "soil_temperature_is_low": {
+      "name": "Bodentemperatur ist zu niedrig",
+      "description": "Prüft, ob die Bodentemperatur einer Pflanze unter der Untergrenze liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "soil_temperature_is_high": {
+      "name": "Bodentemperatur ist zu hoch",
+      "description": "Prüft, ob die Bodentemperatur einer Pflanze über der Obergrenze liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "soil_temperature_is_ok": {
+      "name": "Bodentemperatur ist OK",
+      "description": "Prüft, ob die Bodentemperatur einer Pflanze in den Grenzen liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "illuminance_is_low": {
+      "name": "Beleuchtungsstärke ist zu niedrig",
+      "description": "Prüft, ob die Beleuchtungsstärke einer Pflanze unter der Untergrenze liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "illuminance_is_high": {
+      "name": "Beleuchtungsstärke ist zu hoch",
+      "description": "Prüft, ob die Beleuchtungsstärke einer Pflanze über der Obergrenze liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "illuminance_is_ok": {
+      "name": "Beleuchtungsstärke ist OK",
+      "description": "Prüft, ob die Beleuchtungsstärke einer Pflanze in den Grenzen liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "dli_is_low": {
+      "name": "Tageslicht (DLI) ist zu niedrig",
+      "description": "Prüft, ob das Tageslicht (DLI) einer Pflanze unter der Untergrenze liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "dli_is_high": {
+      "name": "Tageslicht (DLI) ist zu hoch",
+      "description": "Prüft, ob das Tageslicht (DLI) einer Pflanze über der Obergrenze liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "dli_is_ok": {
+      "name": "Tageslicht (DLI) ist OK",
+      "description": "Prüft, ob das Tageslicht (DLI) einer Pflanze in den Grenzen liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "vpd_is_low": {
+      "name": "Dampfdruckdefizit (VPD) ist zu niedrig",
+      "description": "Prüft, ob das Dampfdruckdefizit (VPD) einer Pflanze unter der Untergrenze liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "vpd_is_high": {
+      "name": "Dampfdruckdefizit (VPD) ist zu hoch",
+      "description": "Prüft, ob das Dampfdruckdefizit (VPD) einer Pflanze über der Obergrenze liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "vpd_is_ok": {
+      "name": "Dampfdruckdefizit (VPD) ist OK",
+      "description": "Prüft, ob das Dampfdruckdefizit (VPD) einer Pflanze in den Grenzen liegt.",
+      "fields": {
+        "behavior": {
+          "name": "Verhalten"
+        },
+        "for": {
+          "name": "Mindestens"
+        }
+      }
+    },
+    "moisture_sensor_is_stale": {
+      "name": "Bodenfeuchtigkeit: Sensor veraltet",
+      "description": "Prüft, ob der Sensor für die Bodenfeuchtigkeit einer Pflanze nicht verfügbar ist oder sich länger nicht gemeldet hat.",
+      "fields": {
+        "for": {
+          "name": "Ohne Meldung seit",
+          "description": "Gilt als veraltet, wenn sich der Sensor so lange nicht gemeldet hat (oder nicht verfügbar ist)."
+        }
+      }
+    },
+    "temperature_sensor_is_stale": {
+      "name": "Temperatur: Sensor veraltet",
+      "description": "Prüft, ob der Sensor für die Temperatur einer Pflanze nicht verfügbar ist oder sich länger nicht gemeldet hat.",
+      "fields": {
+        "for": {
+          "name": "Ohne Meldung seit",
+          "description": "Gilt als veraltet, wenn sich der Sensor so lange nicht gemeldet hat (oder nicht verfügbar ist)."
+        }
+      }
+    },
+    "soil_temperature_sensor_is_stale": {
+      "name": "Bodentemperatur: Sensor veraltet",
+      "description": "Prüft, ob der Sensor für die Bodentemperatur einer Pflanze nicht verfügbar ist oder sich länger nicht gemeldet hat.",
+      "fields": {
+        "for": {
+          "name": "Ohne Meldung seit",
+          "description": "Gilt als veraltet, wenn sich der Sensor so lange nicht gemeldet hat (oder nicht verfügbar ist)."
+        }
+      }
+    },
+    "humidity_sensor_is_stale": {
+      "name": "Luftfeuchtigkeit: Sensor veraltet",
+      "description": "Prüft, ob der Sensor für die Luftfeuchtigkeit einer Pflanze nicht verfügbar ist oder sich länger nicht gemeldet hat.",
+      "fields": {
+        "for": {
+          "name": "Ohne Meldung seit",
+          "description": "Gilt als veraltet, wenn sich der Sensor so lange nicht gemeldet hat (oder nicht verfügbar ist)."
+        }
+      }
+    },
+    "illuminance_sensor_is_stale": {
+      "name": "Beleuchtungsstärke: Sensor veraltet",
+      "description": "Prüft, ob der Sensor für die Beleuchtungsstärke einer Pflanze nicht verfügbar ist oder sich länger nicht gemeldet hat.",
+      "fields": {
+        "for": {
+          "name": "Ohne Meldung seit",
+          "description": "Gilt als veraltet, wenn sich der Sensor so lange nicht gemeldet hat (oder nicht verfügbar ist)."
+        }
+      }
+    },
+    "conductivity_sensor_is_stale": {
+      "name": "Leitfähigkeit: Sensor veraltet",
+      "description": "Prüft, ob der Sensor für die Leitfähigkeit einer Pflanze nicht verfügbar ist oder sich länger nicht gemeldet hat.",
+      "fields": {
+        "for": {
+          "name": "Ohne Meldung seit",
+          "description": "Gilt als veraltet, wenn sich der Sensor so lange nicht gemeldet hat (oder nicht verfügbar ist)."
+        }
+      }
+    },
+    "co2_sensor_is_stale": {
+      "name": "CO2: Sensor veraltet",
+      "description": "Prüft, ob der Sensor für der CO2-Wert einer Pflanze nicht verfügbar ist oder sich länger nicht gemeldet hat.",
+      "fields": {
+        "for": {
+          "name": "Ohne Meldung seit",
+          "description": "Gilt als veraltet, wenn sich der Sensor so lange nicht gemeldet hat (oder nicht verfügbar ist)."
+        }
+      }
+    }
+  }
+}

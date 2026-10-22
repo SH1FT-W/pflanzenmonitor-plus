@@ -1,0 +1,13 @@
+replace_sensor:
+  fields:
+    meter_entity:
+      required: true
+      selector:
+        entity:
+          integration: pflanzenmonitor_plus
+          domain: sensor
+    new_sensor:
+      required: false
+      selector:
+        entity:
+          domain: sensor

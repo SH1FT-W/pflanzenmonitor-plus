@@ -1,0 +1,20 @@
+Pflanzenmonitor Plus for Home Assistant
+Copyright 2026 SH1FT-W
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+Plant Monitor
+-------------
+
+Pflanzenmonitor Plus can take over the plants of the custom integration
+"Plant Monitor" (Olen/homeassistant-plant, https://github.com/Olen/homeassistant-plant,
+GNU General Public License v3.0). To make existing automations, dashboards and
+cards keep working after the move, it offers compatible behaviour: the same
+status values and attributes (ok/problem, <measurement>_status, problems,
+species), the same limit defaults and unique ID suffixes, and comparable
+automation triggers and conditions. It also reads Plant Monitor's stored
+configuration once, during the move.
+
+No source code of Plant Monitor is included or adapted here; the behaviour was
+re-implemented independently. Plant Monitor is not required and is not
+affiliated with this project.

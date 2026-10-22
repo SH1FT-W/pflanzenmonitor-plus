@@ -1,0 +1,63 @@
+name: Bug report
+description: Something in Pflanzenmonitor Plus does not work as described.
+labels: ["bug"]
+body:
+  - type: input
+    id: ha_version
+    attributes:
+      label: Home Assistant version
+      placeholder: "2026.10.1"
+    validations:
+      required: true
+  - type: input
+    id: plus_version
+    attributes:
+      label: Pflanzenmonitor Plus version
+      description: Settings > Devices & services > Pflanzenmonitor Plus, or HACS.
+      placeholder: "26.10.1"
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Plant status, readings or limits
+        - Watering forecast or learning
+        - AI suggestions
+        - Rain or frost (plants outdoors)
+        - Automation triggers or conditions
+        - Moving plants over from Plant Monitor
+        - Setup or options
+        - Something else
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. ...\n2. ...\n3. ..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happens instead
+    validations:
+      required: true
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics
+      description: Settings > Devices & services > Pflanzenmonitor Plus > three dots > Download diagnostics. Free AI texts are redacted; plant names and sensor IDs are included, so check the file before you attach it. Drag the file here.
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else
+      description: Debug log lines (logger custom_components.pflanzenmonitor_plus set to debug), the sensors involved and their units.

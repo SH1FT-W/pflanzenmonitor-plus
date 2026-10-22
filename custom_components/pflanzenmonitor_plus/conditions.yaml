@@ -1,0 +1,624 @@
+# Erzeugt passend zu trigger.py/condition.py; Ziel sind die Zustands-Entitäten der Pflanzen.
+
+has_problem:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+moisture_is_low:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+moisture_is_high:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+moisture_is_ok:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+conductivity_is_low:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+conductivity_is_high:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+conductivity_is_ok:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+temperature_is_low:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+temperature_is_high:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+temperature_is_ok:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+humidity_is_low:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+humidity_is_high:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+humidity_is_ok:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+co2_is_low:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+co2_is_high:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+co2_is_ok:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+soil_temperature_is_low:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+soil_temperature_is_high:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+soil_temperature_is_ok:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+illuminance_is_low:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+illuminance_is_high:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+illuminance_is_ok:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+dli_is_low:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+dli_is_high:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+dli_is_ok:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+vpd_is_low:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+vpd_is_high:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+vpd_is_ok:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    for:
+      required: true
+      default: 00:00:00
+      selector:
+        duration:
+
+moisture_sensor_is_stale:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    for:
+      required: false
+      default: "24:00:00"
+      selector:
+        duration:
+
+temperature_sensor_is_stale:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    for:
+      required: false
+      default: "24:00:00"
+      selector:
+        duration:
+
+soil_temperature_sensor_is_stale:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    for:
+      required: false
+      default: "24:00:00"
+      selector:
+        duration:
+
+humidity_sensor_is_stale:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    for:
+      required: false
+      default: "24:00:00"
+      selector:
+        duration:
+
+illuminance_sensor_is_stale:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    for:
+      required: false
+      default: "24:00:00"
+      selector:
+        duration:
+
+conductivity_sensor_is_stale:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    for:
+      required: false
+      default: "24:00:00"
+      selector:
+        duration:
+
+co2_sensor_is_stale:
+  target:
+    entity:
+      - integration: pflanzenmonitor_plus
+        domain: sensor
+        device_class: enum
+  fields:
+    for:
+      required: false
+      default: "24:00:00"
+      selector:
+        duration:

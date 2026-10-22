@@ -1,0 +1,405 @@
+{
+  "entity": {
+    "binary_sensor": {
+      "rain_expected": {
+        "default": "mdi:weather-rainy",
+        "state": {
+          "off": "mdi:weather-partly-cloudy"
+        }
+      },
+      "frost": {
+        "default": "mdi:snowflake-thermometer"
+      }
+    },
+    "sensor": {
+      "learning": {
+        "default": "mdi:brain",
+        "state": {
+          "keine_daten": "mdi:help-circle-outline",
+          "lernt": "mdi:school-outline",
+          "bereit": "mdi:check-decagram-outline"
+        }
+      },
+      "next_watering": {
+        "default": "mdi:watering-can-outline"
+      },
+      "last_watered": {
+        "default": "mdi:watering-can"
+      },
+      "drying_rate": {
+        "default": "mdi:water-minus-outline"
+      },
+      "suggestion": {
+        "default": "mdi:creation-outline",
+        "state": {
+          "offen": "mdi:creation",
+          "keine_aenderung": "mdi:check-circle-outline",
+          "uebernommen": "mdi:check-all",
+          "abgelehnt": "mdi:close-circle-outline",
+          "zurueckgenommen": "mdi:undo-variant"
+        }
+      },
+      "next_watering_due": {
+        "default": "mdi:calendar-clock"
+      },
+      "status": {
+        "default": "mdi:flower",
+        "state": {
+          "problem": "mdi:flower-pollen-outline"
+        }
+      },
+      "moisture": {
+        "default": "mdi:water"
+      },
+      "temperature": {
+        "default": "mdi:thermometer"
+      },
+      "soil_temperature": {
+        "default": "mdi:thermometer-probe"
+      },
+      "humidity": {
+        "default": "mdi:water-percent"
+      },
+      "illuminance": {
+        "default": "mdi:brightness-6"
+      },
+      "conductivity": {
+        "default": "mdi:spa-outline"
+      },
+      "co2": {
+        "default": "mdi:molecule-co2"
+      },
+      "vpd": {
+        "default": "mdi:water-thermometer-outline"
+      },
+      "ppfd": {
+        "default": "mdi:white-balance-sunny"
+      },
+      "total_light_integral": {
+        "default": "mdi:chart-histogram"
+      },
+      "dli": {
+        "default": "mdi:counter"
+      },
+      "dli_24h": {
+        "default": "mdi:counter"
+      }
+    },
+    "button": {
+      "accept": {
+        "default": "mdi:check"
+      },
+      "reject": {
+        "default": "mdi:close"
+      },
+      "undo": {
+        "default": "mdi:undo-variant"
+      },
+      "ask": {
+        "default": "mdi:creation"
+      }
+    },
+    "number": {
+      "max_moisture": {
+        "default": "mdi:water"
+      },
+      "min_moisture": {
+        "default": "mdi:water"
+      },
+      "max_conductivity": {
+        "default": "mdi:spa-outline"
+      },
+      "min_conductivity": {
+        "default": "mdi:spa-outline"
+      },
+      "max_temperature": {
+        "default": "mdi:thermometer"
+      },
+      "min_temperature": {
+        "default": "mdi:thermometer"
+      },
+      "max_humidity": {
+        "default": "mdi:water-percent"
+      },
+      "min_humidity": {
+        "default": "mdi:water-percent"
+      },
+      "max_co2": {
+        "default": "mdi:molecule-co2"
+      },
+      "min_co2": {
+        "default": "mdi:molecule-co2"
+      },
+      "max_soil_temperature": {
+        "default": "mdi:thermometer-probe"
+      },
+      "min_soil_temperature": {
+        "default": "mdi:thermometer-probe"
+      },
+      "max_illuminance": {
+        "default": "mdi:brightness-6"
+      },
+      "min_illuminance": {
+        "default": "mdi:brightness-6"
+      },
+      "max_dli": {
+        "default": "mdi:counter"
+      },
+      "min_dli": {
+        "default": "mdi:counter"
+      },
+      "max_vpd": {
+        "default": "mdi:water-thermometer-outline"
+      },
+      "min_vpd": {
+        "default": "mdi:water-thermometer-outline"
+      },
+      "lux_to_ppfd": {
+        "default": "mdi:white-balance-sunny"
+      }
+    }
+  },
+  "services": {
+    "replace_sensor": {
+      "service": "mdi:swap-horizontal"
+    }
+  },
+  "triggers": {
+    "problem_detected": {
+      "trigger": "mdi:flower-pollen-outline"
+    },
+    "problem_cleared": {
+      "trigger": "mdi:flower"
+    },
+    "moisture_became_low": {
+      "trigger": "mdi:water"
+    },
+    "moisture_became_high": {
+      "trigger": "mdi:water"
+    },
+    "moisture_became_ok": {
+      "trigger": "mdi:water"
+    },
+    "conductivity_became_low": {
+      "trigger": "mdi:spa-outline"
+    },
+    "conductivity_became_high": {
+      "trigger": "mdi:spa-outline"
+    },
+    "conductivity_became_ok": {
+      "trigger": "mdi:spa-outline"
+    },
+    "temperature_became_low": {
+      "trigger": "mdi:thermometer"
+    },
+    "temperature_became_high": {
+      "trigger": "mdi:thermometer"
+    },
+    "temperature_became_ok": {
+      "trigger": "mdi:thermometer"
+    },
+    "humidity_became_low": {
+      "trigger": "mdi:water-percent"
+    },
+    "humidity_became_high": {
+      "trigger": "mdi:water-percent"
+    },
+    "humidity_became_ok": {
+      "trigger": "mdi:water-percent"
+    },
+    "co2_became_low": {
+      "trigger": "mdi:molecule-co2"
+    },
+    "co2_became_high": {
+      "trigger": "mdi:molecule-co2"
+    },
+    "co2_became_ok": {
+      "trigger": "mdi:molecule-co2"
+    },
+    "soil_temperature_became_low": {
+      "trigger": "mdi:thermometer-probe"
+    },
+    "soil_temperature_became_high": {
+      "trigger": "mdi:thermometer-probe"
+    },
+    "soil_temperature_became_ok": {
+      "trigger": "mdi:thermometer-probe"
+    },
+    "illuminance_became_low": {
+      "trigger": "mdi:brightness-6"
+    },
+    "illuminance_became_high": {
+      "trigger": "mdi:brightness-6"
+    },
+    "illuminance_became_ok": {
+      "trigger": "mdi:brightness-6"
+    },
+    "dli_became_low": {
+      "trigger": "mdi:counter"
+    },
+    "dli_became_high": {
+      "trigger": "mdi:counter"
+    },
+    "dli_became_ok": {
+      "trigger": "mdi:counter"
+    },
+    "vpd_became_low": {
+      "trigger": "mdi:water-thermometer-outline"
+    },
+    "vpd_became_high": {
+      "trigger": "mdi:water-thermometer-outline"
+    },
+    "vpd_became_ok": {
+      "trigger": "mdi:water-thermometer-outline"
+    },
+    "moisture_sensor_became_stale": {
+      "trigger": "mdi:timer-sand"
+    },
+    "moisture_sensor_became_fresh": {
+      "trigger": "mdi:check-network-outline"
+    },
+    "temperature_sensor_became_stale": {
+      "trigger": "mdi:timer-sand"
+    },
+    "temperature_sensor_became_fresh": {
+      "trigger": "mdi:check-network-outline"
+    },
+    "soil_temperature_sensor_became_stale": {
+      "trigger": "mdi:timer-sand"
+    },
+    "soil_temperature_sensor_became_fresh": {
+      "trigger": "mdi:check-network-outline"
+    },
+    "humidity_sensor_became_stale": {
+      "trigger": "mdi:timer-sand"
+    },
+    "humidity_sensor_became_fresh": {
+      "trigger": "mdi:check-network-outline"
+    },
+    "illuminance_sensor_became_stale": {
+      "trigger": "mdi:timer-sand"
+    },
+    "illuminance_sensor_became_fresh": {
+      "trigger": "mdi:check-network-outline"
+    },
+    "conductivity_sensor_became_stale": {
+      "trigger": "mdi:timer-sand"
+    },
+    "conductivity_sensor_became_fresh": {
+      "trigger": "mdi:check-network-outline"
+    },
+    "co2_sensor_became_stale": {
+      "trigger": "mdi:timer-sand"
+    },
+    "co2_sensor_became_fresh": {
+      "trigger": "mdi:check-network-outline"
+    }
+  },
+  "conditions": {
+    "has_problem": {
+      "condition": "mdi:flower-pollen-outline"
+    },
+    "moisture_is_low": {
+      "condition": "mdi:water"
+    },
+    "moisture_is_high": {
+      "condition": "mdi:water"
+    },
+    "moisture_is_ok": {
+      "condition": "mdi:water"
+    },
+    "conductivity_is_low": {
+      "condition": "mdi:spa-outline"
+    },
+    "conductivity_is_high": {
+      "condition": "mdi:spa-outline"
+    },
+    "conductivity_is_ok": {
+      "condition": "mdi:spa-outline"
+    },
+    "temperature_is_low": {
+      "condition": "mdi:thermometer"
+    },
+    "temperature_is_high": {
+      "condition": "mdi:thermometer"
+    },
+    "temperature_is_ok": {
+      "condition": "mdi:thermometer"
+    },
+    "humidity_is_low": {
+      "condition": "mdi:water-percent"
+    },
+    "humidity_is_high": {
+      "condition": "mdi:water-percent"
+    },
+    "humidity_is_ok": {
+      "condition": "mdi:water-percent"
+    },
+    "co2_is_low": {
+      "condition": "mdi:molecule-co2"
+    },
+    "co2_is_high": {
+      "condition": "mdi:molecule-co2"
+    },
+    "co2_is_ok": {
+      "condition": "mdi:molecule-co2"
+    },
+    "soil_temperature_is_low": {
+      "condition": "mdi:thermometer-probe"
+    },
+    "soil_temperature_is_high": {
+      "condition": "mdi:thermometer-probe"
+    },
+    "soil_temperature_is_ok": {
+      "condition": "mdi:thermometer-probe"
+    },
+    "illuminance_is_low": {
+      "condition": "mdi:brightness-6"
+    },
+    "illuminance_is_high": {
+      "condition": "mdi:brightness-6"
+    },
+    "illuminance_is_ok": {
+      "condition": "mdi:brightness-6"
+    },
+    "dli_is_low": {
+      "condition": "mdi:counter"
+    },
+    "dli_is_high": {
+      "condition": "mdi:counter"
+    },
+    "dli_is_ok": {
+      "condition": "mdi:counter"
+    },
+    "vpd_is_low": {
+      "condition": "mdi:water-thermometer-outline"
+    },
+    "vpd_is_high": {
+      "condition": "mdi:water-thermometer-outline"
+    },
+    "vpd_is_ok": {
+      "condition": "mdi:water-thermometer-outline"
+    },
+    "moisture_sensor_is_stale": {
+      "condition": "mdi:timer-sand"
+    },
+    "temperature_sensor_is_stale": {
+      "condition": "mdi:timer-sand"
+    },
+    "soil_temperature_sensor_is_stale": {
+      "condition": "mdi:timer-sand"
+    },
+    "humidity_sensor_is_stale": {
+      "condition": "mdi:timer-sand"
+    },
+    "illuminance_sensor_is_stale": {
+      "condition": "mdi:timer-sand"
+    },
+    "conductivity_sensor_is_stale": {
+      "condition": "mdi:timer-sand"
+    },
+    "co2_sensor_is_stale": {
+      "condition": "mdi:timer-sand"
+    }
+  }
+}
