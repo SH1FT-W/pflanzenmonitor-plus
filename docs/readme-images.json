@@ -1,120 +1,120 @@
 {
- "$comment": "Content of the README pictures. Render with: node sh1ft-w.github.io/theme/v1/readme-images/render.mjs <this repo> (title, cards). The title's picture docs/images/title-shot-{light,dark}.png is rendered from docs/title-shot.html (an illustration with an invented plant) with playwright at 1100 px width and device scale 2. Palette from docs/index.html.",
- "title": {
-  "name": "Pflanzenmonitor Plus",
-  "eyebrow": "For Home Assistant",
-  "lead": "Your plants, <em>understood.</em>",
-  "sub": "Status and limits for every plant, a watering forecast learned from its own history and AI-suggested limits you approve. Moves Plant Monitor plants over in one step.",
-  "pills": [
-   [
-    "Local, no cloud"
-   ],
-   [
-    "Platinum",
-    "v"
-   ],
-   [
-    "HACS"
-   ]
-  ],
-  "logo": "docs/images/readme-icon.png",
-  "shot": {
-   "light": "docs/images/title-shot-light.png",
-   "dark": "docs/images/title-shot-dark.png",
-   "srcW": 2200,
-   "winW": 2200,
-   "s": 0.32,
-   "strips": [
-    [
-     0,
-     1476
+  "$comment": "Content of the README pictures. Render with: node sh1ft-w.github.io/theme/v1/readme-images/render.mjs <this repo> (title, cards). The title's picture docs/images/title-shot-{light,dark}.png is rendered from docs/title-shot.html (an illustration with an invented plant) with playwright at 1100 px width and device scale 2. Palette from docs/index.html.",
+  "title": {
+    "name": "Pflanzenmonitor Plus",
+    "eyebrow": "For Home Assistant",
+    "lead": "Your plants, <em>understood.</em>",
+    "sub": "Status and limits for every plant, a watering forecast learned from its own history and AI-suggested limits you approve. Moves Plant Monitor plants over in one step.",
+    "pills": [
+      [
+        "Local, no cloud"
+      ],
+      [
+        "Platinum",
+        "v"
+      ],
+      [
+        "HACS"
+      ]
+    ],
+    "logo": "docs/images/readme-icon.png",
+    "shot": {
+      "light": "docs/images/title-shot-light.png",
+      "dark": "docs/images/title-shot-dark.png",
+      "srcW": 2200,
+      "winW": 2200,
+      "s": 0.32,
+      "strips": [
+        [
+          0,
+          1476
+        ]
+      ],
+      "bar": null,
+      "left": 560,
+      "top": 92,
+      "flat": true
+    },
+    "nameSize": 46
+  },
+  "colors": {
+    "light": {
+      "bg": "#F5F8F2",
+      "bg2": "#E9F0E4",
+      "ink": "#111A12",
+      "ink2": "#4B5A4C",
+      "ink3": "#7E8C7F",
+      "accentText": "#256B29",
+      "accent": "#2E7D32",
+      "accent2": "#66BB6A",
+      "glow1": "rgba(102,187,106,0.16)",
+      "glow2": "rgba(46,125,50,0.10)",
+      "frame": "rgba(20,50,25,0.12)",
+      "pillBg": "#FFFFFF",
+      "pillLine": "rgba(20,50,25,0.10)",
+      "win": "#FFFFFF",
+      "bar": "#F2F6EF"
+    },
+    "dark": {
+      "bg": "#080D09",
+      "bg2": "#0D150F",
+      "ink": "#ECF4ED",
+      "ink2": "rgba(216,232,218,0.84)",
+      "ink3": "rgba(216,232,218,0.52)",
+      "accentText": "#8EDB9A",
+      "accent": "#6FCF7F",
+      "accent2": "#66BB6A",
+      "glow1": "rgba(111,207,127,0.16)",
+      "glow2": "rgba(46,125,50,0.14)",
+      "frame": "rgba(236,244,237,0.12)",
+      "pillBg": "#111A13",
+      "pillLine": "rgba(236,244,237,0.10)",
+      "win": "#111A13",
+      "bar": "#17231A"
+    }
+  },
+  "cards": {
+    "features": [
+      {
+        "icon": "flower-outline",
+        "title": "Status like plant.*",
+        "text": "OK or problem per plant, with problems, the status of every reading and the species, so cards and templates keep working."
+      },
+      {
+        "icon": "gauge",
+        "title": "Every reading on the plant",
+        "text": "Soil moisture, temperature, soil temperature, humidity, illuminance or PPFD, conductivity and CO2, plus VPD, PPFD and daily light."
+      },
+      {
+        "icon": "tune-variant",
+        "title": "Limits you set",
+        "text": "Min and max for every measurement, 5 % hysteresis, which readings count as a problem, a wait after watering."
+      },
+      {
+        "icon": "water-outline",
+        "title": "Water in X days",
+        "text": "A forecast from the plant's own past cycles, scaled to how fast the soil dries today."
+      },
+      {
+        "icon": "watering-can-outline",
+        "title": "Last watered, detected",
+        "text": "A jump in soil moisture is a watering. Nothing to press, nothing to enter."
+      },
+      {
+        "icon": "creation-outline",
+        "title": "AI suggestions you approve",
+        "text": "Limits for the species with reasons, safety rules in code, undo any time."
+      },
+      {
+        "icon": "weather-snowy-rainy",
+        "title": "Rain and frost outdoors",
+        "text": "Rain does not count as watering; frost risk from the hourly forecast."
+      },
+      {
+        "icon": "lightning-bolt-outline",
+        "title": "Automations",
+        "text": "Problem detected, a reading became too low or too high, a sensor became stale: 43 triggers, 35 conditions."
+      }
     ]
-   ],
-   "bar": null,
-   "left": 560,
-   "top": 92,
-   "flat": true
-  },
-  "nameSize": 46
- },
- "colors": {
-  "light": {
-   "bg": "#F5F8F2",
-   "bg2": "#E9F0E4",
-   "ink": "#111A12",
-   "ink2": "#4B5A4C",
-   "ink3": "#7E8C7F",
-   "accentText": "#256B29",
-   "accent": "#2E7D32",
-   "accent2": "#66BB6A",
-   "glow1": "rgba(102,187,106,0.16)",
-   "glow2": "rgba(46,125,50,0.10)",
-   "frame": "rgba(20,50,25,0.12)",
-   "pillBg": "#FFFFFF",
-   "pillLine": "rgba(20,50,25,0.10)",
-   "win": "#FFFFFF",
-   "bar": "#F2F6EF"
-  },
-  "dark": {
-   "bg": "#080D09",
-   "bg2": "#0D150F",
-   "ink": "#ECF4ED",
-   "ink2": "rgba(216,232,218,0.84)",
-   "ink3": "rgba(216,232,218,0.52)",
-   "accentText": "#8EDB9A",
-   "accent": "#6FCF7F",
-   "accent2": "#66BB6A",
-   "glow1": "rgba(111,207,127,0.16)",
-   "glow2": "rgba(46,125,50,0.14)",
-   "frame": "rgba(236,244,237,0.12)",
-   "pillBg": "#111A13",
-   "pillLine": "rgba(236,244,237,0.10)",
-   "win": "#111A13",
-   "bar": "#17231A"
   }
- },
- "cards": {
-  "features": [
-   {
-    "icon": "flower-outline",
-    "title": "Status like plant.*",
-    "text": "OK or problem per plant, with problems, the status of every reading and the species, so cards and templates keep working."
-   },
-   {
-    "icon": "gauge",
-    "title": "Every reading on the plant",
-    "text": "Soil moisture, temperature, soil temperature, humidity, illuminance or PPFD, conductivity and CO2, plus VPD, PPFD and daily light."
-   },
-   {
-    "icon": "tune-variant",
-    "title": "Limits you set",
-    "text": "Min and max for every measurement, 5 % hysteresis, which readings count as a problem, a wait after watering."
-   },
-   {
-    "icon": "water-outline",
-    "title": "Water in X days",
-    "text": "A forecast from the plant's own past cycles, scaled to how fast the soil dries today."
-   },
-   {
-    "icon": "watering-can-outline",
-    "title": "Last watered, detected",
-    "text": "A jump in soil moisture is a watering. Nothing to press, nothing to enter."
-   },
-   {
-    "icon": "creation-outline",
-    "title": "AI suggestions you approve",
-    "text": "Limits for the species with reasons, safety rules in code, undo any time."
-   },
-   {
-    "icon": "weather-snowy-rainy",
-    "title": "Rain and frost outdoors",
-    "text": "Rain does not count as watering; frost risk from the hourly forecast."
-   },
-   {
-    "icon": "lightning-bolt-outline",
-    "title": "Automations",
-    "text": "Problem detected, a reading became too low or too high, a sensor became stale: 43 triggers, 35 conditions."
-   }
-  ]
- }
 }

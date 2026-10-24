@@ -1,8 +1,8 @@
 <div align="center">
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-title-dark.png" />
-  <img src="docs/images/readme-title-light.png" alt="Pflanzenmonitor Plus: Your plants, understood. Every plant with its status, readings and limits in Home Assistant, a watering forecast learned from its own history and AI-suggested limits you approve." />
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-title-dark.webp" />
+  <img src="docs/images/readme-title-light.webp" alt="Pflanzenmonitor Plus: Your plants, understood. Every plant with its status, readings and limits in Home Assistant, a watering forecast learned from its own history and AI-suggested limits you approve." />
 </picture>
 
 <p>The plant integration for Home Assistant that learns: status and limits for every plant,<br/>
@@ -38,10 +38,14 @@ in Home Assistant. No extra packages.
 <a id="features"></a>
 ## Features
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-cards-features-dark.png" />
-  <img src="docs/images/readme-cards-features-light.png" alt="Status like plant.*: OK or problem per plant, with problems, the status of every reading and the species, so cards and templates keep working. Every reading on the plant: Soil moisture, temperature, soil temperature, humidity, illuminance or PPFD, conductivity and CO2, plus VPD, PPFD and daily light. Limits you set: Min and max for every measurement, 5 % hysteresis, which readings count as a problem, a wait after watering. Water in X days: A forecast from the plant's own past cycles, scaled to how fast the soil dries today. Last watered, detected: A jump in soil moisture is a watering. Nothing to press, nothing to enter. AI suggestions you approve: Limits for the species with reasons, safety rules in code, undo any time. Rain and frost outdoors: Rain does not count as watering; frost risk from the hourly forecast. Automations: Problem detected, a reading became too low or too high, a sensor became stale: 43 triggers, 35 conditions." />
-</picture>
+<!-- cards:features -->
+<table>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/flower-outline-dark.svg"><img src="docs/images/icons/flower-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Status like plant.*</b><br>OK or problem per plant, with problems, the status of every reading and the species, so cards and templates keep working.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/gauge-dark.svg"><img src="docs/images/icons/gauge-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Every reading on the plant</b><br>Soil moisture, temperature, soil temperature, humidity, illuminance or PPFD, conductivity and CO2, plus VPD, PPFD and daily light.</td></tr>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/tune-variant-dark.svg"><img src="docs/images/icons/tune-variant-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Limits you set</b><br>Min and max for every measurement, 5 % hysteresis, which readings count as a problem, a wait after watering.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/water-outline-dark.svg"><img src="docs/images/icons/water-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Water in X days</b><br>A forecast from the plant's own past cycles, scaled to how fast the soil dries today.</td></tr>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/watering-can-outline-dark.svg"><img src="docs/images/icons/watering-can-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Last watered, detected</b><br>A jump in soil moisture is a watering. Nothing to press, nothing to enter.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/creation-outline-dark.svg"><img src="docs/images/icons/creation-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>AI suggestions you approve</b><br>Limits for the species with reasons, safety rules in code, undo any time.</td></tr>
+<tr><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/weather-snowy-rainy-dark.svg"><img src="docs/images/icons/weather-snowy-rainy-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Rain and frost outdoors</b><br>Rain does not count as watering; frost risk from the hourly forecast.</td><td width="34" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/lightning-bolt-outline-dark.svg"><img src="docs/images/icons/lightning-bolt-outline-light.svg" width="26" height="26" alt=""></picture></td><td width="46%" valign="top"><b>Automations</b><br>Problem detected, a reading became too low or too high, a sensor became stale: 43 triggers, 35 conditions.</td></tr>
+</table>
+<!-- /cards:features -->
 
 - **Status like `plant.*`:** each plant gets one status entity (`ok` / `problem`) with the attributes Plant Monitor
   cards and templates read (`problems`, `moisture_status` and friends, `species`).
