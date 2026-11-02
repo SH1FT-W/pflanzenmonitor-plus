@@ -48,7 +48,8 @@ in Home Assistant. No extra packages.
 <!-- /cards:features -->
 
 - **Status like `plant.*`:** each plant gets one status entity (`ok` / `problem`) with the attributes Plant Monitor
-  cards and templates read (`problems`, `moisture_status` and friends, `species`).
+  templates read (`problems`, `moisture_status` and friends, `species`), so templates and cards that read these keep
+  working. The Flower Card (`custom:flower-card`) needs Plant Monitor's own backend and is not supported.
 - **Readings and light:** the real sensors are mirrored on the plant's device; Plus adds VPD, PPFD, the total light
   integral and the daily light integral (today, yesterday, last 24 hours).
 - **Limits:** min/max for every measurement and the lux-to-PPFD factor, as settings on the device page. Choose per

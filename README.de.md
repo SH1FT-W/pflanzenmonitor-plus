@@ -10,7 +10,8 @@ Grenzwerte vorschlagen. Sie kann alles, was der [Plant Monitor](https://github.c
 kann, und übernimmt dessen Pflanzen auf Knopfdruck – danach braucht es ihn nicht mehr.
 
 - **Zustand je Pflanze** („OK“/„Problem“) wie `plant.*` im Plant Monitor, mit denselben Attributen
-  (`problems`, `moisture_status` usw., `species`) – Karten und Vorlagen laufen weiter
+  (`problems`, `moisture_status` usw., `species`) – Vorlagen und Karten, die diese lesen, laufen weiter; die
+  Flower Card (`custom:flower-card`) braucht das Backend des Plant Monitor und wird nicht unterstützt
 - **Messwerte** der echten Sensoren auf dem Gerät der Pflanze: Bodenfeuchte, Temperatur, Bodentemperatur,
   Luftfeuchte, Helligkeit (lx oder PPFD), Leitfähigkeit, CO2; dazu **VPD**, **PPFD**, **Lichtsumme** und
   **Tageslicht (DLI)** heute, gestern und der letzten 24 Std.
