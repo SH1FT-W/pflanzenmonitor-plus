@@ -32,7 +32,13 @@ Worauf sich dieses Repo bei Home Assistant verlässt. Bei jeder Änderung am Cod
 | Recorder `statistics_during_period(hass, start, None, ids, "hour", None, {"mean","min","max"})` | `coordinator.py` `_fetch` | Tests über `stats` |
 | `weather.get_forecasts` mit `type: hourly` und `return_response` | `coordinator.py` `_forecast` | `tests/test_init.py` |
 | Issue-Registry: `ir.async_get(hass).issues` ist ein Dict mit Schlüssel `(domain, issue_id)`; `async_delete_issue` ist bei fehlendem Eintrag ein No-op | `advisor.py` `sync_issues`/`_plant`, `repairs.py` `SuggestionRepair`, `__init__.py` `_remove_stale` | `tests/test_repairs.py` `test_issue_of_removed_plant_goes_away`, `test_accept_for_removed_plant` |
-| `ai_task.generate_data` mit `task_name`, `instructions`, `structure`, Antwort in `data` | `advisor.py` `_ask` | `tests/test_advisor.py` |
+| `ai_task.generate_data` mit `task_name`, `instructions`, `structure`, Antwort in `data` | `advisor.py` `_ask`, `careplan.py` `_ask` | `tests/test_advisor.py`, `tests/test_care_calendar.py` |
+| To-do-Aktionen `todo.get_items` (mit `return_response`, Antwort `{<entity>: {"items": [{summary, uid, status, due…}]}}`), `todo.add_item` (`item`, `due_date` nur bei `TodoListEntityFeature.SET_DUE_DATE_ON_ITEM`, sonst Fehler), `todo.update_item` (`item` = uid oder Titel, `status: completed`); `add_item` gibt keine uid zurück → danach über `get_items` suchen; Status-Werte `needs_action`/`completed` | `tasks.py` | `tests/test_tasks.py` |
+| Die `uid` einer To-do-Aufgabe bleibt über Neustarts gleich (sonst gilt die Aufgabe als vom Nutzer gelöscht und wird beim Gießen nicht mehr abgehakt) | `tasks.py` `_find` | – (je Listen-Integration; lokal geprüft nur mit Test-Liste) |
+| Unterstützte Funktionen einer To-do-Liste stehen im Zustandsattribut `supported_features` | `tasks.py` `_add` | `tests/test_tasks.py` `test_deleted_by_user_and_adopted` |
+| `CalendarEntity`: `event` (nächster/laufender Termin) und `async_get_events(hass, start, end)`; Ganztagstermine mit `date` (Ende exklusiv); `_async_write_ha_state` plant selbst die Aktualisierung bei Beginn und Ende des Termins (über Mitternacht kein eigener Timer nötig) | `calendar.py` | `tests/test_care_calendar.py` |
+| Entität ohne Gerät mit `has_entity_name` bekommt den übersetzten Namen als Entitäts-ID (`calendar.pflanzenpflege`) | `calendar.py` | `tests/test_care_calendar.py`, `tests/test_edges.py` |
+| `SelectSelector` in Formularen liefert Strings (Monate „1“–„12“) | `config_flow.py` `async_step_care`, `care.plan` | `tests/test_config_flow.py` `test_add_plant` |
 
 ## Fremde Integrationen
 

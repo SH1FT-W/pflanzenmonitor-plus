@@ -1,4 +1,4 @@
-"""Knöpfe je Pflanze (nur mit KI): Vorschlag übernehmen, ablehnen, zurücknehmen, KI jetzt fragen."""
+"""Knöpfe je Pflanze: gedüngt, umgetopft; mit KI zusätzlich Vorschlag übernehmen, ablehnen, zurücknehmen, KI fragen."""
 
 from __future__ import annotations
 
@@ -10,9 +10,11 @@ from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 
+from . import care
 from .advisor import Advisor
+from .careplan import CarePlans
 from .coordinator import PlusConfigEntry, PlusCoordinator
-from .entity import PlantEntity
+from .entity import PlantEntity, device_info
 from .plants import Plant
 
 PARALLEL_UPDATES = 1
@@ -39,14 +41,29 @@ async def async_setup_entry(
     hass: HomeAssistant, entry: PlusConfigEntry, async_add_entities: AddConfigEntryEntitiesCallback
 ) -> None:
     coordinator = entry.runtime_data
-    if not coordinator.advisor:
-        return
     for plant in coordinator.plants.values():
-        if plant.moisture:
-            async_add_entities(
-                [PlusButton(coordinator, plant, description) for description in BUTTONS],
-                config_subentry_id=plant.subentry_id,
-            )
+        buttons: list[ButtonEntity] = [CareButton(coordinator.care, plant, kind) for kind in care.KINDS]
+        if coordinator.advisor and plant.moisture:
+            buttons += [PlusButton(coordinator, plant, description) for description in BUTTONS]
+        async_add_entities(buttons, config_subentry_id=plant.subentry_id)
+
+
+class CareButton(ButtonEntity):
+    """Fertilized / repotted today: the next date in the care calendar moves on."""
+
+    _attr_has_entity_name = True
+    _attr_should_poll = False
+
+    def __init__(self, plans: CarePlans, plant: Plant, kind: care.Kind) -> None:
+        self.plans = plans
+        self.plant = plant
+        self.kind: care.Kind = kind
+        self._attr_translation_key = kind
+        self._attr_unique_id = f"{plant.key}_{kind}"
+        self._attr_device_info = device_info(plant)
+
+    async def async_press(self) -> None:
+        await self.plans.async_done(self.plant.key, self.kind)
 
 
 class PlusButton(PlantEntity, ButtonEntity):

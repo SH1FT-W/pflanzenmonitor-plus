@@ -38,5 +38,8 @@ async def async_get_config_entry_diagnostics(hass: HomeAssistant, entry: PlusCon
             "frost": asdict(item.frost) if item and item.frost else None,
             # Freie Texte (KI-Begründungen, Fehler) können Namen enthalten – geschwärzt
             "advice": async_redact_data(coordinator.advisor.record(key), REDACT) if coordinator.advisor else None,
+            "care": async_redact_data(coordinator.care.record(key), REDACT)
+            | {"plan": coordinator.care.plan(plant).as_data()},
+            "task": coordinator.tasks.records.get(key) if coordinator.tasks else None,
         }
     return {"options": dict(entry.options), "migrated": entry.data.get("migrated"), "plants": plants}

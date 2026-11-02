@@ -40,7 +40,12 @@ async def test_user_flow_suggests_weather(hass: HomeAssistant) -> None:
     """Ohne Pflanzen einrichtbar; Wetter wird vorgeschlagen."""
     result = await hass.config_entries.flow.async_init(DOMAIN, context={"source": SOURCE_USER})
     assert result["type"] is FlowResultType.FORM
-    assert suggestions(result) == {CONF_AI_TASK: None, CONF_WEATHER: "weather.haus", CONF_RAIN_SENSOR: None}
+    assert suggestions(result) == {
+        CONF_AI_TASK: None,
+        CONF_WEATHER: "weather.haus",
+        CONF_RAIN_SENSOR: None,
+        "todo_list": None,
+    }
 
     result = await hass.config_entries.flow.async_configure(result["flow_id"], {CONF_WEATHER: "weather.haus"})
     await hass.async_block_till_done(wait_background_tasks=True)
@@ -105,6 +110,17 @@ async def test_add_plant(hass: HomeAssistant, entry: MockConfigEntry) -> None:
     result = await hass.config_entries.subentries.async_configure(
         result["flow_id"], {"problems": ["moisture"], "moisture_grace": 30}
     )
+    # Care plan: prefilled with the default plan (northern hemisphere)
+    assert result["step_id"] == "care"
+    assert suggestions(result) == {
+        "fertilize_interval": 21,
+        "fertilize_from": "3",
+        "fertilize_to": "9",
+        "repot_years": 2,
+    }
+    result = await hass.config_entries.subentries.async_configure(
+        result["flow_id"], {"fertilize_interval": 28, "fertilize_from": "4", "fertilize_to": "8", "repot_years": 3}
+    )
     await hass.async_block_till_done(wait_background_tasks=True)
     assert result["type"] is FlowResultType.CREATE_ENTRY
     subentry = next(s for s in entry.subentries.values() if s.title == "Feige")
@@ -112,6 +128,12 @@ async def test_add_plant(hass: HomeAssistant, entry: MockConfigEntry) -> None:
     assert subentry.data["problems"] == ["moisture"]
     assert subentry.data["area"] == "Balkon"
     assert subentry.data["temperature_sensor"] is None
+    assert [subentry.data[k] for k in ("fertilize_interval", "fertilize_from", "fertilize_to", "repot_years")] == [
+        28,
+        4,
+        8,
+        3,
+    ]
     # Neu geladen: Gerät im Raum, Entitäten da
     device = dr.async_get(hass).async_get_device_by_identifier((DOMAIN, subentry.subentry_id), entry.entry_id)
     assert device is not None
@@ -141,7 +163,13 @@ async def test_reconfigure_plant(hass: HomeAssistant, entry: MockConfigEntry) ->
     result = await hass.config_entries.subentries.async_configure(
         result["flow_id"], {"moisture_sensor": "sensor.olivenbaum_bodenfeuchtigkeit", "outdoor": False}
     )
+    # Southern hemisphere: the default season runs September to March
+    hass.config.latitude = -33.9
     result = await hass.config_entries.subentries.async_configure(result["flow_id"], {"problems": []})
+    assert suggestions(result)["fertilize_from"] == "9"
+    result = await hass.config_entries.subentries.async_configure(
+        result["flow_id"], {"fertilize_interval": 21, "fertilize_from": "9", "fertilize_to": "3", "repot_years": 2}
+    )
     await hass.async_block_till_done(wait_background_tasks=True)
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "reconfigure_successful"
@@ -153,6 +181,7 @@ async def test_reconfigure_plant(hass: HomeAssistant, entry: MockConfigEntry) ->
     assert (plant.name, plant.species, plant.outdoor) == ("Olive", "Olea europaea", False)
     # Keine Probleme gewählt = keine; nicht mehr draußen → keine Regen- und Frost-Sensoren
     assert plant.problems == frozenset()
+    assert plant.care == {"fertilize_interval": 21, "fertilize_from": 9, "fertilize_to": 3, "repot_years": 2}
     assert hass.states.get("binary_sensor.terrasse_olivenbaum_regen_erwartet") is None
 
 

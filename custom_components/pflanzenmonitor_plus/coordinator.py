@@ -42,6 +42,8 @@ from .util import number_state
 
 if TYPE_CHECKING:
     from .advisor import Advisor
+    from .careplan import CarePlans
+    from .tasks import WateringTasks
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -113,6 +115,9 @@ class PlusCoordinator(DataUpdateCoordinator[dict[str, PlantData]]):
         self._fresh: dict[str, datetime] = {}
         # KI-Vorschläge (nur mit KI-Entität in den Optionen)
         self.advisor: Advisor | None = None
+        # Care calendar (always) and watering tasks (only with a to-do list in the options)
+        self.care: CarePlans
+        self.tasks: WateringTasks | None = None
         # Neuladen nach einer Änderung ist schon angestoßen
         self.reload_pending = False
 

@@ -64,6 +64,11 @@ in Home Assistant. No extra packages.
   change can be undone.
 - **Plants outdoors:** rain does not count as watering; "Rain expected" (≥ 1 mm in 12 h) and "Frost risk" (forecast
   for the next 48 h below the plant's minimum temperature).
+- **Watering tasks** (optional): when a plant is due, a task like "Water Yucca" lands on a to-do list of your choice,
+  completed by itself once the plant has been watered.
+- **Care calendar:** a calendar "Plant care" with fertilizing (season and interval per plant, winter pause) and
+  repotting dates; the buttons "Fertilized" and "Repotted" move them on. With AI, a care plan per species is suggested
+  once per season.
 - **Repairs:** moving plants over from Plant Monitor, new AI suggestions (accept or reject right in the dialog), and
   automations that still use old `plant.*` entities after the move.
 
@@ -98,11 +103,12 @@ are listed under it. All fields are optional and can be changed later under *Con
 |---|---|
 | AI for limit suggestions | AI task entity. The first one is suggested. Empty = no AI suggestions (and no buttons). |
 | Weather | Weather entity with an hourly forecast. The first one is suggested. Only for plants outdoors. |
+| To-do list for watering | To-do entity (e.g. the shopping list or a local to-do list). Empty = no watering tasks (default). See [Watering tasks](#watering-tasks). |
 | Rain sensor | Measured rain intensity in mm/h (device class precipitation intensity). Lets Plus tell rain from watering outdoors. Without it, or before it has history, rises outdoors count as unknown. Amount sensors ("rain today") do not work: they stay above 0 until midnight after a shower. |
 
 ### Add or edit a plant
 
-*Pflanzenmonitor Plus → Add plant* asks in three steps; *⋮ → Reconfigure* on the plant changes the same things (the
+*Pflanzenmonitor Plus → Add plant* asks in four steps; *⋮ → Reconfigure* on the plant changes the same things (the
 room then lives on the device).
 
 | Step | Fields |
@@ -110,6 +116,7 @@ room then lives on the device).
 | Plant | Name, species (e.g. "Dracaena trifasciata"; helps the AI and is shown as model on the device), room, picture (URL or `/local/…`) |
 | Sensors | Soil moisture, air temperature, soil temperature, air humidity, illuminance (lx or PPFD), conductivity, CO2; "Outdoors" (preselected for rooms like terrace, balcony or garden) |
 | Problems | Which readings count as a problem (default: all but VPD), wait after watering in minutes |
+| Care | Fertilize every N days, fertilizing season from/to month, repot every N years (default: March to September every 21 days, repot every 2 years; southern hemisphere September to March) |
 
 Plus only creates entities for sensors that are set. When you remove a sensor, its entities go away and its limits
 stay stored. When you rename a sensor in Home Assistant, Plus follows.
@@ -155,6 +162,8 @@ All entities appear on the plant's device. Entity IDs depend on language and roo
 | Rain expected, frost risk (outdoors, with weather) | on/off | Amount, until · lowest temperature, time, plant minimum |
 | AI suggestion (with AI) | None yet · Waiting for approval · Limits fit · Accepted · Rejected · Undone | Summary, "old → new" and reason per limit, confidence, species, asked, next check, last accepted, last error |
 | Buttons (with AI) | Accept suggestion · Reject suggestion (only while one is open) · Undo suggestion (right after accepting) · Ask AI now | – |
+| Fertilized, Repotted (buttons, every plant) | Sets today as the last fertilizing/repotting; the next date in the care calendar moves on | – |
+| Plant care (calendar, one for all plants) | Fertilizing and repotting dates as all-day events | – |
 
 Moisture-based learning needs the soil moisture sensor; without it a plant has status, readings and limits only.
 
@@ -269,6 +278,57 @@ cycles. There is no "reset learning" per plant yet.
 Every new open suggestion fires the event `pflanzenmonitor_plus_suggestion` (`entity_id` of the plant's status
 entity, `summary`, `changes`) – for example for a notification.
 
+<a id="watering-tasks"></a>
+## Watering tasks
+
+Optional, off by default: choose a to-do list under *Configure → To-do list for watering*.
+
+- As soon as "Water in" reaches today (or the plant is overdue), Plus adds a task like "Water Yucca" (German: "Yucca
+  gießen"), with the due date if the list supports due dates.
+- There is at most one open task per plant, also across restarts; an open task with the same title that is already on
+  the list is taken over instead of adding a second one.
+- When the soil moisture rises again (a watering, or rain outdoors), Plus completes the task – once the hourly
+  statistics confirm the rise (one to two hours later), so a single outlier reading does not close it.
+- Plants with the same name each get their own task.
+- If you check the task off or delete it yourself, Plus respects that: no new task for this plant until it has been
+  watered and becomes due again.
+- Plants without a soil moisture sensor get no tasks. When you switch to another list or turn the option off, tasks
+  already on the old list stay there.
+
+<a id="care-calendar"></a>
+## Care calendar
+
+The calendar **Plant care** (`calendar.plant_care`, German `calendar.pflanzenpflege`) shows for every plant:
+
+- **Fertilize:** within the fertilizing season every N days after the last fertilizing; outside the season nothing
+  (winter pause), the next date is the first day of the season. Never fertilized: today (in season).
+- **Repot:** every N years in the first month of the season (spring). Never repotted: next spring. Overdue outside
+  spring: next spring.
+
+Overdue dates stay on today. The buttons **Fertilized** and **Repotted** on the plant's device page set today as the
+last date; the action `pflanzenmonitor_plus.care_done` does the same for any date (fields `plant_entity`, `care`:
+`fertilized`/`repotted`, `date`), e.g. from a script after a fertilizing round. The plan per plant is set in the plant
+dialog (step *Care*).
+
+**AI care plan (with an AI task entity):** once per season (meteorological: winter, spring, summer, autumn) Plus asks
+the AI for each plant for a care plan (season, interval, repotting) based on name, species, indoors/outdoors, hemisphere,
+country and month (at most one plant per 10-minute run, after an error not before 6 hours). If it differs from the
+current plan, *Settings → Repairs* shows "new AI suggestion for the care plan" with the current and the suggested plan
+and the reason; **Accept** writes it into the plant (and Plus reloads), **Reject** keeps the plan until the next
+season. Values are clamped in code (interval 7–90 days, repotting every 1–10 years).
+
+```yaml
+# Reminder in the morning when something is due today
+triggers:
+  - trigger: calendar
+    event: start
+    entity_id: calendar.plant_care
+actions:
+  - action: notify.mobile_app_phone
+    data:
+      message: "{{ trigger.calendar_event.summary }}"
+```
+
 ## Known limitations
 
 - Small top-ups below 10 percentage points are not detected as watering.
@@ -279,6 +339,7 @@ entity, `summary`, `changes`) – for example for a notification.
 - Soil moisture percentages of different sensors and substrates are not comparable; learning is per plant.
 - AI suggestions cost a little at your AI provider per request (one request per plant and month). The AI can be
   wrong – hence the safety rules and the approval.
+- The care calendar only shows dates from today on; past fertilizings are not listed.
 - OpenPlantbook is not supported (yet).
 
 <a id="troubleshooting"></a>
@@ -296,7 +357,8 @@ entity, `summary`, `changes`) – for example for a notification.
 ## Removal
 
 *Settings → Devices & services → Pflanzenmonitor Plus → ⋮ → Delete.* Plants, devices, entities, repairs and stored
-data (limits, live state, AI suggestions) are removed. To remove a single plant, use *⋮ → Delete* on its entry. Then
+data (limits, live state, AI suggestions, care dates, watering tasks) are removed; tasks already on a to-do list stay
+there. To remove a single plant, use *⋮ → Delete* on its entry. Then
 delete the folder `custom_components/pflanzenmonitor_plus` and restart Home Assistant.
 
 ## Development

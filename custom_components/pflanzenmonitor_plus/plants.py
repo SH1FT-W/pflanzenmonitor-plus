@@ -10,9 +10,10 @@ from homeassistant.config_entries import ConfigEntry, ConfigSubentry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 
-from . import health
+from . import care, health
 from .const import (
     AI_KEYS,
+    CARE_KEYS,
     CONF_AREA,
     CONF_GRACE,
     CONF_IMAGE,
@@ -50,6 +51,8 @@ class Plant:
     problems: frozenset[str] = frozenset(health.DEFAULT_PROBLEMS)
     # Wartezeit nach dem Gießen in Sekunden (so lange zählt „zu nass“ nicht)
     grace: int = 0
+    # Care plan as set in the plant dialog or by an accepted AI suggestion (missing = default plan)
+    care: dict[str, Any] = field(default_factory=dict)
 
     @property
     def moisture(self) -> str | None:
@@ -75,6 +78,7 @@ def from_subentry(subentry: ConfigSubentry) -> Plant:
         sensors=sensors,
         problems=frozenset(problems) if isinstance(problems, list) else frozenset(health.DEFAULT_PROBLEMS),
         grace=int(data.get(CONF_GRACE) or 0),
+        care={name: data[name] for name in care.FIELDS if data.get(name) is not None},
     )
 
 
@@ -89,6 +93,11 @@ def status_id(key: str) -> str:
     return f"{key}-status"
 
 
+def calendar_id(entry_id: str) -> str:
+    """unique_id of the care calendar (one for all plants)."""
+    return f"{entry_id}-care"
+
+
 def unique_ids(plant: Plant, *, ai: bool, weather: bool) -> dict[str, str]:
     """Alle Entitäten, die Plus für die Pflanze anlegt: unique_id → Domain."""
     key = plant.key
@@ -99,6 +108,7 @@ def unique_ids(plant: Plant, *, ai: bool, weather: bool) -> dict[str, str]:
     if plant.has("dli"):
         ids |= dict.fromkeys((f"{key}-current-ppfd", f"{key}-ppfd-integral", f"{key}-dli", f"{key}-dli-24h"), "sensor")
     ids |= {f"{key}-{name.replace('_', '-')}": "number" for name in health.limit_fields(plant.sensors)}
+    ids |= {f"{key}_{k}": "button" for k in CARE_KEYS}
     if plant.moisture:
         ids |= {f"{key}_{k}": "sensor" for k in SENSOR_KEYS}
         if ai:

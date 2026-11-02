@@ -4,14 +4,15 @@ rules:
   # Bronze
   action-setup:
     status: done
-    comment: replace_sensor wird in async_setup angemeldet (gilt auch ohne geladenen Eintrag, meldet dann not_loaded).
+    comment: replace_sensor und care_done werden in async_setup angemeldet (gilt auch ohne geladenen Eintrag, meldet dann not_loaded).
   appropriate-polling:
     status: done
     comment: >-
       Lernen alle 10 Min.; die Langzeitstatistik wird höchstens einmal pro Stunde gelesen (sie entsteht stündlich).
       Messwerte, Zustand und Lichtsumme laufen auf Zustandsänderungen der echten Sensoren (kein Abfragen), die
       Lichtsumme wird zusätzlich alle 5 Min. und um Mitternacht fortgeschrieben. Gießen wird sofort erkannt. Die KI wird je Pflanze höchstens
-      einmal in 30 Tagen automatisch gefragt, nach einem Fehler frühestens nach 6 Std., je Durchlauf höchstens eine.
+      einmal in 30 Tagen automatisch gefragt (Pflegeplan einmal je Jahreszeit), nach einem Fehler frühestens nach 6 Std., je
+      Durchlauf höchstens eine und nie zwei Anfragen gleichzeitig. Gieß-Aufgaben: je Durchlauf höchstens ein get_items.
   brands:
     status: done
     comment: Eigenes Logo in brand/.
@@ -59,8 +60,8 @@ rules:
   action-exceptions:
     status: done
     comment: >-
-      Knöpfe und replace_sensor werfen ServiceValidationError (nichts offen, nichts zurückzunehmen, keine KI, keine
-      Daten, kein Messwert, Sensor fehlt, nicht geladen) bzw. HomeAssistantError, wenn die KI nicht antwortet.
+      Knöpfe, replace_sensor und care_done werfen ServiceValidationError (nichts offen, nichts zurückzunehmen, keine KI,
+      keine Daten, kein Messwert, Sensor fehlt, keine Pflanze, Datum in der Zukunft, nicht geladen) bzw. HomeAssistantError, wenn die KI nicht antwortet.
   config-entry-unloading: done
   docs-configuration-parameters: done
   docs-installation-parameters: done
@@ -87,7 +88,9 @@ rules:
     comment: Ein Gerät je Pflanze (Art als Modell, Raum beim Anlegen), am Unterpunkt der Pflanze.
   diagnostics:
     status: done
-    comment: Je Pflanze Einstellungen, Grenzwerte, Live-Stand, Gelerntes (Anstiege, Schwelle, Tempo), Quelle des Verlaufs, Wetter.
+    comment: >-
+      Je Pflanze Einstellungen, Grenzwerte, Live-Stand, Gelerntes (Anstiege, Schwelle, Tempo), Quelle des Verlaufs, Wetter,
+      Pflegeplan und -daten, Gieß-Aufgabe.
   discovery-update-info:
     status: exempt
     comment: Nichts zu entdecken; rechnet auf vorhandenen Entitäten.
@@ -130,7 +133,8 @@ rules:
     status: done
     comment: >-
       Umzug aus dem Plant Monitor als behebbarer Hinweis mit Dialog; Automationen/Skripte, die danach noch alte
-      plant.*-IDs nutzen; offener KI-Vorschlag mit Dialog (Übernehmen/Ablehnen). Alle verschwinden von selbst.
+      plant.*-IDs nutzen; offener KI-Vorschlag für Grenzwerte bzw. Pflegeplan mit Dialog (Übernehmen/Ablehnen). Alle
+      verschwinden von selbst.
   stale-devices:
     status: done
     comment: >-

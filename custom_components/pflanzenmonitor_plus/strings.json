@@ -10,12 +10,14 @@
         "data": {
           "ai_task": "AI for limit suggestions",
           "weather": "Weather",
-          "rain_sensor": "Rain sensor"
+          "rain_sensor": "Rain sensor",
+          "todo_list": "To-do list for watering"
         },
         "data_description": {
-          "ai_task": "AI task entity (e.g. Claude). Once a plant is learned, it suggests suitable limits for the species at most once a month (soil moisture, temperature, soil temperature, humidity, illuminance, daily light; only values with a sensor). Nothing changes until you accept. Leave empty to turn suggestions off.",
+          "ai_task": "AI task entity (e.g. Claude). Once a plant is learned, it suggests suitable limits for the species at most once a month (soil moisture, temperature, soil temperature, humidity, illuminance, daily light; only values with a sensor). Nothing changes until you accept. Leave empty to turn suggestions off. It also suggests a care plan (fertilizing, repotting) once per season.",
           "weather": "Hourly forecast for rain and frost warnings of plants outdoors.",
-          "rain_sensor": "Measured rain intensity (mm/h). Lets Plus tell rain from watering for plants outdoors; without it (or before it has history), rises outdoors count as unknown and \"Last watered\" stays empty there."
+          "rain_sensor": "Measured rain intensity (mm/h). Lets Plus tell rain from watering for plants outdoors; without it (or before it has history), rises outdoors count as unknown and \"Last watered\" stays empty there.",
+          "todo_list": "When a plant is due for watering, Plus adds a task \"Water Yucca\" (for a plant called Yucca) here (with the due date if the list supports it), at most one open task per plant. It is completed by itself once the soil moisture rises again; if you check it off, Plus waits for the next watering. Leave empty to turn tasks off."
         }
       }
     }
@@ -87,6 +89,20 @@
           "data_description": {
             "moisture_grace": "After a watering (soil moisture jumps by 10 points or more), \"soil moisture too high\" is not reported for this long. 0 = off."
           }
+        },
+        "care": {
+          "title": "Care",
+          "description": "When the plant is fertilized and repotted. The dates appear in the calendar \"Plant care\"; the buttons \"Fertilized\" and \"Repotted\" move them on. Outside the season there is no fertilizing (winter pause), repotting is due in the first month of the season.",
+          "data": {
+            "fertilize_interval": "Fertilize every",
+            "fertilize_from": "Season from",
+            "fertilize_to": "Season to",
+            "repot_years": "Repot every"
+          },
+          "data_description": {
+            "fertilize_interval": "Days between two fertilizings within the season.",
+            "repot_years": "Years between two repottings."
+          }
         }
       }
     }
@@ -99,12 +115,14 @@
         "data": {
           "ai_task": "AI for limit suggestions",
           "weather": "Weather",
-          "rain_sensor": "Rain sensor"
+          "rain_sensor": "Rain sensor",
+          "todo_list": "To-do list for watering"
         },
         "data_description": {
-          "ai_task": "AI task entity (e.g. Claude). Once a plant is learned, it suggests suitable limits for the species at most once a month (soil moisture, temperature, soil temperature, humidity, illuminance, daily light; only values with a sensor). Nothing changes until you accept. Leave empty to turn suggestions off.",
+          "ai_task": "AI task entity (e.g. Claude). Once a plant is learned, it suggests suitable limits for the species at most once a month (soil moisture, temperature, soil temperature, humidity, illuminance, daily light; only values with a sensor). Nothing changes until you accept. Leave empty to turn suggestions off. It also suggests a care plan (fertilizing, repotting) once per season.",
           "weather": "Hourly forecast for rain and frost warnings of plants outdoors.",
-          "rain_sensor": "Measured rain intensity (mm/h). Lets Plus tell rain from watering for plants outdoors; without it (or before it has history), rises outdoors count as unknown and \"Last watered\" stays empty there."
+          "rain_sensor": "Measured rain intensity (mm/h). Lets Plus tell rain from watering for plants outdoors; without it (or before it has history), rises outdoors count as unknown and \"Last watered\" stays empty there.",
+          "todo_list": "When a plant is due for watering, Plus adds a task \"Water Yucca\" (for a plant called Yucca) here (with the due date if the list supports it), at most one open task per plant. It is completed by itself once the soil moisture rises again; if you check it off, Plus waits for the next watering. Leave empty to turn tasks off."
         }
       }
     }
@@ -451,6 +469,12 @@
       },
       "ask": {
         "name": "Ask AI now"
+      },
+      "fertilized": {
+        "name": "Fertilized"
+      },
+      "repotted": {
+        "name": "Repotted"
       }
     },
     "number": {
@@ -511,6 +535,11 @@
       "lux_to_ppfd": {
         "name": "Lux to PPFD factor"
       }
+    },
+    "calendar": {
+      "care": {
+        "name": "Plant care"
+      }
     }
   },
   "selector": {
@@ -525,6 +554,28 @@
         "illuminance": "Illuminance",
         "dli": "Daily light integral (DLI)",
         "vpd": "Vapour pressure deficit (VPD)"
+      }
+    },
+    "month": {
+      "options": {
+        "1": "January",
+        "2": "February",
+        "3": "March",
+        "4": "April",
+        "5": "May",
+        "6": "June",
+        "7": "July",
+        "8": "August",
+        "9": "September",
+        "10": "October",
+        "11": "November",
+        "12": "December"
+      }
+    },
+    "care": {
+      "options": {
+        "fertilized": "Fertilized",
+        "repotted": "Repotted"
       }
     }
   },
@@ -568,6 +619,25 @@
     "references": {
       "title": "Automations still use the old plant entities",
       "description": "These automations or scripts still use the entities of Plant Monitor, which no longer exist. Replace them with the new ones:\n\n{references}\n\nThis notice disappears once nothing uses them anymore (checked when Pflanzenmonitor Plus is loaded)."
+    },
+    "care": {
+      "title": "{plant}: new AI suggestion for the care plan",
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "{plant}: care plan",
+            "description": "Current: {current}\n\nSuggested: {proposed}\n\n{reason}\n\n**Accept** writes the plan into the plant (you can change it any time with \"Edit plant\"). **Reject** keeps the current plan; the AI is asked again next season.",
+            "menu_options": {
+              "accept": "Accept",
+              "reject": "Reject"
+            }
+          }
+        },
+        "abort": {
+          "no_suggestion": "There is no open suggestion for this plant (anymore).",
+          "suggestion_outdated": "A newer suggestion replaced this one. Open the repair again."
+        }
+      }
     }
   },
   "exceptions": {
@@ -609,6 +679,15 @@
     },
     "legacy_unload_failed": {
       "message": "Plant Monitor could not be stopped. Restart Home Assistant and try again. Nothing was removed."
+    },
+    "not_a_plant": {
+      "message": "{entity} does not belong to a plant of Pflanzenmonitor Plus."
+    },
+    "plant_removed": {
+      "message": "This plant no longer exists."
+    },
+    "date_in_future": {
+      "message": "The date lies in the future."
     }
   },
   "services": {
@@ -623,6 +702,24 @@
         "new_sensor": {
           "name": "New sensor",
           "description": "The real sensor to use from now on. Leave empty to remove the sensor."
+        }
+      }
+    },
+    "care_done": {
+      "name": "Care done",
+      "description": "Marks a plant as fertilized or repotted; the next date in the care calendar moves on.",
+      "fields": {
+        "plant_entity": {
+          "name": "Plant",
+          "description": "The plant (its status or any other entity of the plant)."
+        },
+        "care": {
+          "name": "Care",
+          "description": "What was done."
+        },
+        "date": {
+          "name": "Date",
+          "description": "When it was done. Default: today."
         }
       }
     }

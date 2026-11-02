@@ -97,6 +97,12 @@
       },
       "ask": {
         "default": "mdi:creation"
+      },
+      "fertilized": {
+        "default": "mdi:bottle-tonic-plus-outline"
+      },
+      "repotted": {
+        "default": "mdi:pot-mix-outline"
       }
     },
     "number": {
@@ -157,11 +163,19 @@
       "lux_to_ppfd": {
         "default": "mdi:white-balance-sunny"
       }
+    },
+    "calendar": {
+      "care": {
+        "default": "mdi:calendar-heart"
+      }
     }
   },
   "services": {
     "replace_sensor": {
       "service": "mdi:swap-horizontal"
+    },
+    "care_done": {
+      "service": "mdi:sprout"
     }
   },
   "triggers": {

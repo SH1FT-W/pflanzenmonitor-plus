@@ -56,8 +56,8 @@ class Advisor:
         entry = coordinator.config_entry
         self._store: Store[dict[str, Any]] = Store(hass, 1, f"{DOMAIN}.{entry.entry_id}.advice")
         self.records: dict[str, dict[str, Any]] = {}
-        # Nie zwei KI-Anfragen oder eine Anfrage und ein Übernehmen gleichzeitig
-        self._lock = asyncio.Lock()
+        # Nie zwei KI-Anfragen oder eine Anfrage und ein Übernehmen gleichzeitig (shared with the care plan)
+        self.lock = self._lock = asyncio.Lock()
         self._seen: object = None
         self._unloaded = False
 

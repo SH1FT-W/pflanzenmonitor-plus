@@ -14,9 +14,10 @@ Versionen = Kalender-Schema `YY.M.N` (Jahr, Monat ohne Null, N = laufendes Relea
 Platin-Qualität halten: `quality_scale.yaml` bei jeder Änderung mitpflegen.
 
 ## Prüfen
-- Tests: `~/Software/evenlight/.venv/bin/python -m pytest tests -q -p no:logging --cov=custom_components.pflanzenmonitor_plus` (≥ 95 %)
+- venv im Repo: `.venv` (gitignored; anlegen mit `uv venv --python 3.14 .venv && uv pip install --python .venv/bin/python -r requirements_test.txt pytest-cov`)
+- Tests: `LC_ALL=en_US TZ=UTC .venv/bin/python -m pytest tests -q -p no:logging --cov=custom_components.pflanzenmonitor_plus` (≥ 98 %)
 - `uvx ruff check . && uvx ruff format --check .`
-- `uvx mypy@2.3.1 --python-executable ~/Software/evenlight/.venv/bin/python`
+- `uvx mypy@2.3.1 --python-executable .venv/bin/python`
 - hassfest: `docker run --rm -v "$PWD:/github/workspace" ghcr.io/home-assistant/hassfest` (kein Docker auf dem Mac → läuft in CI; `test_descriptions_valid` prüft die YAML-Beschreibungen lokal)
 - Übersetzungen: `python3 tools/pruefe-uebersetzungen.py` (strings.json gegen translations/*.json)
 - CI: `.github/workflows/pruefung.yml` (Vorlage repo-vorlagen/vorlagen/ci-ha-integration.yml): ruff, mypy, Übersetzungen,
@@ -62,6 +63,19 @@ Platin-Qualität halten: `quality_scale.yaml` bei jeder Änderung mitpflegen.
 - 26.10.5: draußen (Kübel) Frostgrenze im Code (`OUTDOOR_FLOOR`: Luft ≥ −5 °C, Boden ≥ 0 °C) und außerhalb des Sommers
   (Mai–Aug., Südhalbkugel Nov.–Feb.) max lx/max DLI nie senken (`OUTDOOR_NO_LOWER`); Anlass Olivenbaum 17.10. (KI wollte
   −8 °C und 100000 → 20000 lx). Art = Feld `species` der Pflanze (Umzug: `display_pid`, sonst `species`).
+- 26.11.1 Gieß-Aufgaben (`tasks.py`, Option `todo_list`, Store `<entry>.tasks`): fällig = `due_date` ≤ heute; je
+  Pflanze ein Eintrag `open`/`closed`, `cycle` = jüngster Anstieg beim Anlegen; späterer Anstieg = gegossen → Plus hakt
+  ab; vom Nutzer abgehakt/gelöscht → erst nach neuem Anstieg wieder. Offene Aufgabe gleichen Titels wird übernommen.
+- 26.11.1 Pflegekalender (`care.py` rein, `careplan.py` Store `<entry>.care` mit Daten + KI-Vorschlag,
+  `calendar.py` eine Entität für alle, unique_id `<entry>-care`): Plan im Subentry (`fertilize_interval`,
+  `fertilize_from`, `fertilize_to`, `repot_years`; fehlend = Standard 3–9/21 Tage/2 Jahre, Süd 9–3), Umtopfen im
+  ersten Saisonmonat. Knöpfe `<key>_fertilized`/`<key>_repotted`, Aktion `care_done`. KI einmal je Jahreszeit
+  (`season_key`), Reparatur `care_<key>`, Übernehmen schreibt ins Subentry (lädt neu). Advisor und Pflegeplan teilen
+  EINE Sperre (`advisor.lock`, auch für „KI jetzt fragen“): nie zwei KI-Anfragen. Aufgaben laufen getrennt davon
+  (eigene Hintergrundaufgabe, 30 s Timeout je To-do-Aufruf, Fehler je Pflanze abgefangen). Abhaken nach dem Gießen
+  erst, wenn die Stundenstatistik eine Stunde NACH dem Anstieg hat UND deren Mittel ≥ before + JUMP/2 liegt
+  (`tasks.latest_rise`; HA-Mittel ist zeitgewichtet, ein stehender Ausreißer hebt sonst die eigene Stunde) → 1–2 Std.
+  Verzug. Gegossen = Anstieg > `cycle` + MERGE (Gruppenstart kann am 120-Tage-Rand/bei Quellenwechsel wandern).
 
 ## Plan
 1.0 Lernen + KI-Vorschläge · 26.10.1 (erstes öffentliches Release) eigenständig (alles vom Plant Monitor, Umzug) · danach Casora-Kachel +

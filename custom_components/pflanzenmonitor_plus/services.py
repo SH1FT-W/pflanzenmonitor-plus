@@ -1,4 +1,4 @@
-"""Aktion „Sensor tauschen“: einem Messwert einer Pflanze einen anderen echten Sensor geben (oder ihn entfernen)."""
+"""Actions: replace a sensor of a reading (or remove it), mark fertilized/repotted (moves the care calendar on)."""
 
 from __future__ import annotations
 
@@ -7,10 +7,10 @@ from typing import Final
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant, ServiceCall, callback
 from homeassistant.exceptions import ServiceValidationError
-from homeassistant.helpers import config_validation as cv, entity_registry as er
+from homeassistant.helpers import config_validation as cv, device_registry as dr, entity_registry as er
 import voluptuous as vol
 
-from . import health
+from . import care, health
 from .const import DOMAIN
 from .plants import sensor_key
 
@@ -20,11 +20,42 @@ ATTR_NEW: Final = "new_sensor"
 SCHEMA: Final = vol.Schema(
     {vol.Required(ATTR_METER): cv.entity_id, vol.Optional(ATTR_NEW): vol.Any(None, "", cv.entity_id)}
 )
+SERVICE_CARE_DONE: Final = "care_done"
+ATTR_PLANT: Final = "plant_entity"
+ATTR_CARE: Final = "care"
+ATTR_DATE: Final = "date"
+CARE_SCHEMA: Final = vol.Schema(
+    {
+        vol.Required(ATTR_PLANT): cv.entity_id,
+        vol.Required(ATTR_CARE): vol.In(care.KINDS),
+        vol.Optional(ATTR_DATE): cv.date,
+    }
+)
 
 
 @callback
 def async_setup(hass: HomeAssistant) -> None:
     hass.services.async_register(DOMAIN, SERVICE_REPLACE_SENSOR, _replace, schema=SCHEMA)
+    hass.services.async_register(DOMAIN, SERVICE_CARE_DONE, _care_done, schema=CARE_SCHEMA)
+
+
+async def _care_done(call: ServiceCall) -> None:
+    """Fertilized or repotted: any entity of the plant's device names the plant."""
+    hass = call.hass
+    entries = hass.config_entries.async_loaded_entries(DOMAIN)
+    if not entries:
+        raise ServiceValidationError(translation_domain=DOMAIN, translation_key="not_loaded")
+    coordinator = entries[0].runtime_data
+    target = call.data[ATTR_PLANT]
+    item = er.async_get(hass).async_get(target)
+    device = dr.async_get(hass).async_get(item.device_id) if item and item.device_id else None
+    keys = {key for domain, key in device.identifiers if domain == DOMAIN} if device else set()
+    key = next((k for k in keys if k in coordinator.plants), None)
+    if key is None:
+        raise ServiceValidationError(
+            translation_domain=DOMAIN, translation_key="not_a_plant", translation_placeholders={"entity": target}
+        )
+    await coordinator.care.async_done(key, call.data[ATTR_CARE], call.data.get(ATTR_DATE))
 
 
 async def _replace(call: ServiceCall) -> None:

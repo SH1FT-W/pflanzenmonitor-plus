@@ -2,6 +2,20 @@
 
 ## 26.11.1 – unreleased
 
+- **Watering tasks (optional, off by default):** choose a to-do list in the options. When a plant is due ("Water in"
+  reaches today), Plus adds a task like "Water Yucca" (with the due date if the list supports it),
+  at most one open task per plant, also across restarts. Plus completes it once the soil moisture rises again
+  (confirmed by the hourly statistics, so one outlier reading does not count); if you
+  check it off or delete it, no new task comes until the plant has been watered and is due again. Stored in a new
+  store `<entry>.tasks`.
+- **Care calendar "Plant care":** fertilizing (every N days within the season, winter pause) and repotting (every N
+  years in the first month of the season) for every plant, as all-day events. New buttons "Fertilized" and "Repotted"
+  per plant and the action `pflanzenmonitor_plus.care_done` (with an optional date) move the dates on. The plan is set
+  in a new step "Care" of the plant dialog (default March to September every 21 days, repot every 2 years; southern
+  hemisphere September to March). Dates are kept in a new store `<entry>.care`; existing data is unchanged.
+- **AI care plan:** with an AI task entity, Plus asks once per season and plant for a care plan for the species; a
+  differing plan shows up under Repairs with Accept / Reject. Values are clamped in code.
+
 - **Open AI suggestions no longer block a plant forever.** A suggestion nobody accepts or rejects now expires after
   30 days (the same cadence as the regular check, and the suggestion's data is fully outdated by then); the plant is
   then assessed again. The replaced suggestion is kept in the stored record, the AI suggestion entity shows when it was

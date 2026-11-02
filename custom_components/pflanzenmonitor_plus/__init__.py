@@ -18,12 +18,20 @@ from homeassistant.helpers.typing import ConfigType
 
 from . import health, services
 from .advisor import SUGGESTION_ISSUE, Advisor
-from .const import CONF_AI_TASK, CONF_OUTDOOR, CONF_RAIN_SENSOR, CONF_WEATHER, DOMAIN
+from .careplan import CARE_ISSUE, CarePlans
+from .const import CONF_AI_TASK, CONF_OUTDOOR, CONF_RAIN_SENSOR, CONF_TODO, CONF_WEATHER, DOMAIN
 from .coordinator import PlusConfigEntry, PlusCoordinator
 from .migrate import legacy_entries, sync_issues
-from .plants import sensor_key, unique_ids
+from .plants import calendar_id, sensor_key, unique_ids
+from .tasks import WateringTasks
 
-PLATFORMS: list[Platform] = [Platform.BINARY_SENSOR, Platform.BUTTON, Platform.NUMBER, Platform.SENSOR]
+PLATFORMS: list[Platform] = [
+    Platform.BINARY_SENSOR,
+    Platform.BUTTON,
+    Platform.CALENDAR,
+    Platform.NUMBER,
+    Platform.SENSOR,
+]
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
 
@@ -43,18 +51,37 @@ async def async_setup_entry(hass: HomeAssistant, entry: PlusConfigEntry) -> bool
     if not legacy_entries(hass):
         _remove_stale(hass, entry, coordinator)
     sync_issues(hass, entry)
-    if ai := entry.options.get(CONF_AI_TASK):
+    ai = entry.options.get(CONF_AI_TASK)
+    if ai:
         advisor = coordinator.advisor = Advisor(hass, coordinator, ai)
         await advisor.async_load(set(coordinator.plants))
         advisor.sync_issues()
-
-        @callback
-        def updated() -> None:
-            """Nach neuen Daten fällige KI-Vorschläge im Hintergrund holen."""
-            entry.async_create_background_task(hass, advisor.async_run_due(), f"{DOMAIN} KI-Vorschläge")
-
-        entry.async_on_unload(coordinator.async_add_listener(updated))
         entry.async_on_unload(advisor.shutdown)
+    plans = coordinator.care = CarePlans(
+        hass, coordinator, ai, coordinator.advisor.lock if coordinator.advisor else None
+    )
+    await plans.async_load(set(coordinator.plants))
+    plans.sync_issues()
+    entry.async_on_unload(plans.shutdown)
+    if todo := entry.options.get(CONF_TODO):
+        coordinator.tasks = WateringTasks(hass, coordinator, todo)
+        await coordinator.tasks.async_load(set(coordinator.plants))
+
+    async def suggestions() -> None:
+        """Limits first, then the care plan; both share one lock, so the AI never gets two requests at once."""
+        if coordinator.advisor:
+            await coordinator.advisor.async_run_due()
+        await plans.async_run_due()
+
+    @callback
+    def updated() -> None:
+        """After new data: due AI suggestions and (independently, a slow list must not wait for the AI) watering
+        tasks in the background."""
+        entry.async_create_background_task(hass, suggestions(), f"{DOMAIN} suggestions")
+        if coordinator.tasks:
+            entry.async_create_background_task(hass, coordinator.tasks.async_run(), f"{DOMAIN} watering tasks")
+
+    entry.async_on_unload(coordinator.async_add_listener(updated))
 
     coordinator.async_track_moisture()
     for unsub in coordinator.live.async_start():
@@ -89,7 +116,7 @@ async def _changed(hass: HomeAssistant, entry: PlusConfigEntry) -> None:
 def _remove_stale(hass: HomeAssistant, entry: PlusConfigEntry, coordinator: PlusCoordinator) -> None:
     """Entitäten und Geräte entfernen, die es nicht mehr geben soll (Sensor abgewählt, KI/Wetter aus, nach drinnen)."""
     ai, weather = bool(entry.options.get(CONF_AI_TASK)), bool(entry.options.get(CONF_WEATHER))
-    expected: set[str] = set()
+    expected: set[str] = {calendar_id(entry.entry_id)}
     for plant in coordinator.plants.values():
         expected |= set(unique_ids(plant, ai=ai, weather=weather))
     registry = er.async_get(hass)
@@ -104,9 +131,9 @@ def _remove_stale(hass: HomeAssistant, entry: PlusConfigEntry, coordinator: Plus
         if domain != DOMAIN:
             continue
         # Bis 26.10: Hinweis „keine Untergrenze“ (Plus hat jetzt immer eine)
-        if issue_id.startswith("no_minimum_") or (
-            issue_id.startswith(SUGGESTION_ISSUE)
-            and (not ai or issue_id.removeprefix(SUGGESTION_ISSUE) not in coordinator.plants)
+        if issue_id.startswith("no_minimum_") or any(
+            issue_id.startswith(prefix) and (not ai or issue_id.removeprefix(prefix) not in coordinator.plants)
+            for prefix in (SUGGESTION_ISSUE, CARE_ISSUE)
         ):
             ir.async_delete_issue(hass, DOMAIN, issue_id)
 
@@ -115,7 +142,7 @@ def _remove_stale(hass: HomeAssistant, entry: PlusConfigEntry, coordinator: Plus
 def _rename(hass: HomeAssistant, entry: PlusConfigEntry, old: str, new: str) -> None:
     """Umbenannte Entität in den Optionen (Wetter, Regensensor, KI) und den Sensoren der Pflanzen nachziehen."""
     options: dict[str, Any] = dict(entry.options)
-    for key in (CONF_AI_TASK, CONF_WEATHER, CONF_RAIN_SENSOR):
+    for key in (CONF_AI_TASK, CONF_WEATHER, CONF_RAIN_SENSOR, CONF_TODO):
         if options.get(key) == old:
             options[key] = new
     # Bis zum Umzug: Pflanzen draußen als plant.*-Liste
@@ -137,8 +164,9 @@ async def async_unload_entry(hass: HomeAssistant, entry: PlusConfigEntry) -> boo
 
 
 async def async_remove_entry(hass: HomeAssistant, entry: PlusConfigEntry) -> None:
-    """Hinweise unter Reparaturen und gespeicherte Daten (KI-Vorschläge, Grenzwerte, Live-Stand) mit entfernen."""
-    for name in ("advice", "limits", "live"):
+    """Hinweise unter Reparaturen und gespeicherte Daten (KI-Vorschläge, Grenzwerte, Live-Stand, Pflege, Aufgaben)
+    mit entfernen."""
+    for name in ("advice", "limits", "live", "care", "tasks"):
         await Store[dict[str, object]](hass, 1, f"{DOMAIN}.{entry.entry_id}.{name}").async_remove()
     for domain, issue_id in list(ir.async_get(hass).issues):
         if domain == DOMAIN:

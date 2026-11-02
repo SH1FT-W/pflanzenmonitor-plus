@@ -209,10 +209,21 @@ def forecast(hass: HomeAssistant) -> list[dict[str, Any]]:
 
 
 class FakeAI:
-    """Fake-KI für ai_task.generate_data: Antwort im Test änderbar, Aufrufe werden mitgeschrieben."""
+    """Fake-KI für ai_task.generate_data: Antwort im Test änderbar, Aufrufe werden mitgeschrieben.
+
+    Requests for the care plan are answered and recorded separately (`care_calls`, `care_answer`).
+    """
 
     def __init__(self) -> None:
         self.calls: list[dict[str, Any]] = []
+        self.care_calls: list[dict[str, Any]] = []
+        self.care_answer: Any = {
+            "fertilize_interval": 14,
+            "fertilize_from": 4,
+            "fertilize_to": 8,
+            "repot_years": 3,
+            "reason": "Wächst langsam.",
+        }
         self.answer: Any = {
             "min_moisture": 15,
             "max_moisture": 40,
@@ -228,6 +239,9 @@ class FakeAI:
         self.hang = False  # antwortet nie (Anbieter hängt)
 
     async def handler(self, call: ServiceCall) -> ServiceResponse:
+        if "care:" in call.data["task_name"]:
+            self.care_calls.append(dict(call.data))
+            return {"conversation_id": "x", "data": self.care_answer}
         self.calls.append(dict(call.data))
         if self.hang:
             await asyncio.Event().wait()

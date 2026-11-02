@@ -30,7 +30,7 @@ from homeassistant.helpers.selector import (
 )
 import voluptuous as vol
 
-from . import health
+from . import care, health
 from .const import (
     CONF_AI_TASK,
     CONF_AREA,
@@ -41,6 +41,7 @@ from .const import (
     CONF_PROBLEMS,
     CONF_RAIN_SENSOR,
     CONF_SPECIES,
+    CONF_TODO,
     CONF_WEATHER,
     DOMAIN,
     OUTDOOR_WORDS,
@@ -74,6 +75,9 @@ def _schema(current: dict[str, Any]) -> vol.Schema:
                     # Nur Regenintensität (mm/h): Mengen-Sensoren zählen hoch bzw. bleiben bis Mitternacht > 0
                     EntitySelectorConfig(domain="sensor", device_class=SensorDeviceClass.PRECIPITATION_INTENSITY)
                 )
+            ),
+            vol.Optional(CONF_TODO, description={"suggested_value": current.get(CONF_TODO)}): EntitySelector(
+                EntitySelectorConfig(domain="todo")
             ),
         }
     )
@@ -169,7 +173,7 @@ class PlantFlow(ConfigSubentryFlow):
         if user_input is not None:
             self.data[CONF_PROBLEMS] = list(user_input.get(CONF_PROBLEMS) or [])
             self.data[CONF_GRACE] = int(float(user_input.get(CONF_GRACE) or 0) * 60)
-            return self._finish()
+            return await self.async_step_care()
         problems = self.data.get(CONF_PROBLEMS, list(health.DEFAULT_PROBLEMS))
         schema = vol.Schema(
             {
@@ -186,6 +190,32 @@ class PlantFlow(ConfigSubentryFlow):
             }
         )
         return self.async_show_form(step_id="problems", data_schema=schema)
+
+    async def async_step_care(self, user_input: dict[str, Any] | None = None) -> SubentryFlowResult:
+        """Care plan: fertilizing season and interval, repotting (prefilled with the current or default plan)."""
+        if user_input is not None:
+            self.data |= care.plan(user_input, south=False).as_data()
+            return self._finish()
+        current = care.plan(self.data, south=self.hass.config.latitude < 0).as_data()
+        months = SelectSelector(SelectSelectorConfig(options=[str(m) for m in range(1, 13)], translation_key="month"))
+
+        def number(name: str, unit: str) -> NumberSelector:
+            low, high = care.RANGE[name]
+            return NumberSelector(
+                NumberSelectorConfig(min=low, max=high, step=1, mode=NumberSelectorMode.BOX, unit_of_measurement=unit)
+            )
+
+        schema = vol.Schema(
+            {
+                vol.Required("fertilize_interval", default=current["fertilize_interval"]): number(
+                    "fertilize_interval", "d"
+                ),
+                vol.Required("fertilize_from", default=str(current["fertilize_from"])): months,
+                vol.Required("fertilize_to", default=str(current["fertilize_to"])): months,
+                vol.Required("repot_years", default=current["repot_years"]): number("repot_years", "a"),
+            }
+        )
+        return self.async_show_form(step_id="care", data_schema=schema)
 
     def _finish(self) -> SubentryFlowResult:
         name = self.data[CONF_NAME]

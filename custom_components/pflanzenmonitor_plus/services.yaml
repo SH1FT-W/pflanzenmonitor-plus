@@ -11,3 +11,23 @@ replace_sensor:
       selector:
         entity:
           domain: sensor
+care_done:
+  fields:
+    plant_entity:
+      required: true
+      selector:
+        entity:
+          integration: pflanzenmonitor_plus
+          domain: sensor
+    care:
+      required: true
+      selector:
+        select:
+          translation_key: care
+          options:
+            - fertilized
+            - repotted
+    date:
+      required: false
+      selector:
+        date:

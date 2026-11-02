@@ -28,6 +28,11 @@ kann, und übernimmt dessen Pflanzen auf Knopfdruck – danach braucht es ihn ni
   bis du übernimmst; jede Übernahme lässt sich zurücknehmen.
 - **Pflanzen draußen**: Regen zählt nicht als Gießen; dazu die Sensoren „Regen erwartet“ (≥ 1 mm in 12 Std.) und
   „Frostgefahr“ (Vorhersage der nächsten 48 Std. unter der Mindesttemperatur der Pflanze)
+- **Gieß-Aufgaben** (optional): Ist eine Pflanze fällig, landet eine Aufgabe wie „Yucca gießen“ auf einer
+  To-do-Liste deiner Wahl und wird nach dem Gießen von selbst abgehakt
+- **Pflegekalender**: Kalender „Pflanzenpflege“ mit Dünge- (Saison und Abstand je Pflanze, Winterpause) und
+  Umtopf-Terminen; die Knöpfe „Gedüngt“ und „Umgetopft“ schieben sie weiter. Mit KI einmal je Jahreszeit ein
+  Pflegeplan je Art als Vorschlag
 - **Hinweise unter Reparaturen**: Umzug aus dem Plant Monitor, neuer KI-Vorschlag (mit Übernehmen/Ablehnen direkt im
   Dialog), Automationen, die nach dem Umzug noch alte `plant.*`-Entitäten nutzen
 
@@ -66,11 +71,12 @@ Eintrag; die Pflanzen hängen als Unterpunkte darunter.
 |---|---|
 | KI für Grenzwert-Vorschläge | KI-Aufgaben-Entität. Vorgeschlagen wird die erste vorhandene. Leer = keine KI-Vorschläge (und keine Knöpfe). |
 | Wetter | Wetter-Entität mit stündlicher Vorhersage. Vorgeschlagen wird die erste vorhandene. Nur für Pflanzen draußen. |
+| To-do-Liste fürs Gießen | To-do-Entität (z. B. die Einkaufsliste oder eine lokale To-do-Liste). Leer = keine Gieß-Aufgaben (Standard). Siehe [Gieß-Aufgaben](#giess-aufgaben). |
 | Regensensor | Gemessene Regenintensität in mm/h (Geräteklasse Niederschlagsintensität). Damit unterscheidet Plus bei Pflanzen draußen Regen vom Gießen. Ohne Regensensor – oder bevor er Verlauf hat – gelten Anstiege draußen als „unbekannt“. Mengen-Sensoren („Regen heute“) eignen sich nicht: sie bleiben nach einem Schauer bis Mitternacht über 0. |
 
 ### Pflanze anlegen und ändern
 
-*Pflanze hinzufügen* fragt in drei Schritten; *⋮ → Neu konfigurieren* an der Pflanze ändert dieselben Angaben (der
+*Pflanze hinzufügen* fragt in vier Schritten; *⋮ → Neu konfigurieren* an der Pflanze ändert dieselben Angaben (der
 Raum gilt dann über das Gerät).
 
 | Schritt | Felder |
@@ -78,6 +84,7 @@ Raum gilt dann über das Gerät).
 | Pflanze | Name, Art (z. B. „Dracaena trifasciata“; hilft der KI, steht als Modell am Gerät), Raum, Bild (URL oder `/local/…`) |
 | Sensoren | Bodenfeuchte, Lufttemperatur, Bodentemperatur, Luftfeuchte, Helligkeit (lx oder PPFD), Leitfähigkeit, CO2; „Draußen“ (bei Räumen wie Terrasse, Balkon, Garten vorgewählt) |
 | Probleme | Welche Messwerte als Problem zählen (Standard: alle außer VPD), Wartezeit nach dem Gießen in Minuten |
+| Pflege | Düngen alle N Tage, Düngesaison von/bis Monat, Umtopfen alle N Jahre (Standard: März bis September alle 21 Tage, Umtopfen alle 2 Jahre; Südhalbkugel September bis März) |
 
 Plus legt nur Entitäten zu vorhandenen Sensoren an. Wird ein Sensor abgewählt, verschwinden seine Entitäten; seine
 Grenzwerte bleiben gespeichert. Wird ein Sensor in HA umbenannt, zieht Plus das nach.
@@ -119,6 +126,8 @@ Alle Entitäten erscheinen auf dem Gerät der Pflanze. Die Entitäts-IDs hängen
 | Regen erwartet, Frostgefahr (nur draußen, mit Wetter) | an/aus | Menge, bis · Tiefstwert, Zeitpunkt, Mindesttemperatur der Pflanze |
 | KI-Vorschlag (nur mit KI) | Noch keiner · Wartet auf Freigabe · Grenzwerte passen · Übernommen · Abgelehnt · Zurückgenommen | Zusammenfassung, je Grenzwert „alt → neu“ (ggf. „Ziel …, schrittweise“) und Grund, Sicherheit, Pflanzenart, gefragt, nächste Prüfung, zuletzt übernommen, letzter Fehler |
 | Knöpfe (nur mit KI) | Vorschlag übernehmen · Vorschlag ablehnen (nur bei offenem Vorschlag) · Vorschlag zurücknehmen (nur direkt nach dem Übernehmen) · KI jetzt fragen | – |
+| Gedüngt, Umgetopft (Knöpfe, jede Pflanze) | Setzt heute als letztes Düngen/Umtopfen; der nächste Termin im Pflegekalender rückt weiter | – |
+| Pflanzenpflege (Kalender, einer für alle Pflanzen) | Dünge- und Umtopf-Termine als Ganztagstermine | – |
 
 Feuchte und Lernen brauchen den Bodenfeuchtesensor; ohne ihn gibt es nur Zustand, Messwerte und Grenzwerte.
 
@@ -260,6 +269,58 @@ actions:
       message: "{{ trigger.event.data.summary }}"
 ```
 
+<a id="giess-aufgaben"></a>
+## Gieß-Aufgaben
+
+Optional, standardmäßig aus: unter *Konfigurieren → To-do-Liste fürs Gießen* eine Liste wählen.
+
+- Sobald „Gießen in“ heute erreicht (oder die Pflanze überfällig ist), legt Plus eine Aufgabe wie „Yucca gießen“ an,
+  mit Fälligkeitsdatum, wenn die Liste das kann.
+- Je Pflanze gibt es höchstens eine offene Aufgabe, auch über Neustarts; steht eine offene Aufgabe mit demselben Titel
+  schon auf der Liste, übernimmt Plus sie statt eine zweite anzulegen.
+- Steigt die Bodenfeuchte wieder (Gießen, draußen auch Regen), hakt Plus die Aufgabe selbst ab – sobald die
+  Stundenstatistik den Anstieg bestätigt (ein bis zwei Stunden später), damit ein einzelner Ausreißer sie nicht schließt.
+- Gleichnamige Pflanzen bekommen je eine eigene Aufgabe.
+- Hakst du sie selbst ab oder löschst sie, respektiert Plus das: keine neue Aufgabe für diese Pflanze, bis sie
+  gegossen wurde und wieder fällig ist.
+- Pflanzen ohne Bodenfeuchtesensor bekommen keine Aufgaben. Wechselst du die Liste oder schaltest die Option ab,
+  bleiben Aufgaben auf der alten Liste stehen.
+
+<a id="pflegekalender"></a>
+## Pflegekalender
+
+Der Kalender **Pflanzenpflege** (`calendar.pflanzenpflege`) zeigt je Pflanze:
+
+- **Düngen:** in der Düngesaison alle N Tage nach dem letzten Düngen; außerhalb der Saison nichts (Winterpause), der
+  nächste Termin ist dann der erste Tag der Saison. Noch nie gedüngt: heute (in der Saison).
+- **Umtopfen:** alle N Jahre im ersten Monat der Saison (Frühjahr). Noch nie umgetopft: nächstes Frühjahr. Überfällig
+  außerhalb des Frühjahrs: nächstes Frühjahr.
+
+Überfällige Termine bleiben auf heute stehen. Die Knöpfe **Gedüngt** und **Umgetopft** auf der Geräteseite setzen
+heute als letztes Datum; die Aktion `pflanzenmonitor_plus.care_done` macht dasselbe für ein beliebiges Datum (Felder
+`plant_entity`, `care`: `fertilized`/`repotted`, `date`), z. B. aus einem Skript nach einer Düngerunde. Den Plan je
+Pflanze stellst du im Pflanzen-Dialog ein (Schritt *Pflege*).
+
+**KI-Pflegeplan (mit KI-Aufgaben-Entität):** einmal je Jahreszeit (meteorologisch: Winter, Frühling, Sommer, Herbst)
+fragt Plus die KI je Pflanze nach einem Pflegeplan (Saison, Abstand, Umtopfen) – anhand von Name, Art,
+drinnen/draußen, Halbkugel, Land und Monat (je 10-Minuten-Durchlauf höchstens eine Pflanze, nach einem Fehler
+frühestens nach 6 Std.). Weicht er vom bisherigen Plan ab, erscheint unter *Einstellungen → Reparaturen* „neuer
+KI-Vorschlag für den Pflegeplan“ mit bisherigem und vorgeschlagenem Plan und Begründung; **Übernehmen** schreibt ihn in
+die Pflanze (Plus lädt neu), **Ablehnen** behält den Plan bis zur nächsten Jahreszeit. Die Werte begrenzt der Code
+(Abstand 7–90 Tage, Umtopfen alle 1–10 Jahre).
+
+```yaml
+# Erinnerung am Morgen, wenn heute etwas fällig ist
+triggers:
+  - trigger: calendar
+    event: start
+    entity_id: calendar.pflanzenpflege
+actions:
+  - action: notify.mobile_app_iphone
+    data:
+      message: "{{ trigger.calendar_event.summary }}"
+```
+
 ## Bekannte Grenzen
 
 - Kleine Nachgüsse unter 10 Prozentpunkten werden nicht als Gießen erkannt.
@@ -270,6 +331,7 @@ actions:
 - Bodenfeuchte-Prozente verschiedener Sensoren und Substrate sind nicht vergleichbar; gelernt wird je Pflanze.
 - KI-Vorschläge kosten je Anfrage etwas bei deinem KI-Anbieter (eine Anfrage je Pflanze und Monat). Die KI kann sich
   irren – deshalb die Schutzregeln und die Freigabe.
+- Der Pflegekalender zeigt Termine erst ab heute; vergangenes Düngen steht nicht darin.
 
 ## Fehlersuche
 
@@ -285,5 +347,6 @@ actions:
 ## Entfernen
 
 *Einstellungen → Geräte & Dienste → Pflanzenmonitor Plus → ⋮ → Löschen*. Pflanzen, Geräte, Entitäten, Hinweise und
-gespeicherte Daten (Grenzwerte, Live-Stand, KI-Vorschläge) werden entfernt. Eine einzelne Pflanze entfernt
+gespeicherte Daten (Grenzwerte, Live-Stand, KI-Vorschläge, Pflege-Termine, Gieß-Aufgaben) werden entfernt; Aufgaben,
+die schon auf einer To-do-Liste stehen, bleiben dort. Eine einzelne Pflanze entfernt
 *⋮ → Löschen* an ihrem Unterpunkt. Danach den Ordner `custom_components/pflanzenmonitor_plus` löschen und neu starten.

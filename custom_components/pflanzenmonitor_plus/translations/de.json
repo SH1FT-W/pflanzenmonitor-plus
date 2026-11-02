@@ -10,12 +10,14 @@
         "data": {
           "ai_task": "KI für Grenzwert-Vorschläge",
           "weather": "Wetter",
-          "rain_sensor": "Regensensor"
+          "rain_sensor": "Regensensor",
+          "todo_list": "To-do-Liste fürs Gießen"
         },
         "data_description": {
-          "ai_task": "KI-Aufgaben-Entität (z. B. Claude). Sobald eine Pflanze gelernt ist, schlägt sie höchstens einmal im Monat passende Grenzwerte nach Pflanzenart vor (Bodenfeuchte, Temperatur, Bodentemperatur, Luftfeuchte, Helligkeit, Tageslicht; nur Werte mit Sensor). Es ändert sich nichts, bis du übernimmst. Leer lassen = keine Vorschläge.",
+          "ai_task": "KI-Aufgaben-Entität (z. B. Claude). Sobald eine Pflanze gelernt ist, schlägt sie höchstens einmal im Monat passende Grenzwerte nach Pflanzenart vor (Bodenfeuchte, Temperatur, Bodentemperatur, Luftfeuchte, Helligkeit, Tageslicht; nur Werte mit Sensor). Es ändert sich nichts, bis du übernimmst. Leer lassen = keine Vorschläge. Außerdem schlägt sie einmal je Jahreszeit einen Pflegeplan vor (Düngen, Umtopfen).",
           "weather": "Stündliche Vorhersage für Regen- und Frosthinweise bei Pflanzen draußen.",
-          "rain_sensor": "Gemessene Regenintensität (mm/h). Damit unterscheidet Plus bei Pflanzen draußen Regen vom Gießen; ohne (oder bevor er Verlauf hat) zählen Anstiege draußen als unbekannt und „Zuletzt gegossen“ bleibt dort leer."
+          "rain_sensor": "Gemessene Regenintensität (mm/h). Damit unterscheidet Plus bei Pflanzen draußen Regen vom Gießen; ohne (oder bevor er Verlauf hat) zählen Anstiege draußen als unbekannt und „Zuletzt gegossen“ bleibt dort leer.",
+          "todo_list": "Ist eine Pflanze fällig, legt Plus hier eine Aufgabe „Yucca gießen“ (für eine Pflanze namens Yucca) an (mit Fälligkeitsdatum, wenn die Liste das kann), höchstens eine offene je Pflanze. Sie wird von selbst erledigt, sobald die Bodenfeuchte wieder steigt; hakst du sie ab, wartet Plus auf das nächste Gießen. Leer lassen = keine Aufgaben."
         }
       }
     }
@@ -87,6 +89,20 @@
           "data_description": {
             "moisture_grace": "Nach dem Gießen (Bodenfeuchte springt um 10 Punkte oder mehr) wird „Bodenfeuchte zu hoch“ so lange nicht gemeldet. 0 = aus."
           }
+        },
+        "care": {
+          "title": "Pflege",
+          "description": "Wann die Pflanze gedüngt und umgetopft wird. Die Termine stehen im Kalender „Pflanzenpflege“; die Knöpfe „Gedüngt“ und „Umgetopft“ schieben sie weiter. Außerhalb der Saison wird nicht gedüngt (Winterpause), Umtopfen ist im ersten Monat der Saison fällig.",
+          "data": {
+            "fertilize_interval": "Düngen alle",
+            "fertilize_from": "Saison ab",
+            "fertilize_to": "Saison bis",
+            "repot_years": "Umtopfen alle"
+          },
+          "data_description": {
+            "fertilize_interval": "Tage zwischen zwei Düngungen in der Saison.",
+            "repot_years": "Jahre zwischen zwei Umtopfen."
+          }
         }
       }
     }
@@ -99,12 +115,14 @@
         "data": {
           "ai_task": "KI für Grenzwert-Vorschläge",
           "weather": "Wetter",
-          "rain_sensor": "Regensensor"
+          "rain_sensor": "Regensensor",
+          "todo_list": "To-do-Liste fürs Gießen"
         },
         "data_description": {
-          "ai_task": "KI-Aufgaben-Entität (z. B. Claude). Sobald eine Pflanze gelernt ist, schlägt sie höchstens einmal im Monat passende Grenzwerte nach Pflanzenart vor (Bodenfeuchte, Temperatur, Bodentemperatur, Luftfeuchte, Helligkeit, Tageslicht; nur Werte mit Sensor). Es ändert sich nichts, bis du übernimmst. Leer lassen = keine Vorschläge.",
+          "ai_task": "KI-Aufgaben-Entität (z. B. Claude). Sobald eine Pflanze gelernt ist, schlägt sie höchstens einmal im Monat passende Grenzwerte nach Pflanzenart vor (Bodenfeuchte, Temperatur, Bodentemperatur, Luftfeuchte, Helligkeit, Tageslicht; nur Werte mit Sensor). Es ändert sich nichts, bis du übernimmst. Leer lassen = keine Vorschläge. Außerdem schlägt sie einmal je Jahreszeit einen Pflegeplan vor (Düngen, Umtopfen).",
           "weather": "Stündliche Vorhersage für Regen- und Frosthinweise bei Pflanzen draußen.",
-          "rain_sensor": "Gemessene Regenintensität (mm/h). Damit unterscheidet Plus bei Pflanzen draußen Regen vom Gießen; ohne (oder bevor er Verlauf hat) zählen Anstiege draußen als unbekannt und „Zuletzt gegossen“ bleibt dort leer."
+          "rain_sensor": "Gemessene Regenintensität (mm/h). Damit unterscheidet Plus bei Pflanzen draußen Regen vom Gießen; ohne (oder bevor er Verlauf hat) zählen Anstiege draußen als unbekannt und „Zuletzt gegossen“ bleibt dort leer.",
+          "todo_list": "Ist eine Pflanze fällig, legt Plus hier eine Aufgabe „Yucca gießen“ (für eine Pflanze namens Yucca) an (mit Fälligkeitsdatum, wenn die Liste das kann), höchstens eine offene je Pflanze. Sie wird von selbst erledigt, sobald die Bodenfeuchte wieder steigt; hakst du sie ab, wartet Plus auf das nächste Gießen. Leer lassen = keine Aufgaben."
         }
       }
     }
@@ -451,6 +469,12 @@
       },
       "ask": {
         "name": "KI jetzt fragen"
+      },
+      "fertilized": {
+        "name": "Gedüngt"
+      },
+      "repotted": {
+        "name": "Umgetopft"
       }
     },
     "number": {
@@ -511,6 +535,11 @@
       "lux_to_ppfd": {
         "name": "Lux-zu-PPFD-Faktor"
       }
+    },
+    "calendar": {
+      "care": {
+        "name": "Pflanzenpflege"
+      }
     }
   },
   "selector": {
@@ -525,6 +554,28 @@
         "illuminance": "Beleuchtungsstärke",
         "dli": "Tageslicht (DLI)",
         "vpd": "Dampfdruckdefizit (VPD)"
+      }
+    },
+    "month": {
+      "options": {
+        "1": "Januar",
+        "2": "Februar",
+        "3": "März",
+        "4": "April",
+        "5": "Mai",
+        "6": "Juni",
+        "7": "Juli",
+        "8": "August",
+        "9": "September",
+        "10": "Oktober",
+        "11": "November",
+        "12": "Dezember"
+      }
+    },
+    "care": {
+      "options": {
+        "fertilized": "Gedüngt",
+        "repotted": "Umgetopft"
       }
     }
   },
@@ -568,6 +619,25 @@
     "references": {
       "title": "Automationen nutzen noch die alten Pflanzen-Entitäten",
       "description": "Diese Automationen oder Skripte nutzen noch Entitäten des Plant Monitor, die es nicht mehr gibt. Durch die neuen ersetzen:\n\n{references}\n\nDer Hinweis verschwindet, sobald sie niemand mehr nutzt (geprüft beim Laden von Pflanzenmonitor Plus)."
+    },
+    "care": {
+      "title": "{plant}: neuer KI-Vorschlag für den Pflegeplan",
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "{plant}: Pflegeplan",
+            "description": "Bisher: {current}\n\nVorschlag: {proposed}\n\n{reason}\n\n**Übernehmen** schreibt den Plan in die Pflanze (jederzeit änderbar über „Pflanze bearbeiten“). **Ablehnen** behält den bisherigen Plan; die KI wird in der nächsten Jahreszeit wieder gefragt.",
+            "menu_options": {
+              "accept": "Übernehmen",
+              "reject": "Ablehnen"
+            }
+          }
+        },
+        "abort": {
+          "no_suggestion": "Für diese Pflanze gibt es keinen offenen Vorschlag (mehr).",
+          "suggestion_outdated": "Ein neuerer Vorschlag hat diesen ersetzt. Öffne die Reparatur erneut."
+        }
+      }
     }
   },
   "exceptions": {
@@ -609,6 +679,15 @@
     },
     "legacy_unload_failed": {
       "message": "Der Plant Monitor ließ sich nicht anhalten. Home Assistant neu starten und noch einmal versuchen. Es wurde nichts entfernt."
+    },
+    "not_a_plant": {
+      "message": "{entity} gehört zu keiner Pflanze von Pflanzenmonitor Plus."
+    },
+    "plant_removed": {
+      "message": "Diese Pflanze gibt es nicht mehr."
+    },
+    "date_in_future": {
+      "message": "Das Datum liegt in der Zukunft."
     }
   },
   "services": {
@@ -623,6 +702,24 @@
         "new_sensor": {
           "name": "Neuer Sensor",
           "description": "Der echte Sensor, der ab jetzt gilt. Leer lassen, um den Sensor zu entfernen."
+        }
+      }
+    },
+    "care_done": {
+      "name": "Pflege erledigt",
+      "description": "Markiert eine Pflanze als gedüngt oder umgetopft; der nächste Termin im Pflegekalender rückt weiter.",
+      "fields": {
+        "plant_entity": {
+          "name": "Pflanze",
+          "description": "Die Pflanze (ihr Zustand oder eine andere Entität der Pflanze)."
+        },
+        "care": {
+          "name": "Pflege",
+          "description": "Was erledigt wurde."
+        },
+        "date": {
+          "name": "Datum",
+          "description": "Wann es erledigt wurde. Standard: heute."
         }
       }
     }
