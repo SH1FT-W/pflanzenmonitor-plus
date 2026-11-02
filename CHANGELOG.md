@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 26.11.2 – 02.11.2026
 
 - **Care calendar is now an option, off by default.** Turn it on under *Configure → Care calendar*. Off means no
   calendar "Plant care", no buttons "Fertilized"/"Repotted", no AI care plan requests and no care plan repairs; the
