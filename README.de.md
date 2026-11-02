@@ -188,7 +188,9 @@ gibt es noch nicht.
 
 1. **Wann:** sobald eine Pflanze „Gelernt“ ist, danach höchstens alle 30 Tage automatisch (je 10-Minuten-Durchlauf
    höchstens eine Pflanze). „KI jetzt fragen“ fragt sofort. Nach einem Fehler frühestens nach 6 Std. erneut. Trägst du
-   die Pflanzenart ein oder änderst sie, fragt Plus beim nächsten Durchlauf neu. Nach dem Update auf
+   die Pflanzenart ein oder änderst sie, fragt Plus beim nächsten Durchlauf neu. Ein offener Vorschlag wartet 30 Tage
+   auf deine Entscheidung; danach bewertet Plus die Pflanze neu und ersetzt ihn (Attribut „expired“ am KI-Vorschlag
+   zeigt, wann der ersetzte gefragt wurde). Nach dem Update auf
    1.1 fragt Plus alle gelernten Pflanzen einmal neu (ein offener Vorschlag aus 1.0 wird dabei ersetzt).
 2. **Was die KI bekommt:** Name, Art (falls eingetragen), Raum, drinnen/draußen, Monat, Land, aktuelle
    Grenzwerte, gelernte Zahlen (Zyklen, meist gegossen bei, Feuchte nach dem Gießen, Tage zwischen dem Gießen, Tempo)

@@ -5,6 +5,7 @@ from __future__ import annotations
 from homeassistant.components.repairs import repairs_flow_manager
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
+from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.setup import async_setup_component
 import pytest
@@ -133,3 +134,76 @@ async def test_issues_removed_without_ai(hass: HomeAssistant, ai: FakeAI, ai_ent
     await hass.async_block_till_done(wait_background_tasks=True)
     assert ir.async_get(hass).async_get_issue(DOMAIN, ISSUE) is None
     assert ir.async_get(hass).async_get_issue("andere", "suggestion_x") is not None
+
+
+async def test_accept_for_removed_plant(hass: HomeAssistant, ai: FakeAI, ai_entry: MockConfigEntry) -> None:
+    """Plant gone while its suggestion is still stored and listed: abort cleanly and remove the repair."""
+    assert await async_setup_component(hass, "repairs", {})
+    await setup(hass, ai_entry)
+    advisor = ai_entry.runtime_data.advisor
+    assert advisor is not None
+    flow = await open_flow(hass)
+    # The plant disappears before "accept" (the record and the repair are still there)
+    del ai_entry.runtime_data.plants[INSIDE]
+    result = await choose(hass, flow["flow_id"], "accept")
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "no_suggestion"
+    assert ir.async_get(hass).async_get_issue(DOMAIN, ISSUE) is None
+    assert INSIDE not in advisor.records
+    # Same for undo and for the button path
+    advisor.records[INSIDE] = {"state": "uebernommen", "applied": {"old": {}, "new": {}}}
+    with pytest.raises(ServiceValidationError) as err:
+        await advisor.async_undo(INSIDE)
+    assert err.value.translation_key == "nothing_to_undo"
+    assert INSIDE not in advisor.records
+
+
+async def test_issue_of_removed_plant_goes_away(hass: HomeAssistant, ai: FakeAI, ai_entry: MockConfigEntry) -> None:
+    """A suggestion repair whose plant is gone is removed on the next sync and when its dialog is opened."""
+    assert await async_setup_component(hass, "repairs", {})
+    await setup(hass, ai_entry)
+    advisor = ai_entry.runtime_data.advisor
+    assert advisor is not None
+    for key in ("GONE", "GONE2"):
+        ir.async_create_issue(
+            hass, DOMAIN, f"suggestion_{key}", is_fixable=True, severity=ir.IssueSeverity.WARNING,
+            translation_key="suggestion", translation_placeholders={"plant": "x"}, data={"key": key},
+        )  # fmt: skip
+    result = await open_flow(hass, "suggestion_GONE")
+    assert result["reason"] == "no_suggestion"
+    assert ir.async_get(hass).async_get_issue(DOMAIN, "suggestion_GONE") is None
+    advisor.sync_issues()
+    assert ir.async_get(hass).async_get_issue(DOMAIN, "suggestion_GONE2") is None
+    assert ir.async_get(hass).async_get_issue(DOMAIN, ISSUE) is not None
+    # Integration unloaded: the dialog finds nothing
+    assert await hass.config_entries.async_unload(ai_entry.entry_id)
+    result = await open_flow(hass)
+    assert result["reason"] == "no_suggestion"
+
+
+async def test_dialog_does_not_accept_a_replaced_suggestion(
+    hass: HomeAssistant, ai: FakeAI, ai_entry: MockConfigEntry
+) -> None:
+    """The dialog shows suggestion A; if B replaces it meanwhile, "accept" must not write B unseen."""
+    assert await async_setup_component(hass, "repairs", {})
+    await setup(hass, ai_entry)
+    advisor = ai_entry.runtime_data.advisor
+    assert advisor is not None
+    flow = await open_flow(hass)
+    advisor.records[INSIDE]["asked"] = "2026-11-20T00:00:00+00:00"
+    result = await choose(hass, flow["flow_id"], "accept")
+    assert result["reason"] == "suggestion_outdated"
+    assert advisor.record(INSIDE)["state"] == "offen"
+
+
+async def test_ask_for_removed_plant(hass: HomeAssistant, ai: FakeAI, ai_entry: MockConfigEntry) -> None:
+    """ "Ask AI now" in the window between removing a plant and the reload: clean error, no KeyError."""
+    await setup(hass, ai_entry)
+    advisor = ai_entry.runtime_data.advisor
+    assert advisor is not None
+    del ai_entry.runtime_data.plants[INSIDE]
+    with pytest.raises(ServiceValidationError) as err:
+        await advisor.async_ask(INSIDE)
+    assert err.value.translation_key == "no_data"
+    assert ir.async_get(hass).async_get_issue(DOMAIN, ISSUE) is None
+    assert INSIDE not in advisor.records

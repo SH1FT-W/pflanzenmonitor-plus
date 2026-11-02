@@ -236,7 +236,9 @@ cycles. There is no "reset learning" per plant yet.
 
 1. **When:** once a plant is "Learned", then automatically at most every 30 days (at most one plant per 10-minute
    run). "Ask AI now" asks right away. After an error, at the earliest after 6 hours. When you enter or change the
-   species, Plus asks again on the next run.
+   species, Plus asks again on the next run. An open suggestion waits 30 days for your decision; after that Plus
+   assesses the plant again and replaces it (the attribute `expired` of the AI suggestion shows when the replaced one
+   was asked).
 2. **What the AI gets:** name, species (if set), room, indoors/outdoors, month, country, current limits, learned
    numbers (cycles, usually watered at, moisture after watering, days between waterings, rate) and min/mean/max of the
    last 30 days (soil moisture, air and soil temperature, humidity), plus for light the daily peaks and the daily light

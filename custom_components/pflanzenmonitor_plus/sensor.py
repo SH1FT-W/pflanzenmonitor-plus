@@ -370,5 +370,7 @@ class SuggestionSensor(PlantEntity, SensorEntity):
             "next_check": nxt.isoformat() if nxt else None,
             "applied": applied.get("at") if isinstance(applied, dict) else None,
             "error": rec.get("error"),
+            # When an undecided suggestion was replaced by a newer one (the old one stays in the store)
+            "expired": expired.get("asked") if isinstance(expired := rec.get("expired"), dict) else None,
         }
         return _present(attrs)

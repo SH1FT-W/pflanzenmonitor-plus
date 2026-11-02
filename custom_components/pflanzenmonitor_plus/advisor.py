@@ -36,6 +36,10 @@ RETRY: Final = timedelta(hours=6)
 AI_TIMEOUT: Final = 120
 # Nach einem übernommenen, von den Schutzregeln begrenzten Schritt: so bald nach dem nächsten Schritt fragen
 NEXT_STEP: Final = timedelta(days=7)
+# An open suggestion waits this long for a decision, then the plant is assessed again. Same as the regular
+# cadence: the suggestion was based on the last 30 days, so by then all of its data has been replaced, and the
+# AI is still asked at most once a month per plant. The replaced suggestion is kept under "expired".
+SUGGESTION_EXPIRES: Final = ASK_EVERY
 SUGGESTION_ISSUE: Final = "suggestion_"
 # Stand der gespeicherten Einträge; ältere (1.0, nur Feuchte und Mindesttemperatur) werden beim Laden neu gefragt
 VERSION: Final = 2
@@ -123,7 +127,11 @@ class Advisor:
             return False
         rec = self.record(key)
         if rec["state"] == "offen":
-            return False
+            asked = _time(rec.get("asked"))
+            if asked is not None and now < asked + SUGGESTION_EXPIRES:
+                return False
+            retry = _time(rec.get("retry_after"))
+            return retry is None or now >= retry
         # Art eingetragen oder geändert: gleich neu fragen (nur die Fehlersperre gilt)
         if rec.get("asked") and self._species(self.coordinator.plants[key]) != rec.get("plant_species"):
             retry = _time(rec.get("retry_after"))
@@ -149,6 +157,8 @@ class Advisor:
         if not self.ai:
             raise ServiceValidationError(translation_domain=DOMAIN, translation_key="no_ai")
         data = (self.coordinator.data or {}).get(key)
+        if key not in self.coordinator.plants:
+            await self._plant(key, "no_data")  # removed meanwhile: clean up and fail
         if data is None or data.learned.stage == "keine_daten":
             raise ServiceValidationError(translation_domain=DOMAIN, translation_key="no_data")
         if self._lock.locked():
@@ -204,6 +214,19 @@ class Advisor:
             return
 
         state = "offen" if result.changes else "keine_aenderung"
+        previous = self.record(key)
+        # Never drop an undecided suggestion silently: keep the replaced one (what, when, how sure)
+        expired = (
+            {name: previous.get(name) for name in ("asked", "changes", "summary", "confidence")}
+            if previous["state"] == "offen" and previous["changes"]
+            else None
+        )
+        if expired:
+            _LOGGER.info(
+                "Offener KI-Vorschlag für %s vom %s wird durch eine neue Bewertung ersetzt",
+                plant.name,
+                expired["asked"],
+            )
         summary = advice.describe(result.changes, self.hass.config.language)
         confidence = result.confidence
         # Ohne eingetragene Art rät die KI nur aus dem Namen – dann höchstens „mittel“
@@ -227,6 +250,8 @@ class Advisor:
             "plant_species": self._species(plant),
             "version": VERSION,
         }
+        if expired:
+            self.records[key]["expired"] = expired
         await self._save()
         if state == "offen":
             self.hass.bus.async_fire(
@@ -250,7 +275,7 @@ class Advisor:
             rec = self.record(key)
             if rec["state"] != "offen" or not rec["changes"]:
                 raise ServiceValidationError(translation_domain=DOMAIN, translation_key="no_suggestion")
-            plant = self.coordinator.plants[key]
+            plant = await self._plant(key, "no_suggestion")
             current = self._current(plant)
             new = {name: float(change["proposed"]) for name, change in rec["changes"].items()}
             settable = self._settable(plant)
@@ -290,7 +315,7 @@ class Advisor:
             applied = rec.get("applied")
             if rec["state"] != "uebernommen" or not isinstance(applied, dict):
                 raise ServiceValidationError(translation_domain=DOMAIN, translation_key="nothing_to_undo")
-            plant = self.coordinator.plants[key]
+            plant = await self._plant(key, "nothing_to_undo")
             current = self._current(plant)
             if any(current.get(n) != v for n, v in applied["new"].items()):
                 raise ServiceValidationError(translation_domain=DOMAIN, translation_key="changed_since")
@@ -303,6 +328,15 @@ class Advisor:
             }
             await self._save()
         await self.coordinator.async_request_refresh()
+
+    async def _plant(self, key: str, error: str) -> Plant:
+        """The plant, or (removed meanwhile) drop its record and repair and fail with `error`."""
+        if (plant := self.coordinator.plants.get(key)) is not None:
+            return plant
+        self.records.pop(key, None)
+        await self._save()
+        ir.async_delete_issue(self.hass, DOMAIN, f"{SUGGESTION_ISSUE}{key}")
+        raise ServiceValidationError(translation_domain=DOMAIN, translation_key=error)
 
     async def _save(self) -> None:
         if self._unloaded:
@@ -328,6 +362,14 @@ class Advisor:
                     data={"key": key},
                 )
             else:
+                ir.async_delete_issue(self.hass, DOMAIN, issue_id)
+        # Repairs of plants that are gone (e.g. removed while Plant Monitor still blocks the cleanup at setup)
+        for domain, issue_id in list(ir.async_get(self.hass).issues):
+            if (
+                domain == DOMAIN
+                and issue_id.startswith(SUGGESTION_ISSUE)
+                and issue_id.removeprefix(SUGGESTION_ISSUE) not in self.coordinator.plants
+            ):
                 ir.async_delete_issue(self.hass, DOMAIN, issue_id)
 
     def repair_placeholders(self, key: str) -> dict[str, str]:

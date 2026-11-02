@@ -304,6 +304,9 @@
           "asked": {
             "name": "Gefragt"
           },
+          "expired": {
+            "name": "Ersetzter Vorschlag gefragt"
+          },
           "next_check": {
             "name": "Nächste Prüfung"
           },

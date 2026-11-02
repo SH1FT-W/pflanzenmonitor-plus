@@ -1,5 +1,15 @@
 # Changelog
 
+## 26.11.1 – unreleased
+
+- **Open AI suggestions no longer block a plant forever.** A suggestion nobody accepts or rejects now expires after
+  30 days (the same cadence as the regular check, and the suggestion's data is fully outdated by then); the plant is
+  then assessed again. The replaced suggestion is kept in the stored record, the AI suggestion entity shows when it was
+  asked (attribute `expired`). If the new request fails, the open suggestion stays. A repair dialog whose suggestion
+  was replaced meanwhile does not accept the new one unseen.
+- **Accepting or undoing a suggestion of a removed plant** no longer fails with an error: it stops cleanly and the
+  suggestion's repair is removed. Repairs of plants that no longer exist are cleaned up.
+
 ## 26.10.1 – 22.10.2026
 
 First public release. Pflanzenmonitor Plus is now a complete plant integration of its own and no longer needs

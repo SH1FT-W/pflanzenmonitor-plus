@@ -327,3 +327,58 @@ async def test_no_suggestion_without_sensor(hass: HomeAssistant, ai: FakeAI, ai_
     state = state_of(hass, SUGGESTION)
     assert "min_temperature" not in state.attributes
     assert "min_moisture" in state.attributes
+
+
+async def test_open_suggestion_expires(
+    hass: HomeAssistant, ai: FakeAI, ai_entry: MockConfigEntry, freezer: Any
+) -> None:
+    """An open suggestion nobody decides on must not block the plant forever; the expired one is kept."""
+    from custom_components.pflanzenmonitor_plus.advisor import SUGGESTION_EXPIRES
+
+    await setup(hass, ai_entry)
+    advisor = advisor_of(ai_entry)
+    old = advisor.record(INSIDE)
+    assert old["state"] == "offen"
+    await next_round(hass, 11)  # Olive
+    calls = len(ai.calls)
+
+    # Within the expiry the open suggestion waits for the user
+    freezer.move_to(now() + SUGGESTION_EXPIRES - timedelta(days=1))
+    async_fire_time_changed(hass, now() + SUGGESTION_EXPIRES - timedelta(days=1))
+    await hass.async_block_till_done(wait_background_tasks=True)
+    assert len(ai.calls) == calls
+
+    # Expired, but the AI fails: the open suggestion stays as it is
+    ai.error = HomeAssistantError("Kontingent erschöpft")
+    freezer.move_to(now() + SUGGESTION_EXPIRES + timedelta(minutes=1))
+    async_fire_time_changed(hass, now() + SUGGESTION_EXPIRES + timedelta(minutes=1))
+    await hass.async_block_till_done(wait_background_tasks=True)
+    assert len(ai.calls) == calls + 1
+    assert ai.calls[-1]["task_name"].endswith("Bogenhanf")
+    rec = advisor.record(INSIDE)
+    assert (rec["state"], rec["changes"], rec["asked"]) == ("offen", old["changes"], old["asked"])
+
+    # After the retry wait it is assessed again; the expired suggestion is kept for reference
+    ai.error = None
+    ai.answer = ai.answer | {"min_moisture": 20, "max_moisture": 50}
+    later = now() + SUGGESTION_EXPIRES + timedelta(hours=7)
+    freezer.move_to(later)
+    async_fire_time_changed(hass, later)
+    await hass.async_block_till_done(wait_background_tasks=True)
+    rec = advisor.record(INSIDE)
+    assert rec["state"] == "offen"
+    assert rec["asked"] == later.isoformat()
+    assert rec["changes"]["min_moisture"]["proposed"] == 20
+    assert rec["expired"] == {
+        "asked": old["asked"],
+        "changes": old["changes"],
+        "summary": old["summary"],
+        "confidence": old["confidence"],
+    }
+    assert state_of(hass, SUGGESTION).attributes["expired"] == old["asked"]
+    # A suggestion that was decided on is not kept as "expired"
+    await press(hass, REJECT)
+    freezer.move_to(later + timedelta(days=31))
+    async_fire_time_changed(hass, later + timedelta(days=31))
+    await hass.async_block_till_done(wait_background_tasks=True)
+    assert "expired" not in advisor.record(INSIDE)

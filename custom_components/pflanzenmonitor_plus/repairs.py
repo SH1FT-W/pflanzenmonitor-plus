@@ -8,9 +8,10 @@ from typing import Any
 from homeassistant.components.repairs import RepairsFlow, RepairsFlowResult
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
+from homeassistant.helpers import issue_registry as ir
 import voluptuous as vol
 
-from .advisor import Advisor
+from .advisor import SUGGESTION_ISSUE, Advisor
 from .const import DOMAIN
 from .migrate import ISSUE_MIGRATE, async_migrate, legacy_entries
 
@@ -26,13 +27,20 @@ class SuggestionRepair(RepairsFlow):
     def __init__(self, key: str) -> None:
         super().__init__()
         self.key = key
+        # The suggestion shown in the dialog; a newer one may replace it meanwhile and must not be accepted unseen
+        self.asked: Any = None
 
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> RepairsFlowResult:
         advisor = _advisor(self.hass)
-        if advisor is None or self.key not in advisor.coordinator.plants:
+        if advisor is None:
             return self.async_abort(reason="no_suggestion")
-        if advisor.record(self.key)["state"] != "offen":
+        if self.key not in advisor.coordinator.plants:
+            # The plant is gone: this repair can never be fixed, remove it
+            ir.async_delete_issue(self.hass, DOMAIN, f"{SUGGESTION_ISSUE}{self.key}")
             return self.async_abort(reason="no_suggestion")
+        if (rec := advisor.record(self.key))["state"] != "offen":
+            return self.async_abort(reason="no_suggestion")
+        self.asked = rec.get("asked")
         return self.async_show_menu(
             step_id="init",
             menu_options=["accept", "reject"],
@@ -49,6 +57,8 @@ class SuggestionRepair(RepairsFlow):
         advisor = _advisor(self.hass)
         if advisor is None:
             return self.async_abort(reason="no_suggestion")
+        if advisor.record(self.key).get("asked") != self.asked:
+            return self.async_abort(reason="suggestion_outdated")
         try:
             if accept:
                 await advisor.async_apply(self.key)

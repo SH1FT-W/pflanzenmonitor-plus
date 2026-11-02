@@ -304,6 +304,9 @@
           "asked": {
             "name": "Asked"
           },
+          "expired": {
+            "name": "Replaced suggestion asked"
+          },
           "next_check": {
             "name": "Next check"
           },

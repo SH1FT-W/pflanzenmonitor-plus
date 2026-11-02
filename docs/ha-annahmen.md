@@ -31,6 +31,7 @@ Worauf sich dieses Repo bei Home Assistant verlässt. Bei jeder Änderung am Cod
 | `automations_with_entity`/`scripts_with_entity` finden Automationen/Skripte zu einer Entitäts-ID | `migrate.py` `_references` | `tests/test_migrate.py` `test_migrate` |
 | Recorder `statistics_during_period(hass, start, None, ids, "hour", None, {"mean","min","max"})` | `coordinator.py` `_fetch` | Tests über `stats` |
 | `weather.get_forecasts` mit `type: hourly` und `return_response` | `coordinator.py` `_forecast` | `tests/test_init.py` |
+| Issue-Registry: `ir.async_get(hass).issues` ist ein Dict mit Schlüssel `(domain, issue_id)`; `async_delete_issue` ist bei fehlendem Eintrag ein No-op | `advisor.py` `sync_issues`/`_plant`, `repairs.py` `SuggestionRepair`, `__init__.py` `_remove_stale` | `tests/test_repairs.py` `test_issue_of_removed_plant_goes_away`, `test_accept_for_removed_plant` |
 | `ai_task.generate_data` mit `task_name`, `instructions`, `structure`, Antwort in `data` | `advisor.py` `_ask` | `tests/test_advisor.py` |
 
 ## Fremde Integrationen
