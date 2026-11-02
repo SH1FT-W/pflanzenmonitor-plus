@@ -115,8 +115,8 @@ class PlusCoordinator(DataUpdateCoordinator[dict[str, PlantData]]):
         self._fresh: dict[str, datetime] = {}
         # KI-Vorschläge (nur mit KI-Entität in den Optionen)
         self.advisor: Advisor | None = None
-        # Care calendar (always) and watering tasks (only with a to-do list in the options)
-        self.care: CarePlans
+        # Care calendar (only with the option on) and watering tasks (only with a to-do list in the options)
+        self.care: CarePlans | None = None
         self.tasks: WateringTasks | None = None
         # Neuladen nach einer Änderung ist schon angestoßen
         self.reload_pending = False

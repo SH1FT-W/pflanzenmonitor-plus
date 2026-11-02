@@ -98,7 +98,7 @@ def calendar_id(entry_id: str) -> str:
     return f"{entry_id}-care"
 
 
-def unique_ids(plant: Plant, *, ai: bool, weather: bool) -> dict[str, str]:
+def unique_ids(plant: Plant, *, ai: bool, weather: bool, care: bool) -> dict[str, str]:
     """Alle Entitäten, die Plus für die Pflanze anlegt: unique_id → Domain."""
     key = plant.key
     ids = {status_id(key): "sensor"}
@@ -108,7 +108,8 @@ def unique_ids(plant: Plant, *, ai: bool, weather: bool) -> dict[str, str]:
     if plant.has("dli"):
         ids |= dict.fromkeys((f"{key}-current-ppfd", f"{key}-ppfd-integral", f"{key}-dli", f"{key}-dli-24h"), "sensor")
     ids |= {f"{key}-{name.replace('_', '-')}": "number" for name in health.limit_fields(plant.sensors)}
-    ids |= {f"{key}_{k}": "button" for k in CARE_KEYS}
+    if care:
+        ids |= {f"{key}_{k}": "button" for k in CARE_KEYS}
     if plant.moisture:
         ids |= {f"{key}_{k}": "sensor" for k in SENSOR_KEYS}
         if ai:

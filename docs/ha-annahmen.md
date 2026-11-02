@@ -37,8 +37,10 @@ Worauf sich dieses Repo bei Home Assistant verlässt. Bei jeder Änderung am Cod
 | Die `uid` einer To-do-Aufgabe bleibt über Neustarts gleich (sonst gilt die Aufgabe als vom Nutzer gelöscht und wird beim Gießen nicht mehr abgehakt) | `tasks.py` `_find` | – (je Listen-Integration; lokal geprüft nur mit Test-Liste) |
 | Unterstützte Funktionen einer To-do-Liste stehen im Zustandsattribut `supported_features` | `tasks.py` `_add` | `tests/test_tasks.py` `test_deleted_by_user_and_adopted` |
 | `CalendarEntity`: `event` (nächster/laufender Termin) und `async_get_events(hass, start, end)`; Ganztagstermine mit `date` (Ende exklusiv); `_async_write_ha_state` plant selbst die Aktualisierung bei Beginn und Ende des Termins (über Mitternacht kein eigener Timer nötig) | `calendar.py` | `tests/test_care_calendar.py` |
-| Entität ohne Gerät mit `has_entity_name` bekommt den übersetzten Namen als Entitäts-ID (`calendar.pflanzenpflege`) | `calendar.py` | `tests/test_care_calendar.py`, `tests/test_edges.py` |
+| Entität ohne Gerät mit `has_entity_name` bekommt den übersetzten Namen als Entitäts-ID (`calendar.pflanzenpflege`) | `calendar.py` | `tests/test_care_calendar.py`, `tests/test_care_option.py` |
 | `SelectSelector` in Formularen liefert Strings (Monate „1“–„12“) | `config_flow.py` `async_step_care`, `care.plan` | `tests/test_config_flow.py` `test_add_plant` |
+| `ConfigSubentryFlow._get_entry()` liefert im Pflanzen-Dialog den Eintrag samt Optionen (Schritt „Pflege“ nur mit Pflegekalender) | `config_flow.py` `async_step_problems` | `tests/test_config_flow.py` `test_add_plant`, `test_plant_without_care_step` |
+| Eine weitergeleitete Plattform darf keine Entität anlegen (Kalender bei ausgeschaltetem Pflegekalender) und lädt trotzdem sauber ent- und neu; eine per `entity_registry.async_remove` entfernte Entität bekommt beim Wiederanlegen dieselbe Entitäts-ID | `calendar.py`, `button.py`, `__init__.py` `_remove_care`/`_remove_stale` | `tests/test_care_option.py` `test_switch_on_off_on` |
 
 ## Fremde Integrationen
 

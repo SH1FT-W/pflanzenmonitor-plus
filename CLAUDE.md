@@ -66,7 +66,9 @@ Platin-Qualität halten: `quality_scale.yaml` bei jeder Änderung mitpflegen.
 - 26.11.1 Gieß-Aufgaben (`tasks.py`, Option `todo_list`, Store `<entry>.tasks`): fällig = `due_date` ≤ heute; je
   Pflanze ein Eintrag `open`/`closed`, `cycle` = jüngster Anstieg beim Anlegen; späterer Anstieg = gegossen → Plus hakt
   ab; vom Nutzer abgehakt/gelöscht → erst nach neuem Anstieg wieder. Offene Aufgabe gleichen Titels wird übernommen.
-- 26.11.1 Pflegekalender (`care.py` rein, `careplan.py` Store `<entry>.care` mit Daten + KI-Vorschlag,
+- 26.11.1 Pflegekalender (seit 26.11.2 Option `care_calendar`, Standard aus: dann `coordinator.care` None, kein
+  Kalender, keine Pflege-Knöpfe, keine KI-Pflegeanfragen, Pflanzen-Dialog ohne Schritt „Pflege“, `_remove_care` räumt
+  Entitäten + `care_`-Reparaturen weg; Store `<entry>.care` und Plan im Subentry bleiben) (`care.py` rein, `careplan.py` Store `<entry>.care` mit Daten + KI-Vorschlag,
   `calendar.py` eine Entität für alle, unique_id `<entry>-care`): Plan im Subentry (`fertilize_interval`,
   `fertilize_from`, `fertilize_to`, `repot_years`; fehlend = Standard 3–9/21 Tage/2 Jahre, Süd 9–3), Umtopfen im
   ersten Saisonmonat. Knöpfe `<key>_fertilized`/`<key>_repotted`, Aktion `care_done`. KI einmal je Jahreszeit

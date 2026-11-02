@@ -242,7 +242,8 @@ def _create(
                 labels=set(item.device.labels),
                 name_by_user=item.device.name_by_user,
             )
-        wanted = unique_ids(plant, ai=ai, weather=weather)
+        # the Plant Monitor has no care buttons: nothing of them to take over
+        wanted = unique_ids(plant, ai=ai, weather=weather, care=False)
         for old in item.entities:
             unique_id = _new_unique_id(key, old)
             domain = wanted.get(unique_id)

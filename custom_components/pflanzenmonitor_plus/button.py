@@ -1,4 +1,4 @@
-"""Knöpfe je Pflanze: gedüngt, umgetopft; mit KI zusätzlich Vorschlag übernehmen, ablehnen, zurücknehmen, KI fragen."""
+"""Buttons per plant: fertilized, repotted (care calendar on); with AI also accept, reject, undo, ask AI."""
 
 from __future__ import annotations
 
@@ -42,7 +42,9 @@ async def async_setup_entry(
 ) -> None:
     coordinator = entry.runtime_data
     for plant in coordinator.plants.values():
-        buttons: list[ButtonEntity] = [CareButton(coordinator.care, plant, kind) for kind in care.KINDS]
+        buttons: list[ButtonEntity] = []
+        if coordinator.care:
+            buttons += [CareButton(coordinator.care, plant, kind) for kind in care.KINDS]
         if coordinator.advisor and plant.moisture:
             buttons += [PlusButton(coordinator, plant, description) for description in BUTTONS]
         async_add_entities(buttons, config_subentry_id=plant.subentry_id)

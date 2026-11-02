@@ -17,6 +17,8 @@ CONF_OUTDOOR: Final = "outdoor"
 CONF_AI_TASK: Final = "ai_task"
 # To-do list for watering tasks (empty = off)
 CONF_TODO: Final = "todo_list"
+# Care calendar with fertilize/repot buttons and AI care plan (default off)
+CONF_CARE: Final = "care_calendar"
 # Je Pflanze (Unterpunkt); Sensoren als „<Messgröße>_sensor“
 CONF_NAME: Final = "name"
 CONF_SPECIES: Final = "species"
@@ -64,5 +66,5 @@ OUTDOOR_WORDS: Final = (
 SENSOR_KEYS: Final = ("learning", "next_watering", "next_watering_due", "last_watered", "drying_rate")
 AI_KEYS: Final = ("suggestion", "accept", "reject", "undo", "ask")
 OUTDOOR_KEYS: Final = ("rain_expected", "frost")
-# Care buttons, for every plant
+# Care buttons, for every plant while the care calendar is on
 CARE_KEYS: Final = ("fertilized", "repotted")

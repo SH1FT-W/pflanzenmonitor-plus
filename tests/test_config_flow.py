@@ -45,6 +45,7 @@ async def test_user_flow_suggests_weather(hass: HomeAssistant) -> None:
         CONF_WEATHER: "weather.haus",
         CONF_RAIN_SENSOR: None,
         "todo_list": None,
+        "care_calendar": False,
     }
 
     result = await hass.config_entries.flow.async_configure(result["flow_id"], {CONF_WEATHER: "weather.haus"})
@@ -52,7 +53,7 @@ async def test_user_flow_suggests_weather(hass: HomeAssistant) -> None:
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert result["title"] == "Pflanzenmonitor Plus"
     assert result["data"] == {}
-    assert result["options"] == {CONF_WEATHER: "weather.haus"}
+    assert result["options"] == {CONF_WEATHER: "weather.haus", "care_calendar": False}
 
     # Nur ein Eintrag
     again = await hass.config_entries.flow.async_init(DOMAIN, context={"source": SOURCE_USER})
@@ -65,8 +66,8 @@ async def test_user_flow_without_weather(hass: HomeAssistant) -> None:
     result = await hass.config_entries.flow.async_configure(result["flow_id"], {})
     await hass.async_block_till_done(wait_background_tasks=True)
     assert result["type"] is FlowResultType.CREATE_ENTRY
-    # Nichts gewählt = nichts gespeichert (die Vorschläge kommen nur ins Formular)
-    assert result["options"] == {}
+    # Nichts gewählt = nichts gespeichert (die Vorschläge kommen nur ins Formular); care calendar off by default
+    assert result["options"] == {"care_calendar": False}
 
 
 @pytest.mark.usefixtures("house", "stats", "forecast")
@@ -79,14 +80,15 @@ async def test_options_reload(hass: HomeAssistant, entry: MockConfigEntry) -> No
     result = await hass.config_entries.options.async_configure(result["flow_id"], {})
     await hass.async_block_till_done(wait_background_tasks=True)
     assert result["type"] is FlowResultType.CREATE_ENTRY
-    assert entry.options == {}
+    assert entry.options == {"care_calendar": False}
     # Neu geladen: ohne Wetter keine Regen- und Frost-Sensoren mehr
     assert hass.states.get("binary_sensor.terrasse_olivenbaum_regen_erwartet") is None
 
 
 @pytest.mark.usefixtures("stats", "forecast")
 async def test_add_plant(hass: HomeAssistant, entry: MockConfigEntry) -> None:
-    """Name, Art, Raum → Sensoren (draußen nach Raum vorgewählt) → Probleme und Wartezeit."""
+    """Name, Art, Raum → Sensoren (draußen nach Raum vorgewählt) → Probleme und Wartezeit → care plan."""
+    hass.config_entries.async_update_entry(entry, options={**entry.options, "care_calendar": True})
     await setup(hass, entry)
     terrace = ar.async_get(hass).async_get_or_create("Balkon")
     hass.states.async_set("sensor.feige_feuchte", "40", {"unit_of_measurement": "%", "device_class": "moisture"})
@@ -147,6 +149,7 @@ async def test_add_plant(hass: HomeAssistant, entry: MockConfigEntry) -> None:
 
 @pytest.mark.usefixtures("house", "stats", "forecast")
 async def test_reconfigure_plant(hass: HomeAssistant, entry: MockConfigEntry) -> None:
+    hass.config_entries.async_update_entry(entry, options={**entry.options, "care_calendar": True})
     await setup(hass, entry)
     subentry_id = entry.runtime_data.plants[OUTSIDE].subentry_id
     result = await hass.config_entries.subentries.async_init(
@@ -183,6 +186,29 @@ async def test_reconfigure_plant(hass: HomeAssistant, entry: MockConfigEntry) ->
     assert plant.problems == frozenset()
     assert plant.care == {"fertilize_interval": 21, "fertilize_from": 9, "fertilize_to": 3, "repot_years": 2}
     assert hass.states.get("binary_sensor.terrasse_olivenbaum_regen_erwartet") is None
+
+
+@pytest.mark.usefixtures("house", "stats", "forecast")
+async def test_plant_without_care_step(hass: HomeAssistant, entry: MockConfigEntry) -> None:
+    """Care calendar off: no care plan step; a plan stored earlier stays in the plant."""
+    await setup(hass, entry)
+    subentry_id = entry.runtime_data.plants[INSIDE].subentry_id
+    hass.config_entries.async_update_subentry(
+        entry, entry.subentries[subentry_id], data={**entry.subentries[subentry_id].data, "repot_years": 4}
+    )
+    await hass.async_block_till_done(wait_background_tasks=True)
+    result = await hass.config_entries.subentries.async_init(
+        (entry.entry_id, SUBENTRY_PLANT), context={"source": SOURCE_RECONFIGURE, "subentry_id": subentry_id}
+    )
+    result = await hass.config_entries.subentries.async_configure(result["flow_id"], {"name": "Bogenhanf"})
+    result = await hass.config_entries.subentries.async_configure(
+        result["flow_id"], {"moisture_sensor": "sensor.bogenhanf_bodenfeuchtigkeit", "outdoor": False}
+    )
+    result = await hass.config_entries.subentries.async_configure(result["flow_id"], {"problems": ["moisture"]})
+    await hass.async_block_till_done(wait_background_tasks=True)
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "reconfigure_successful"
+    assert entry.subentries[subentry_id].data["repot_years"] == 4
 
 
 @pytest.mark.usefixtures("house", "stats", "forecast")

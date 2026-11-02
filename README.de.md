@@ -30,7 +30,7 @@ kann, und übernimmt dessen Pflanzen auf Knopfdruck – danach braucht es ihn ni
   „Frostgefahr“ (Vorhersage der nächsten 48 Std. unter der Mindesttemperatur der Pflanze)
 - **Gieß-Aufgaben** (optional): Ist eine Pflanze fällig, landet eine Aufgabe wie „Yucca gießen“ auf einer
   To-do-Liste deiner Wahl und wird nach dem Gießen von selbst abgehakt
-- **Pflegekalender**: Kalender „Pflanzenpflege“ mit Dünge- (Saison und Abstand je Pflanze, Winterpause) und
+- **Pflegekalender** (optional): Kalender „Pflanzenpflege“ mit Dünge- (Saison und Abstand je Pflanze, Winterpause) und
   Umtopf-Terminen; die Knöpfe „Gedüngt“ und „Umgetopft“ schieben sie weiter. Mit KI einmal je Jahreszeit ein
   Pflegeplan je Art als Vorschlag
 - **Hinweise unter Reparaturen**: Umzug aus dem Plant Monitor, neuer KI-Vorschlag (mit Übernehmen/Ablehnen direkt im
@@ -72,6 +72,7 @@ Eintrag; die Pflanzen hängen als Unterpunkte darunter.
 | KI für Grenzwert-Vorschläge | KI-Aufgaben-Entität. Vorgeschlagen wird die erste vorhandene. Leer = keine KI-Vorschläge (und keine Knöpfe). |
 | Wetter | Wetter-Entität mit stündlicher Vorhersage. Vorgeschlagen wird die erste vorhandene. Nur für Pflanzen draußen. |
 | To-do-Liste fürs Gießen | To-do-Entität (z. B. die Einkaufsliste oder eine lokale To-do-Liste). Leer = keine Gieß-Aufgaben (Standard). Siehe [Gieß-Aufgaben](#giess-aufgaben). |
+| Pflegekalender | Kalender „Pflanzenpflege“, die Knöpfe „Gedüngt“/„Umgetopft“ und (mit KI) die Pflegeplan-Vorschläge. Standard aus. Ausschalten entfernt Kalender und Knöpfe; die gespeicherten Pflege-Termine bleiben fürs Wiedereinschalten erhalten. Siehe [Pflegekalender](#pflegekalender). |
 | Regensensor | Gemessene Regenintensität in mm/h (Geräteklasse Niederschlagsintensität). Damit unterscheidet Plus bei Pflanzen draußen Regen vom Gießen. Ohne Regensensor – oder bevor er Verlauf hat – gelten Anstiege draußen als „unbekannt“. Mengen-Sensoren („Regen heute“) eignen sich nicht: sie bleiben nach einem Schauer bis Mitternacht über 0. |
 
 ### Pflanze anlegen und ändern
@@ -84,7 +85,7 @@ Raum gilt dann über das Gerät).
 | Pflanze | Name, Art (z. B. „Dracaena trifasciata“; hilft der KI, steht als Modell am Gerät), Raum, Bild (URL oder `/local/…`) |
 | Sensoren | Bodenfeuchte, Lufttemperatur, Bodentemperatur, Luftfeuchte, Helligkeit (lx oder PPFD), Leitfähigkeit, CO2; „Draußen“ (bei Räumen wie Terrasse, Balkon, Garten vorgewählt) |
 | Probleme | Welche Messwerte als Problem zählen (Standard: alle außer VPD), Wartezeit nach dem Gießen in Minuten |
-| Pflege | Düngen alle N Tage, Düngesaison von/bis Monat, Umtopfen alle N Jahre (Standard: März bis September alle 21 Tage, Umtopfen alle 2 Jahre; Südhalbkugel September bis März) |
+| Pflege (nur mit Pflegekalender) | Düngen alle N Tage, Düngesaison von/bis Monat, Umtopfen alle N Jahre (Standard: März bis September alle 21 Tage, Umtopfen alle 2 Jahre; Südhalbkugel September bis März) |
 
 Plus legt nur Entitäten zu vorhandenen Sensoren an. Wird ein Sensor abgewählt, verschwinden seine Entitäten; seine
 Grenzwerte bleiben gespeichert. Wird ein Sensor in HA umbenannt, zieht Plus das nach.
@@ -126,8 +127,8 @@ Alle Entitäten erscheinen auf dem Gerät der Pflanze. Die Entitäts-IDs hängen
 | Regen erwartet, Frostgefahr (nur draußen, mit Wetter) | an/aus | Menge, bis · Tiefstwert, Zeitpunkt, Mindesttemperatur der Pflanze |
 | KI-Vorschlag (nur mit KI) | Noch keiner · Wartet auf Freigabe · Grenzwerte passen · Übernommen · Abgelehnt · Zurückgenommen | Zusammenfassung, je Grenzwert „alt → neu“ (ggf. „Ziel …, schrittweise“) und Grund, Sicherheit, Pflanzenart, gefragt, nächste Prüfung, zuletzt übernommen, letzter Fehler |
 | Knöpfe (nur mit KI) | Vorschlag übernehmen · Vorschlag ablehnen (nur bei offenem Vorschlag) · Vorschlag zurücknehmen (nur direkt nach dem Übernehmen) · KI jetzt fragen | – |
-| Gedüngt, Umgetopft (Knöpfe, jede Pflanze) | Setzt heute als letztes Düngen/Umtopfen; der nächste Termin im Pflegekalender rückt weiter | – |
-| Pflanzenpflege (Kalender, einer für alle Pflanzen) | Dünge- und Umtopf-Termine als Ganztagstermine | – |
+| Gedüngt, Umgetopft (Knöpfe, jede Pflanze, mit Pflegekalender) | Setzt heute als letztes Düngen/Umtopfen; der nächste Termin im Pflegekalender rückt weiter | – |
+| Pflanzenpflege (Kalender, einer für alle Pflanzen, mit Pflegekalender) | Dünge- und Umtopf-Termine als Ganztagstermine | – |
 
 Feuchte und Lernen brauchen den Bodenfeuchtesensor; ohne ihn gibt es nur Zustand, Messwerte und Grenzwerte.
 
@@ -288,6 +289,11 @@ Optional, standardmäßig aus: unter *Konfigurieren → To-do-Liste fürs Gieße
 
 <a id="pflegekalender"></a>
 ## Pflegekalender
+
+Optional, Standard aus: unter *Konfigurieren → Pflegekalender* einschalten. Aus heißt: kein Kalender, keine
+Pflege-Knöpfe, keine KI-Anfragen für den Pflegeplan und keine Pflegeplan-Hinweise unter Reparaturen; die Aktion
+`care_done` meldet, dass der Pflegekalender aus ist. Die gespeicherten Termine (`<entry>.care`) bleiben, Wiedereinschalten
+verliert also nichts.
 
 Der Kalender **Pflanzenpflege** (`calendar.pflanzenpflege`) zeigt je Pflanze:
 

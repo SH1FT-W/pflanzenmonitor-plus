@@ -46,6 +46,8 @@ async def _care_done(call: ServiceCall) -> None:
     if not entries:
         raise ServiceValidationError(translation_domain=DOMAIN, translation_key="not_loaded")
     coordinator = entries[0].runtime_data
+    if coordinator.care is None:
+        raise ServiceValidationError(translation_domain=DOMAIN, translation_key="care_off")
     target = call.data[ATTR_PLANT]
     item = er.async_get(hass).async_get(target)
     device = dr.async_get(hass).async_get(item.device_id) if item and item.device_id else None

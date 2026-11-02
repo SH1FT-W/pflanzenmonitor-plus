@@ -53,9 +53,6 @@ async def test_plant_without_moisture_sensor(hass: HomeAssistant, entry: MockCon
         "sensor.flur_nackt_temperatur",
         "number.flur_nackt_min_temperatur",
         "number.flur_nackt_max_temperatur",
-        "button.flur_nackt_gedungt",
-        "button.flur_nackt_umgetopft",
-        "calendar.pflanzenpflege",
     }
     assert entry.runtime_data.data["PLANTBARE0001"].learned.stage == "keine_daten"
 

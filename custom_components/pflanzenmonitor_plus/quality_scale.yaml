@@ -139,7 +139,8 @@ rules:
     status: done
     comment: >-
       Beim Einrichten werden Entitäten und Geräte entfernt, die es nicht mehr geben soll (Sensor abgewählt, KI oder
-      Wetter abgewählt, Pflanze nach drinnen); gelöschte Unterpunkte nehmen Gerät und Entitäten mit. Solange der Plant
+      Wetter abgewählt, Pflanze nach drinnen, Pflegekalender aus; Kalender, Pflege-Knöpfe und Pflegeplan-Hinweise
+      auch, solange der Plant Monitor noch Pflanzen hat); gelöschte Unterpunkte nehmen Gerät und Entitäten mit. Solange der Plant
       Monitor noch Pflanzen hat, wird nichts weggeräumt (an dessen Geräten hängen Entitäten von Plus).
 
   # Platinum

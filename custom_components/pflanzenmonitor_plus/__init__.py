@@ -19,7 +19,16 @@ from homeassistant.helpers.typing import ConfigType
 from . import health, services
 from .advisor import SUGGESTION_ISSUE, Advisor
 from .careplan import CARE_ISSUE, CarePlans
-from .const import CONF_AI_TASK, CONF_OUTDOOR, CONF_RAIN_SENSOR, CONF_TODO, CONF_WEATHER, DOMAIN
+from .const import (
+    CARE_KEYS,
+    CONF_AI_TASK,
+    CONF_CARE,
+    CONF_OUTDOOR,
+    CONF_RAIN_SENSOR,
+    CONF_TODO,
+    CONF_WEATHER,
+    DOMAIN,
+)
 from .coordinator import PlusConfigEntry, PlusCoordinator
 from .migrate import legacy_entries, sync_issues
 from .plants import calendar_id, sensor_key, unique_ids
@@ -50,6 +59,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: PlusConfigEntry) -> bool
     # Solange der Plant Monitor noch Pflanzen hat, nichts wegräumen: dessen Geräte tragen noch Entitäten von Plus
     if not legacy_entries(hass):
         _remove_stale(hass, entry, coordinator)
+    if not entry.options.get(CONF_CARE):
+        _remove_care(hass, entry, coordinator)
     sync_issues(hass, entry)
     ai = entry.options.get(CONF_AI_TASK)
     if ai:
@@ -57,12 +68,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: PlusConfigEntry) -> bool
         await advisor.async_load(set(coordinator.plants))
         advisor.sync_issues()
         entry.async_on_unload(advisor.shutdown)
-    plans = coordinator.care = CarePlans(
-        hass, coordinator, ai, coordinator.advisor.lock if coordinator.advisor else None
-    )
-    await plans.async_load(set(coordinator.plants))
-    plans.sync_issues()
-    entry.async_on_unload(plans.shutdown)
+    # Care calendar off: no plans at all (no entities, no AI requests); the stored dates stay for turning it on again
+    if entry.options.get(CONF_CARE):
+        plans = coordinator.care = CarePlans(
+            hass, coordinator, ai, coordinator.advisor.lock if coordinator.advisor else None
+        )
+        await plans.async_load(set(coordinator.plants))
+        plans.sync_issues()
+        entry.async_on_unload(plans.shutdown)
     if todo := entry.options.get(CONF_TODO):
         coordinator.tasks = WateringTasks(hass, coordinator, todo)
         await coordinator.tasks.async_load(set(coordinator.plants))
@@ -71,7 +84,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: PlusConfigEntry) -> bool
         """Limits first, then the care plan; both share one lock, so the AI never gets two requests at once."""
         if coordinator.advisor:
             await coordinator.advisor.async_run_due()
-        await plans.async_run_due()
+        if coordinator.care:
+            await coordinator.care.async_run_due()
 
     @callback
     def updated() -> None:
@@ -116,9 +130,10 @@ async def _changed(hass: HomeAssistant, entry: PlusConfigEntry) -> None:
 def _remove_stale(hass: HomeAssistant, entry: PlusConfigEntry, coordinator: PlusCoordinator) -> None:
     """Entitäten und Geräte entfernen, die es nicht mehr geben soll (Sensor abgewählt, KI/Wetter aus, nach drinnen)."""
     ai, weather = bool(entry.options.get(CONF_AI_TASK)), bool(entry.options.get(CONF_WEATHER))
-    expected: set[str] = {calendar_id(entry.entry_id)}
+    care = bool(entry.options.get(CONF_CARE))
+    expected: set[str] = {calendar_id(entry.entry_id)} if care else set()
     for plant in coordinator.plants.values():
-        expected |= set(unique_ids(plant, ai=ai, weather=weather))
+        expected |= set(unique_ids(plant, ai=ai, weather=weather, care=care))
     registry = er.async_get(hass)
     for item in er.async_entries_for_config_entry(registry, entry.entry_id):
         if item.unique_id not in expected:
@@ -135,6 +150,19 @@ def _remove_stale(hass: HomeAssistant, entry: PlusConfigEntry, coordinator: Plus
             issue_id.startswith(prefix) and (not ai or issue_id.removeprefix(prefix) not in coordinator.plants)
             for prefix in (SUGGESTION_ISSUE, CARE_ISSUE)
         ):
+            ir.async_delete_issue(hass, DOMAIN, issue_id)
+
+
+def _remove_care(hass: HomeAssistant, entry: PlusConfigEntry, coordinator: PlusCoordinator) -> None:
+    """Care calendar off: remove its calendar, the care buttons and open care plan repairs (also while the Plant
+    Monitor still has plants: these entities belong to Plus alone)."""
+    care = {calendar_id(entry.entry_id)} | {f"{key}_{k}" for key in coordinator.plants for k in CARE_KEYS}
+    registry = er.async_get(hass)
+    for item in er.async_entries_for_config_entry(registry, entry.entry_id):
+        if item.unique_id in care:
+            registry.async_remove(item.entity_id)
+    for domain, issue_id in list(ir.async_get(hass).issues):
+        if domain == DOMAIN and issue_id.startswith(CARE_ISSUE):
             ir.async_delete_issue(hass, DOMAIN, issue_id)
 
 

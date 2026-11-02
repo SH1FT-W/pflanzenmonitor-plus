@@ -11,13 +11,15 @@
           "ai_task": "KI für Grenzwert-Vorschläge",
           "weather": "Wetter",
           "rain_sensor": "Regensensor",
-          "todo_list": "To-do-Liste fürs Gießen"
+          "todo_list": "To-do-Liste fürs Gießen",
+          "care_calendar": "Pflegekalender"
         },
         "data_description": {
-          "ai_task": "KI-Aufgaben-Entität (z. B. Claude). Sobald eine Pflanze gelernt ist, schlägt sie höchstens einmal im Monat passende Grenzwerte nach Pflanzenart vor (Bodenfeuchte, Temperatur, Bodentemperatur, Luftfeuchte, Helligkeit, Tageslicht; nur Werte mit Sensor). Es ändert sich nichts, bis du übernimmst. Leer lassen = keine Vorschläge. Außerdem schlägt sie einmal je Jahreszeit einen Pflegeplan vor (Düngen, Umtopfen).",
+          "ai_task": "KI-Aufgaben-Entität (z. B. Claude). Sobald eine Pflanze gelernt ist, schlägt sie höchstens einmal im Monat passende Grenzwerte nach Pflanzenart vor (Bodenfeuchte, Temperatur, Bodentemperatur, Luftfeuchte, Helligkeit, Tageslicht; nur Werte mit Sensor). Es ändert sich nichts, bis du übernimmst. Leer lassen = keine Vorschläge. Mit eingeschaltetem Pflegekalender schlägt sie außerdem einmal je Jahreszeit einen Pflegeplan vor (Düngen, Umtopfen).",
           "weather": "Stündliche Vorhersage für Regen- und Frosthinweise bei Pflanzen draußen.",
           "rain_sensor": "Gemessene Regenintensität (mm/h). Damit unterscheidet Plus bei Pflanzen draußen Regen vom Gießen; ohne (oder bevor er Verlauf hat) zählen Anstiege draußen als unbekannt und „Zuletzt gegossen“ bleibt dort leer.",
-          "todo_list": "Ist eine Pflanze fällig, legt Plus hier eine Aufgabe „Yucca gießen“ (für eine Pflanze namens Yucca) an (mit Fälligkeitsdatum, wenn die Liste das kann), höchstens eine offene je Pflanze. Sie wird von selbst erledigt, sobald die Bodenfeuchte wieder steigt; hakst du sie ab, wartet Plus auf das nächste Gießen. Leer lassen = keine Aufgaben."
+          "todo_list": "Ist eine Pflanze fällig, legt Plus hier eine Aufgabe „Yucca gießen“ (für eine Pflanze namens Yucca) an (mit Fälligkeitsdatum, wenn die Liste das kann), höchstens eine offene je Pflanze. Sie wird von selbst erledigt, sobald die Bodenfeuchte wieder steigt; hakst du sie ab, wartet Plus auf das nächste Gießen. Leer lassen = keine Aufgaben.",
+          "care_calendar": "Kalender „Pflanzenpflege“ mit Dünge- und Umtopfterminen aller Pflanzen, Knöpfe „Gedüngt“ und „Umgetopft“ je Pflanze und mit KI einmal je Jahreszeit ein Vorschlag für den Pflegeplan. Ausschalten entfernt Kalender und Knöpfe; die gespeicherten Termine bleiben fürs Wiedereinschalten erhalten."
         }
       }
     }
@@ -116,13 +118,15 @@
           "ai_task": "KI für Grenzwert-Vorschläge",
           "weather": "Wetter",
           "rain_sensor": "Regensensor",
-          "todo_list": "To-do-Liste fürs Gießen"
+          "todo_list": "To-do-Liste fürs Gießen",
+          "care_calendar": "Pflegekalender"
         },
         "data_description": {
-          "ai_task": "KI-Aufgaben-Entität (z. B. Claude). Sobald eine Pflanze gelernt ist, schlägt sie höchstens einmal im Monat passende Grenzwerte nach Pflanzenart vor (Bodenfeuchte, Temperatur, Bodentemperatur, Luftfeuchte, Helligkeit, Tageslicht; nur Werte mit Sensor). Es ändert sich nichts, bis du übernimmst. Leer lassen = keine Vorschläge. Außerdem schlägt sie einmal je Jahreszeit einen Pflegeplan vor (Düngen, Umtopfen).",
+          "ai_task": "KI-Aufgaben-Entität (z. B. Claude). Sobald eine Pflanze gelernt ist, schlägt sie höchstens einmal im Monat passende Grenzwerte nach Pflanzenart vor (Bodenfeuchte, Temperatur, Bodentemperatur, Luftfeuchte, Helligkeit, Tageslicht; nur Werte mit Sensor). Es ändert sich nichts, bis du übernimmst. Leer lassen = keine Vorschläge. Mit eingeschaltetem Pflegekalender schlägt sie außerdem einmal je Jahreszeit einen Pflegeplan vor (Düngen, Umtopfen).",
           "weather": "Stündliche Vorhersage für Regen- und Frosthinweise bei Pflanzen draußen.",
           "rain_sensor": "Gemessene Regenintensität (mm/h). Damit unterscheidet Plus bei Pflanzen draußen Regen vom Gießen; ohne (oder bevor er Verlauf hat) zählen Anstiege draußen als unbekannt und „Zuletzt gegossen“ bleibt dort leer.",
-          "todo_list": "Ist eine Pflanze fällig, legt Plus hier eine Aufgabe „Yucca gießen“ (für eine Pflanze namens Yucca) an (mit Fälligkeitsdatum, wenn die Liste das kann), höchstens eine offene je Pflanze. Sie wird von selbst erledigt, sobald die Bodenfeuchte wieder steigt; hakst du sie ab, wartet Plus auf das nächste Gießen. Leer lassen = keine Aufgaben."
+          "todo_list": "Ist eine Pflanze fällig, legt Plus hier eine Aufgabe „Yucca gießen“ (für eine Pflanze namens Yucca) an (mit Fälligkeitsdatum, wenn die Liste das kann), höchstens eine offene je Pflanze. Sie wird von selbst erledigt, sobald die Bodenfeuchte wieder steigt; hakst du sie ab, wartet Plus auf das nächste Gießen. Leer lassen = keine Aufgaben.",
+          "care_calendar": "Kalender „Pflanzenpflege“ mit Dünge- und Umtopfterminen aller Pflanzen, Knöpfe „Gedüngt“ und „Umgetopft“ je Pflanze und mit KI einmal je Jahreszeit ein Vorschlag für den Pflegeplan. Ausschalten entfernt Kalender und Knöpfe; die gespeicherten Termine bleiben fürs Wiedereinschalten erhalten."
         }
       }
     }
@@ -664,6 +668,9 @@
     },
     "changed_since": {
       "message": "Die Grenzwerte wurden seit der Übernahme geändert; Zurücknehmen würde das überschreiben."
+    },
+    "care_off": {
+      "message": "Der Pflegekalender ist ausgeschaltet (Optionen von Pflanzenmonitor Plus)."
     },
     "not_loaded": {
       "message": "Pflanzenmonitor Plus ist nicht geladen."

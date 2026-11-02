@@ -34,6 +34,7 @@ from . import care, health
 from .const import (
     CONF_AI_TASK,
     CONF_AREA,
+    CONF_CARE,
     CONF_GRACE,
     CONF_IMAGE,
     CONF_NAME,
@@ -79,6 +80,7 @@ def _schema(current: dict[str, Any]) -> vol.Schema:
             vol.Optional(CONF_TODO, description={"suggested_value": current.get(CONF_TODO)}): EntitySelector(
                 EntitySelectorConfig(domain="todo")
             ),
+            vol.Optional(CONF_CARE, default=bool(current.get(CONF_CARE))): BooleanSelector(),
         }
     )
 
@@ -173,7 +175,10 @@ class PlantFlow(ConfigSubentryFlow):
         if user_input is not None:
             self.data[CONF_PROBLEMS] = list(user_input.get(CONF_PROBLEMS) or [])
             self.data[CONF_GRACE] = int(float(user_input.get(CONF_GRACE) or 0) * 60)
-            return await self.async_step_care()
+            # Care plan only with the care calendar on (a stored plan stays in the subentry)
+            if self._get_entry().options.get(CONF_CARE):
+                return await self.async_step_care()
+            return self._finish()
         problems = self.data.get(CONF_PROBLEMS, list(health.DEFAULT_PROBLEMS))
         schema = vol.Schema(
             {

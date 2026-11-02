@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- **Care calendar is now an option, off by default.** Turn it on under *Configure → Care calendar*. Off means no
+  calendar "Plant care", no buttons "Fertilized"/"Repotted", no AI care plan requests and no care plan repairs; the
+  action `care_done` reports that the care calendar is off, and the plant dialog skips the step "Care". **If you
+  installed 26.11.1, the calendar and the buttons disappear after this update** (their entities are removed from the
+  entity registry); turn the option on to get them back (with the same entity IDs; custom names or icons set on these entities are
+  not kept). The stored care dates and AI suggestions (`<entry>.care`)
+  and the care plan of each plant stay, so turning it on again loses nothing.
+
 ## 26.11.1 – 02.11.2026
 
 - **Watering tasks (optional, off by default):** choose a to-do list in the options. When a plant is due ("Water in"

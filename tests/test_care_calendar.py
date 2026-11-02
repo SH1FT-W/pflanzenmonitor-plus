@@ -17,7 +17,7 @@ from homeassistant.setup import async_setup_component
 import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry, async_fire_time_changed
 
-from custom_components.pflanzenmonitor_plus.const import DOMAIN
+from custom_components.pflanzenmonitor_plus.const import CONF_CARE, DOMAIN
 from custom_components.pflanzenmonitor_plus.repairs import async_create_fix_flow
 
 from .conftest import INSIDE, OUTSIDE, FakeAI, now, pending, setup
@@ -29,6 +29,20 @@ FERTILIZED = "button.schlafzimmer_bogenhanf_gedungt"
 REPOTTED = "button.schlafzimmer_bogenhanf_umgetopft"
 ISSUE = f"care_{INSIDE}"
 ALL_YEAR = {"fertilize_interval": 14, "fertilize_from": 1, "fertilize_to": 12}
+
+
+@pytest.fixture
+def entry(hass: HomeAssistant, entry: MockConfigEntry) -> MockConfigEntry:
+    """Care calendar on (off by default)."""
+    hass.config_entries.async_update_entry(entry, options={**entry.options, CONF_CARE: True})
+    return entry
+
+
+@pytest.fixture
+def ai_entry(hass: HomeAssistant, ai_entry: MockConfigEntry) -> MockConfigEntry:
+    """Care calendar on (off by default)."""
+    hass.config_entries.async_update_entry(ai_entry, options={**ai_entry.options, CONF_CARE: True})
+    return ai_entry
 
 
 async def events(hass: HomeAssistant, start: str, end: str) -> list[dict[str, Any]]:
@@ -301,10 +315,10 @@ async def test_repair_outdated_removed_and_ai_off(hass: HomeAssistant, ai: FakeA
     assert hass.config_entries.async_remove_subentry(ai_entry, subentry)
     await hass.async_block_till_done(wait_background_tasks=True)
 
-    # AI turned off: open care repairs go away
+    # AI turned off (care calendar stays on): open care repairs go away
     ai_entry.runtime_data.care.records[OUTSIDE] = {"state": "offen", "proposal": {}}
     await ai_entry.runtime_data.care.async_done(OUTSIDE, "fertilized")
     assert ir.async_get(hass).async_get_issue(DOMAIN, f"care_{OUTSIDE}") is not None
-    hass.config_entries.async_update_entry(ai_entry, options={})
+    hass.config_entries.async_update_entry(ai_entry, options={CONF_CARE: True})
     await hass.async_block_till_done(wait_background_tasks=True)
     assert ir.async_get(hass).async_get_issue(DOMAIN, f"care_{OUTSIDE}") is None

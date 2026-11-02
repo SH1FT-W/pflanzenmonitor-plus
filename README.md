@@ -66,7 +66,7 @@ in Home Assistant. No extra packages.
   for the next 48 h below the plant's minimum temperature).
 - **Watering tasks** (optional): when a plant is due, a task like "Water Yucca" lands on a to-do list of your choice,
   completed by itself once the plant has been watered.
-- **Care calendar:** a calendar "Plant care" with fertilizing (season and interval per plant, winter pause) and
+- **Care calendar** (optional): a calendar "Plant care" with fertilizing (season and interval per plant, winter pause) and
   repotting dates; the buttons "Fertilized" and "Repotted" move them on. With AI, a care plan per species is suggested
   once per season.
 - **Repairs:** moving plants over from Plant Monitor, new AI suggestions (accept or reject right in the dialog), and
@@ -104,6 +104,7 @@ are listed under it. All fields are optional and can be changed later under *Con
 | AI for limit suggestions | AI task entity. The first one is suggested. Empty = no AI suggestions (and no buttons). |
 | Weather | Weather entity with an hourly forecast. The first one is suggested. Only for plants outdoors. |
 | To-do list for watering | To-do entity (e.g. the shopping list or a local to-do list). Empty = no watering tasks (default). See [Watering tasks](#watering-tasks). |
+| Care calendar | Calendar "Plant care", the buttons "Fertilized"/"Repotted" and (with AI) the care plan suggestions. Off by default. Turning it off removes the calendar and the buttons; the stored care dates stay for turning it on again. See [Care calendar](#care-calendar). |
 | Rain sensor | Measured rain intensity in mm/h (device class precipitation intensity). Lets Plus tell rain from watering outdoors. Without it, or before it has history, rises outdoors count as unknown. Amount sensors ("rain today") do not work: they stay above 0 until midnight after a shower. |
 
 ### Add or edit a plant
@@ -116,7 +117,7 @@ room then lives on the device).
 | Plant | Name, species (e.g. "Dracaena trifasciata"; helps the AI and is shown as model on the device), room, picture (URL or `/local/…`) |
 | Sensors | Soil moisture, air temperature, soil temperature, air humidity, illuminance (lx or PPFD), conductivity, CO2; "Outdoors" (preselected for rooms like terrace, balcony or garden) |
 | Problems | Which readings count as a problem (default: all but VPD), wait after watering in minutes |
-| Care | Fertilize every N days, fertilizing season from/to month, repot every N years (default: March to September every 21 days, repot every 2 years; southern hemisphere September to March) |
+| Care (only with the care calendar on) | Fertilize every N days, fertilizing season from/to month, repot every N years (default: March to September every 21 days, repot every 2 years; southern hemisphere September to March) |
 
 Plus only creates entities for sensors that are set. When you remove a sensor, its entities go away and its limits
 stay stored. When you rename a sensor in Home Assistant, Plus follows.
@@ -162,8 +163,8 @@ All entities appear on the plant's device. Entity IDs depend on language and roo
 | Rain expected, frost risk (outdoors, with weather) | on/off | Amount, until · lowest temperature, time, plant minimum |
 | AI suggestion (with AI) | None yet · Waiting for approval · Limits fit · Accepted · Rejected · Undone | Summary, "old → new" and reason per limit, confidence, species, asked, next check, last accepted, last error |
 | Buttons (with AI) | Accept suggestion · Reject suggestion (only while one is open) · Undo suggestion (right after accepting) · Ask AI now | – |
-| Fertilized, Repotted (buttons, every plant) | Sets today as the last fertilizing/repotting; the next date in the care calendar moves on | – |
-| Plant care (calendar, one for all plants) | Fertilizing and repotting dates as all-day events | – |
+| Fertilized, Repotted (buttons, every plant, with care calendar) | Sets today as the last fertilizing/repotting; the next date in the care calendar moves on | – |
+| Plant care (calendar, one for all plants, with care calendar) | Fertilizing and repotting dates as all-day events | – |
 
 Moisture-based learning needs the soil moisture sensor; without it a plant has status, readings and limits only.
 
@@ -297,6 +298,10 @@ Optional, off by default: choose a to-do list under *Configure → To-do list fo
 
 <a id="care-calendar"></a>
 ## Care calendar
+
+Optional, off by default: turn on *Configure → Care calendar*. Off means no calendar, no care buttons, no AI care plan
+requests and no care plan repairs; the action `care_done` reports that the care calendar is off. The stored dates
+(`<entry>.care`) stay, so turning it on again loses nothing.
 
 The calendar **Plant care** (`calendar.plant_care`, German `calendar.pflanzenpflege`) shows for every plant:
 

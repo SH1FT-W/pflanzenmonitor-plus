@@ -11,13 +11,15 @@
           "ai_task": "AI for limit suggestions",
           "weather": "Weather",
           "rain_sensor": "Rain sensor",
-          "todo_list": "To-do list for watering"
+          "todo_list": "To-do list for watering",
+          "care_calendar": "Care calendar"
         },
         "data_description": {
-          "ai_task": "AI task entity (e.g. Claude). Once a plant is learned, it suggests suitable limits for the species at most once a month (soil moisture, temperature, soil temperature, humidity, illuminance, daily light; only values with a sensor). Nothing changes until you accept. Leave empty to turn suggestions off. It also suggests a care plan (fertilizing, repotting) once per season.",
+          "ai_task": "AI task entity (e.g. Claude). Once a plant is learned, it suggests suitable limits for the species at most once a month (soil moisture, temperature, soil temperature, humidity, illuminance, daily light; only values with a sensor). Nothing changes until you accept. Leave empty to turn suggestions off. With the care calendar on, it also suggests a care plan (fertilizing, repotting) once per season.",
           "weather": "Hourly forecast for rain and frost warnings of plants outdoors.",
           "rain_sensor": "Measured rain intensity (mm/h). Lets Plus tell rain from watering for plants outdoors; without it (or before it has history), rises outdoors count as unknown and \"Last watered\" stays empty there.",
-          "todo_list": "When a plant is due for watering, Plus adds a task \"Water Yucca\" (for a plant called Yucca) here (with the due date if the list supports it), at most one open task per plant. It is completed by itself once the soil moisture rises again; if you check it off, Plus waits for the next watering. Leave empty to turn tasks off."
+          "todo_list": "When a plant is due for watering, Plus adds a task \"Water Yucca\" (for a plant called Yucca) here (with the due date if the list supports it), at most one open task per plant. It is completed by itself once the soil moisture rises again; if you check it off, Plus waits for the next watering. Leave empty to turn tasks off.",
+          "care_calendar": "Calendar \"Plant care\" with fertilizing and repotting dates of all plants, buttons \"Fertilized\" and \"Repotted\" per plant and, with an AI, a suggested care plan once per season. Turning it off removes the calendar and the buttons; the stored dates stay for turning it on again."
         }
       }
     }
@@ -116,13 +118,15 @@
           "ai_task": "AI for limit suggestions",
           "weather": "Weather",
           "rain_sensor": "Rain sensor",
-          "todo_list": "To-do list for watering"
+          "todo_list": "To-do list for watering",
+          "care_calendar": "Care calendar"
         },
         "data_description": {
-          "ai_task": "AI task entity (e.g. Claude). Once a plant is learned, it suggests suitable limits for the species at most once a month (soil moisture, temperature, soil temperature, humidity, illuminance, daily light; only values with a sensor). Nothing changes until you accept. Leave empty to turn suggestions off. It also suggests a care plan (fertilizing, repotting) once per season.",
+          "ai_task": "AI task entity (e.g. Claude). Once a plant is learned, it suggests suitable limits for the species at most once a month (soil moisture, temperature, soil temperature, humidity, illuminance, daily light; only values with a sensor). Nothing changes until you accept. Leave empty to turn suggestions off. With the care calendar on, it also suggests a care plan (fertilizing, repotting) once per season.",
           "weather": "Hourly forecast for rain and frost warnings of plants outdoors.",
           "rain_sensor": "Measured rain intensity (mm/h). Lets Plus tell rain from watering for plants outdoors; without it (or before it has history), rises outdoors count as unknown and \"Last watered\" stays empty there.",
-          "todo_list": "When a plant is due for watering, Plus adds a task \"Water Yucca\" (for a plant called Yucca) here (with the due date if the list supports it), at most one open task per plant. It is completed by itself once the soil moisture rises again; if you check it off, Plus waits for the next watering. Leave empty to turn tasks off."
+          "todo_list": "When a plant is due for watering, Plus adds a task \"Water Yucca\" (for a plant called Yucca) here (with the due date if the list supports it), at most one open task per plant. It is completed by itself once the soil moisture rises again; if you check it off, Plus waits for the next watering. Leave empty to turn tasks off.",
+          "care_calendar": "Calendar \"Plant care\" with fertilizing and repotting dates of all plants, buttons \"Fertilized\" and \"Repotted\" per plant and, with an AI, a suggested care plan once per season. Turning it off removes the calendar and the buttons; the stored dates stay for turning it on again."
         }
       }
     }
@@ -664,6 +668,9 @@
     },
     "changed_since": {
       "message": "The limits were changed since the suggestion was accepted; undo would overwrite them."
+    },
+    "care_off": {
+      "message": "The care calendar is turned off (options of Pflanzenmonitor Plus)."
     },
     "not_loaded": {
       "message": "Pflanzenmonitor Plus is not loaded."

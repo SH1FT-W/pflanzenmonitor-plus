@@ -22,7 +22,8 @@ NEXT_WITHIN = timedelta(days=400)
 async def async_setup_entry(
     hass: HomeAssistant, entry: PlusConfigEntry, async_add_entities: AddConfigEntryEntitiesCallback
 ) -> None:
-    async_add_entities([CareCalendar(entry.runtime_data.care, entry.entry_id)])
+    if plans := entry.runtime_data.care:
+        async_add_entities([CareCalendar(plans, entry.entry_id)])
 
 
 class CareCalendar(CalendarEntity):

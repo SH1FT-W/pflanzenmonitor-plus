@@ -353,8 +353,24 @@ async def test_options_keep_outdoor_until_migrated(hass: HomeAssistant) -> None:
     result = await hass.config_entries.options.async_init(plus.entry_id)
     await hass.config_entries.options.async_configure(result["flow_id"], {})
     await hass.async_block_till_done(wait_background_tasks=True)
-    assert plus.options == {CONF_OUTDOOR: ["plant.bogenhanf"]}
+    assert plus.options == {CONF_OUTDOOR: ["plant.bogenhanf"], "care_calendar": False}
     # Umbenannt → Liste zieht mit
     er.async_get(hass).async_update_entity("plant.bogenhanf", new_entity_id="plant.bogen")
     await hass.async_block_till_done(wait_background_tasks=True)
     assert plus.options[CONF_OUTDOOR] == ["plant.bogen"]
+
+
+async def test_care_calendar_off_cleans_up_before_migration(hass: HomeAssistant) -> None:
+    """Care calendar off while the Plant Monitor still has plants: its calendar entity (Plus only) is removed
+    anyway, everything else waits for the migration."""
+    legacy_plant(hass)
+    await start(hass)
+    plus = MockConfigEntry(domain=DOMAIN, title="Pflanzenmonitor Plus", data={}, options={})
+    plus.add_to_hass(hass)
+    registry = er.async_get(hass)
+    calendar = registry.async_get_or_create("calendar", DOMAIN, f"{plus.entry_id}-care", config_entry=plus)
+    other = registry.async_get_or_create("sensor", DOMAIN, "something-else", config_entry=plus)
+    assert await hass.config_entries.async_setup(plus.entry_id)
+    await hass.async_block_till_done(wait_background_tasks=True)
+    assert registry.async_get(calendar.entity_id) is None
+    assert registry.async_get(other.entity_id) is not None
