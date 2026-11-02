@@ -1,6 +1,6 @@
 # Changelog
 
-## 26.11.1 – unreleased
+## 26.11.1 – 02.11.2026
 
 - **Watering tasks (optional, off by default):** choose a to-do list in the options. When a plant is due ("Water in"
   reaches today), Plus adds a task like "Water Yucca" (with the due date if the list supports it),
