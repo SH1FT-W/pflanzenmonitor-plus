@@ -54,7 +54,8 @@ async def test_sensors_on_plant_device(hass: HomeAssistant, entry: MockConfigEnt
     assert device is not None
     assert device.name == "Bogenhanf"
     assert device.area_id == "schlafzimmer"
-    assert device.config_entries_subentries[entry.entry_id] == {entry.runtime_data.plants[INSIDE].subentry_id}
+    assert device.config_entry_id == entry.entry_id
+    assert device.config_subentry_id == entry.runtime_data.plants[INSIDE].subentry_id
     for entity_id in (
         "sensor.schlafzimmer_bogenhanf",
         "sensor.schlafzimmer_bogenhanf_lernstand",

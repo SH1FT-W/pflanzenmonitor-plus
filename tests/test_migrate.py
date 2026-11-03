@@ -4,10 +4,13 @@ from __future__ import annotations
 
 from typing import Any
 
+from awesomeversion import AwesomeVersion
 from homeassistant.components.repairs import repairs_flow_manager
 from homeassistant.config_entries import ConfigEntryState
+from homeassistant.const import __version__ as HA_VERSION
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import (
     area_registry as ar,
     device_registry as dr,
@@ -26,6 +29,7 @@ pytestmark = pytest.mark.usefixtures("stats", "forecast")
 
 
 KEY = "01JPLANT0000000000BOGENHANF"
+NEW_UNLOAD_RESULT = AwesomeVersion(HA_VERSION) >= AwesomeVersion("2026.11.0b0")
 
 
 @pytest.fixture(autouse=True)
@@ -33,8 +37,12 @@ def plant_monitor(hass: HomeAssistant) -> dict[str, bool]:
     """Der Plant Monitor als Integration, deren Einträge sich entladen lassen (unload=False: Entladen scheitert)."""
     control = {"unload": True}
 
-    async def unload_entry(_hass: HomeAssistant, _entry: Any) -> bool:
-        return control["unload"]
+    async def unload_entry(_hass: HomeAssistant, _entry: Any) -> bool | None:
+        # A failed unload raises (FAILED_UNLOAD in every HA version); from HA 2026.11 a core integration,
+        # and mock_integration counts as one, must return None instead of True.
+        if not control["unload"]:
+            raise HomeAssistantError("unload failed")
+        return None if NEW_UNLOAD_RESULT else True
 
     mock_integration(hass, MockModule("plant", async_unload_entry=unload_entry))
     return control
