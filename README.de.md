@@ -6,7 +6,7 @@
 
 Pflanzen-Integration für Home Assistant: überwacht jede Pflanze an ihren Grenzwerten, lernt aus dem
 Bodenfeuchte-Verlauf, wann gegossen wurde und wann sie wieder Wasser braucht, und lässt auf Wunsch eine KI passende
-Grenzwerte vorschlagen. Sie kann alles, was der [Plant Monitor](https://github.com/Olen/homeassistant-plant) (HACS)
+Grenzwerte vorschlagen. Sie kann alles, was der [Plant Monitor](https://github.com/Olen/homeassistant-plant) (Marketplace)
 kann, und übernimmt dessen Pflanzen auf Knopfdruck – danach braucht es ihn nicht mehr.
 
 - **Zustand je Pflanze** („OK“/„Problem“) wie `plant.*` im Plant Monitor, mit denselben Attributen
@@ -54,7 +54,9 @@ Keine zusätzlichen Pakete. OpenPlantbook wird (noch) nicht unterstützt.
 
 ## Installation
 
-1. In HACS über das Drei-Punkte-Menü **Benutzerdefinierte Repositories** öffnen,
+Der Marketplace liegt unter Einstellungen → Marketplace. Vor Home Assistant 2026.11 heißt er noch HACS.
+
+1. Im Marketplace über das Drei-Punkte-Menü **Benutzerdefinierte Repositories** öffnen,
    `https://github.com/SH1FT-W/pflanzenmonitor-plus` mit dem Typ **Integration** hinzufügen, **Pflanzenmonitor Plus**
    herunterladen – oder den Ordner `custom_components/pflanzenmonitor_plus` aus dem
    [neuesten Release](https://github.com/SH1FT-W/pflanzenmonitor-plus/releases/latest) nach
@@ -102,7 +104,7 @@ Hat der Plant Monitor noch Pflanzen, erscheint unter *Einstellungen → Reparatu
   der Entitäten sowie der Live-Stand (Lichtsumme, Tageslicht heute und gestern, laufende Probleme)
 - die Entitäts-IDs bleiben gleich, der Verlauf läuft weiter; nur `plant.<name>` wird zu `sensor.<name>`
 - Gelerntes und KI-Verlauf von Plus bleiben erhalten
-- danach sind die Pflanzen **aus dem Plant Monitor entfernt**; er lässt sich in HACS deinstallieren
+- danach sind die Pflanzen **aus dem Plant Monitor entfernt**; er lässt sich im Marketplace deinstallieren
 
 Automationen und Skripte, die noch `plant.<name>` nutzen, listet Plus unter Reparaturen mit der neuen ID auf
 (Dashboards kann HA nicht durchsuchen – dort selbst ersetzen).

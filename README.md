@@ -10,7 +10,7 @@ a watering forecast from each plant's own history, AI-suggested limits you appro
 
 [![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FSH1FT-W%2Fpflanzenmonitor-plus%2Fmain%2Fcustom_components%2Fpflanzenmonitor_plus%2Fmanifest.json&query=%24.version&label=version&style=flat-square&color=2E7D32&labelColor=111111)](https://github.com/SH1FT-W/pflanzenmonitor-plus/releases/latest)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.9%2B-2E7D32?style=flat-square&labelColor=111111&logo=homeassistant&logoColor=white)](https://www.home-assistant.io)
-[![HACS](https://img.shields.io/badge/HACS-custom%20repository-2E7D32?style=flat-square&labelColor=111111)](https://hacs.xyz)
+[![Marketplace](https://img.shields.io/badge/Marketplace-custom%20repository-2E7D32?style=flat-square&labelColor=111111)](https://hacs.xyz)
 [![IoT class](https://img.shields.io/badge/iot-calculated-2E7D32?style=flat-square&labelColor=111111)](https://developers.home-assistant.io/docs/creating_integration_manifest/#iot-class)
 [![Quality scale](https://img.shields.io/badge/quality%20scale-self--assessed-2E7D32?style=flat-square&labelColor=111111)](custom_components/pflanzenmonitor_plus/quality_scale.yaml)
 [![License](https://img.shields.io/badge/license-Apache%202.0-2E7D32?style=flat-square&labelColor=111111)](LICENSE)
@@ -83,9 +83,11 @@ in Home Assistant. No extra packages.
 <a id="installation"></a>
 ## Installation
 
-### HACS (custom repository)
+### Marketplace (custom repository)
 
-1. In HACS, open the three dots menu, choose **Custom repositories** and add
+The Marketplace is under Settings → Marketplace. On Home Assistant before 2026.11 it is still called HACS.
+
+1. In the Marketplace, open the three dots menu, choose **Custom repositories** and add
    `https://github.com/SH1FT-W/pflanzenmonitor-plus` with the type **Integration**.
 2. Search for **Pflanzenmonitor Plus**, download it and restart Home Assistant.
 
@@ -136,7 +138,7 @@ what happens and, once you confirm, moves all plants:
   problems)
 - entity IDs stay the same and history continues; only `plant.<name>` becomes `sensor.<name>`
 - what Plus has learned and the AI history stay
-- afterwards the plants are **removed from Plant Monitor**; you can uninstall it in HACS
+- afterwards the plants are **removed from Plant Monitor**; you can uninstall it in the Marketplace
 
 Plant Monitor has to be running for the move (only then are the current limits known). Automations and scripts that
 still use `plant.<name>` or the old devices are listed under Repairs with the new IDs. Home Assistant cannot search
