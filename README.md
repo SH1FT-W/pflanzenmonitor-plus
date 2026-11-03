@@ -83,13 +83,15 @@ in Home Assistant. No extra packages.
 <a id="installation"></a>
 ## Installation
 
-### Marketplace (custom repository)
+### Marketplace
 
 The Marketplace is under Settings → Marketplace. On Home Assistant before 2026.11 it is still called HACS.
 
-1. In the Marketplace, open the three dots menu, choose **Custom repositories** and add
-   `https://github.com/SH1FT-W/pflanzenmonitor-plus` with the type **Integration**.
-2. Search for **Pflanzenmonitor Plus**, download it and restart Home Assistant.
+[![Open in the Marketplace](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=SH1FT-W&repository=pflanzenmonitor-plus&category=integration)
+
+1. In the Marketplace, search for **Pflanzenmonitor Plus** (or click **Open in the Marketplace** above), download it and restart Home Assistant.
+
+Not in the search yet? Then add it as a custom repository first: in the Marketplace open the three dots menu, choose **Custom repositories** and add `https://github.com/SH1FT-W/pflanzenmonitor-plus` with the type **Integration**.
 
 ### Manual
 

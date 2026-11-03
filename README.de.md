@@ -56,9 +56,9 @@ Keine zusätzlichen Pakete. OpenPlantbook wird (noch) nicht unterstützt.
 
 Der Marketplace liegt unter Einstellungen → Marketplace. Vor Home Assistant 2026.11 heißt er noch HACS.
 
-1. Im Marketplace über das Drei-Punkte-Menü **Benutzerdefinierte Repositories** öffnen,
-   `https://github.com/SH1FT-W/pflanzenmonitor-plus` mit dem Typ **Integration** hinzufügen, **Pflanzenmonitor Plus**
-   herunterladen – oder den Ordner `custom_components/pflanzenmonitor_plus` aus dem
+1. Im Marketplace nach **Pflanzenmonitor Plus** suchen und herunterladen. Noch nicht in der Suche? Dann zuerst über das
+   Drei-Punkte-Menü **Benutzerdefinierte Repositories** öffnen und `https://github.com/SH1FT-W/pflanzenmonitor-plus`
+   mit dem Typ **Integration** hinzufügen. Ohne Marketplace: den Ordner `custom_components/pflanzenmonitor_plus` aus dem
    [neuesten Release](https://github.com/SH1FT-W/pflanzenmonitor-plus/releases/latest) nach
    `/config/custom_components/` kopieren.
 2. Home Assistant neu starten.
