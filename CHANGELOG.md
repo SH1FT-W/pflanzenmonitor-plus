@@ -1,6 +1,6 @@
 # Changelog
 
-## 26.11.3 – unreleased
+## 26.11.3 – 04.11.2026
 
 - **Breaking: no more automatic move from Plant Monitor.** Pflanzenmonitor Plus no longer reads, changes or removes
   anything of Plant Monitor (HACS review hacs/default). The repair "Move plants over from Plant Monitor" is gone;
