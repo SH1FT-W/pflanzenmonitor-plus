@@ -23,8 +23,8 @@ a watering forecast from each plant's own history, AI-suggested limits you appro
 
 Pflanzenmonitor Plus watches every plant against its limits, learns from the soil moisture history when it was watered
 and when it needs water again, and optionally lets an AI suggest limits that fit the species. It does everything
-[Plant Monitor](https://github.com/Olen/homeassistant-plant) does and can take over its plants in one step, keeping
-entity IDs and history.
+[Plant Monitor](https://github.com/Olen/homeassistant-plant) does; moving over is a few steps per plant
+([guide](#moving-from-plant-monitor)).
 
 Everything runs locally from Home Assistant's own statistics. Only the optional AI suggestions go to the AI you set up
 in Home Assistant. No extra packages.
@@ -70,8 +70,8 @@ in Home Assistant. No extra packages.
 - **Care calendar** (optional): a calendar "Plant care" with fertilizing (season and interval per plant, winter pause) and
   repotting dates; the buttons "Fertilized" and "Repotted" move them on. With AI, a care plan per species is suggested
   once per season.
-- **Repairs:** moving plants over from Plant Monitor, new AI suggestions (accept or reject right in the dialog), and
-  automations that still use old `plant.*` entities after the move.
+- **Repairs:** new AI suggestions (accept or reject right in the dialog), a notice while Plant Monitor is still set up,
+  and automations that still use old `plant.*` entities after a move.
 
 ## Requirements
 
@@ -130,21 +130,34 @@ stay stored. When you rename a sensor in Home Assistant, Plus follows.
 <a id="moving-from-plant-monitor"></a>
 ## Moving from Plant Monitor
 
-If Plant Monitor still has plants, *Settings → Repairs* shows "Move plants over from Plant Monitor". The dialog says
-what happens and, once you confirm, moves all plants:
+Pflanzenmonitor Plus does not take over anything from Plant Monitor: it does not read, change or remove its plants.
+While Plant Monitor is still set up, *Settings → Repairs* shows a notice with a link to this guide. Move each plant by
+hand:
 
-- taken over are the sensors, the limits **currently set** (from Plant Monitor's limit entities, not the start values
-  in its entry; temperatures converted to °C), species, picture, which readings count as a problem, the wait after
-  watering, "outdoors", the device's room and labels, and the entities' names, icons, labels, hidden/disabled flags,
-  display and voice assistant settings, plus the live state (light sums, daily light today and yesterday, current
-  problems)
-- entity IDs stay the same and history continues; only `plant.<name>` becomes `sensor.<name>`
-- what Plus has learned and the AI history stay
-- afterwards the plants are **removed from Plant Monitor**; you can uninstall it in the Marketplace
+1. Note what you set for the plant in Plant Monitor: sensors, limits (its min/max entities), species, picture, which
+   readings count as a problem, the wait after watering and the room.
+2. Delete the plant in Plant Monitor: *Settings → Devices & services → Plant Monitor*, the plant, three dots menu,
+   **Delete**. This frees its entity IDs; do it first, otherwise Plus gets IDs ending in `_2` that stay. The old
+   history stays in Home Assistant under the old IDs.
+3. In Pflanzenmonitor Plus choose **Add plant** with the same name and the **real sensors** (the ones Plant Monitor
+   used), and **leave Room empty**: with a room, Home Assistant puts it in front of every new entity ID. Set the room
+   afterwards on the plant's device, the IDs stay. Then set the limits on the plant's limit entities (or let the AI
+   suggest them) and the rest in the plant dialog.
+4. Check the entity IDs on the plant's device. The status entity is `sensor.<name>` instead of `plant.<name>` (same
+   states `ok`/`problem` and attributes): replace it in automations, scripts and dashboards. Readings and limits get
+   the same IDs as before where the names match (then their history continues). Older Plant Monitor plants in a
+   Home Assistant that is not set to English kept English IDs (`sensor.<plant>_soil_moisture`), Plus names them in
+   your language: replace those too.
+5. When you have deleted all plants in Plant Monitor, remove it in the Marketplace and restart Home Assistant. The
+   notice under Repairs disappears.
 
-Plant Monitor has to be running for the move (only then are the current limits known). Automations and scripts that
-still use `plant.<name>` or the old devices are listed under Repairs with the new IDs. Home Assistant cannot search
-dashboards: replace the IDs there yourself.
+Nothing is carried over automatically: everything from step 1, plus names, icons, labels, hidden or disabled entities
+and display or voice assistant settings of the entities, and Plant Monitor's light sums (daily light starts again).
+For the watering forecast Plus learns from the long-term statistics of the real moisture sensor, which stay; a
+sensor without statistics (no `state_class`) or only a few days of history needs some watering cycles first.
+
+Moved with an earlier version of Plus (up to 26.11.2, which moved plants itself)? Nothing changes for you. Automations
+and scripts that still use `plant.<name>` or an old device are still listed under Repairs.
 
 <a id="entities"></a>
 ## Entities
@@ -175,7 +188,7 @@ Moisture-based learning needs the soil moisture sensor; without it a plant has s
 
 ## Status and problems
 
-Like Plant Monitor, so automations keep working after the move:
+Like Plant Monitor, so automations only need the new entity ID after moving over:
 
 - Every measurement is "too low" (below min), "too high" (above max) or "OK". Once too low, it stays so until the value
   is 5 % above the limit (at most 5 % of the range), and the other way round – no flapping at the limit.
@@ -224,9 +237,8 @@ actions:
 ## How learning works
 
 1. Plus reads the hourly long-term statistics of the plant's moisture sensor (up to 120 days, at most once an hour)
-   and appends the current value. It also reads its own mirror of that sensor and takes the longer history (after the
-   move, the mirror continues Plant Monitor's). The other sensors (temperature, humidity, light) are only needed for
-   the AI summary; Plus reads 30 days of them.
+   and appends the current value. It also reads its own mirror of that sensor and takes the longer history. The other
+   sensors (temperature, humidity, light) are only needed for the AI summary; Plus reads 30 days of them.
 2. **Detecting watering:** if the maximum of an hour is at least 10 percentage points above the minimum of the three
    hours before, that is a rise. Steps within 12 hours count as one event. After gaps in the history (sensor or Home
    Assistant off) nothing is compared, and a short dip (many sensors briefly report 0 after a restart) does not count.

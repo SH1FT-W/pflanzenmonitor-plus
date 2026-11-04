@@ -63,7 +63,10 @@ class Plant:
 
 
 def from_subentry(subentry: ConfigSubentry) -> Plant:
-    """Pflanze aus einem Unterpunkt; der Schlüssel bleibt nach dem Umzug der aus dem Plant Monitor."""
+    """Pflanze aus einem Unterpunkt.
+
+    Schlüssel ist die Unterpunkt-ID, nach einem Umzug mit einer früheren Version die Eintrags-ID aus dem Plant Monitor.
+    """
     data: Mapping[str, Any] = subentry.data
     sensors = {m: str(data[sensor_key(m)]) for m in health.SOURCES if data.get(sensor_key(m))}
     problems = data.get(CONF_PROBLEMS)

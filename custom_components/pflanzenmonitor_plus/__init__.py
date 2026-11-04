@@ -23,14 +23,13 @@ from .const import (
     CARE_KEYS,
     CONF_AI_TASK,
     CONF_CARE,
-    CONF_OUTDOOR,
     CONF_RAIN_SENSOR,
     CONF_TODO,
     CONF_WEATHER,
     DOMAIN,
 )
 from .coordinator import PlusConfigEntry, PlusCoordinator
-from .migrate import legacy_entries, sync_issues
+from .plant_monitor import sync_issues
 from .plants import calendar_id, sensor_key, unique_ids
 from .tasks import WateringTasks
 
@@ -56,12 +55,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: PlusConfigEntry) -> bool
     entry.runtime_data = coordinator
     await coordinator.limits.async_load(set(coordinator.plants))
     await coordinator.live.async_load(coordinator.plants)
-    # Solange der Plant Monitor noch Pflanzen hat, nichts wegräumen: dessen Geräte tragen noch Entitäten von Plus
-    if not legacy_entries(hass):
-        _remove_stale(hass, entry, coordinator)
+    _remove_stale(hass, entry, coordinator)
     if not entry.options.get(CONF_CARE):
         _remove_care(hass, entry, coordinator)
-    sync_issues(hass, entry)
+    sync_issues(hass, dict(entry.data))
     ai = entry.options.get(CONF_AI_TASK)
     if ai:
         advisor = coordinator.advisor = Advisor(hass, coordinator, ai)
@@ -154,8 +151,7 @@ def _remove_stale(hass: HomeAssistant, entry: PlusConfigEntry, coordinator: Plus
 
 
 def _remove_care(hass: HomeAssistant, entry: PlusConfigEntry, coordinator: PlusCoordinator) -> None:
-    """Care calendar off: remove its calendar, the care buttons and open care plan repairs (also while the Plant
-    Monitor still has plants: these entities belong to Plus alone)."""
+    """Care calendar off: remove its calendar, the care buttons and open care plan repairs."""
     care = {calendar_id(entry.entry_id)} | {f"{key}_{k}" for key in coordinator.plants for k in CARE_KEYS}
     registry = er.async_get(hass)
     for item in er.async_entries_for_config_entry(registry, entry.entry_id):
@@ -173,9 +169,6 @@ def _rename(hass: HomeAssistant, entry: PlusConfigEntry, old: str, new: str) -> 
     for key in (CONF_AI_TASK, CONF_WEATHER, CONF_RAIN_SENSOR, CONF_TODO):
         if options.get(key) == old:
             options[key] = new
-    # Bis zum Umzug: Pflanzen draußen als plant.*-Liste
-    if isinstance(outdoor := options.get(CONF_OUTDOOR), list) and old in outdoor:
-        options[CONF_OUTDOOR] = [new if v == old else v for v in outdoor]
     if options != dict(entry.options):
         hass.config_entries.async_update_entry(entry, options=options)
     for subentry in entry.subentries.values():

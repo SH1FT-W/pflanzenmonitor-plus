@@ -7,7 +7,7 @@
 Pflanzen-Integration für Home Assistant: überwacht jede Pflanze an ihren Grenzwerten, lernt aus dem
 Bodenfeuchte-Verlauf, wann gegossen wurde und wann sie wieder Wasser braucht, und lässt auf Wunsch eine KI passende
 Grenzwerte vorschlagen. Sie kann alles, was der [Plant Monitor](https://github.com/Olen/homeassistant-plant) (Marketplace)
-kann, und übernimmt dessen Pflanzen auf Knopfdruck – danach braucht es ihn nicht mehr.
+kann; der Umstieg sind wenige Schritte je Pflanze ([Anleitung](#umzug-aus-dem-plant-monitor)).
 
 - **Zustand je Pflanze** („OK“/„Problem“) wie `plant.*` im Plant Monitor, mit denselben Attributen
   (`problems`, `moisture_status` usw., `species`) – Vorlagen und Karten, die diese lesen, laufen weiter; die
@@ -34,8 +34,8 @@ kann, und übernimmt dessen Pflanzen auf Knopfdruck – danach braucht es ihn ni
 - **Pflegekalender** (optional): Kalender „Pflanzenpflege“ mit Dünge- (Saison und Abstand je Pflanze, Winterpause) und
   Umtopf-Terminen; die Knöpfe „Gedüngt“ und „Umgetopft“ schieben sie weiter. Mit KI einmal je Jahreszeit ein
   Pflegeplan je Art als Vorschlag
-- **Hinweise unter Reparaturen**: Umzug aus dem Plant Monitor, neuer KI-Vorschlag (mit Übernehmen/Ablehnen direkt im
-  Dialog), Automationen, die nach dem Umzug noch alte `plant.*`-Entitäten nutzen
+- **Hinweise unter Reparaturen**: neuer KI-Vorschlag (mit Übernehmen/Ablehnen direkt im Dialog), Hinweis, solange der
+  Plant Monitor noch eingerichtet ist, Automationen, die nach einem Umzug noch alte `plant.*`-Entitäten nutzen
 
 Alles läuft lokal; nur die optionalen KI-Vorschläge gehen an die KI, die du in Home Assistant eingerichtet hast.
 Keine zusätzlichen Pakete. OpenPlantbook wird (noch) nicht unterstützt.
@@ -63,7 +63,7 @@ Der Marketplace liegt unter Einstellungen → Marketplace. Vor Home Assistant 20
    `/config/custom_components/` kopieren.
 2. Home Assistant neu starten.
 3. *Einstellungen → Geräte & Dienste → Integration hinzufügen → Pflanzenmonitor Plus*.
-4. Pflanzen anlegen: *Pflanzenmonitor Plus → Pflanze hinzufügen* – oder aus dem Plant Monitor übernehmen (unten).
+4. Pflanzen anlegen: *Pflanzenmonitor Plus → Pflanze hinzufügen* – vom Plant Monitor kommend siehe unten.
 
 ### Einstellungen des Eintrags
 
@@ -95,19 +95,34 @@ Grenzwerte bleiben gespeichert. Wird ein Sensor in HA umbenannt, zieht Plus das 
 
 ### Umzug aus dem Plant Monitor
 
-Hat der Plant Monitor noch Pflanzen, erscheint unter *Einstellungen → Reparaturen* „Pflanzen aus dem Plant Monitor
-übernehmen“. Der Dialog zeigt, was passiert, und zieht nach Bestätigung alle Pflanzen um:
+Pflanzenmonitor Plus übernimmt nichts aus dem Plant Monitor: Es liest, ändert und entfernt dessen Pflanzen nicht.
+Solange der Plant Monitor noch eingerichtet ist, zeigt *Einstellungen → Reparaturen* einen Hinweis mit Link auf diese
+Anleitung. Jede Pflanze ziehst du von Hand um:
 
-- übernommen werden Sensoren, die **aktuellen** Grenzwerte (aus den Grenzwert-Entitäten, nicht die Startwerte im
-  Eintrag; Temperaturen in °C umgerechnet), Art, Bild, welche Messwerte als Problem zählen, die Wartezeit, „draußen“,
-  Raum und Labels des Geräts, Namen, Symbole, Labels, Ausblenden/Deaktivieren und Anzeige- und Assist-Einstellungen
-  der Entitäten sowie der Live-Stand (Lichtsumme, Tageslicht heute und gestern, laufende Probleme)
-- die Entitäts-IDs bleiben gleich, der Verlauf läuft weiter; nur `plant.<name>` wird zu `sensor.<name>`
-- Gelerntes und KI-Verlauf von Plus bleiben erhalten
-- danach sind die Pflanzen **aus dem Plant Monitor entfernt**; er lässt sich im Marketplace deinstallieren
+1. Notieren, was im Plant Monitor für die Pflanze eingestellt ist: Sensoren, Grenzwerte (seine Min/Max-Entitäten),
+   Art, Bild, welche Messwerte als Problem zählen, die Wartezeit nach dem Gießen und den Raum.
+2. Die Pflanze im Plant Monitor löschen: *Einstellungen → Geräte & Dienste → Plant Monitor*, die Pflanze,
+   Drei-Punkte-Menü, **Löschen**. Damit werden ihre Entitäts-IDs frei; zuerst löschen, sonst bekommt Plus IDs mit
+   `_2` am Ende, und die bleiben. Der alte Verlauf bleibt in Home Assistant unter den alten IDs.
+3. In Pflanzenmonitor Plus **Pflanze hinzufügen** mit demselben Namen und den **echten Sensoren** (die der Plant
+   Monitor genutzt hat), **Raum leer lassen**: mit Raum stellt Home Assistant ihn jeder neuen Entitäts-ID voran. Den
+   Raum danach am Gerät der Pflanze setzen, die IDs bleiben. Dann die Grenzwerte an den Grenzwert-Entitäten setzen
+   (oder von der KI vorschlagen lassen) und den Rest im Pflanzen-Dialog.
+4. Die Entitäts-IDs am Gerät der Pflanze prüfen. Die Zustands-Entität heißt `sensor.<name>` statt `plant.<name>`
+   (gleiche Zustände `ok`/`problem` und Attribute): in Automationen, Skripten und Dashboards ersetzen. Messwerte und
+   Grenzwerte bekommen dieselben IDs wie vorher, wo die Namen übereinstimmen (dann läuft ihr Verlauf weiter). Ältere
+   Pflanzen des Plant Monitor haben in einem nicht englisch eingestellten Home Assistant englische IDs behalten
+   (`sensor.<pflanze>_soil_moisture`), Plus benennt sie in deiner Sprache: diese auch ersetzen.
+5. Sind alle Pflanzen im Plant Monitor gelöscht, ihn im Marketplace entfernen und Home Assistant neu starten. Der
+   Hinweis unter Reparaturen verschwindet.
 
-Automationen und Skripte, die noch `plant.<name>` nutzen, listet Plus unter Reparaturen mit der neuen ID auf
-(Dashboards kann HA nicht durchsuchen – dort selbst ersetzen).
+Automatisch übernommen wird nichts: alles aus Schritt 1, dazu Namen, Symbole, Labels, ausgeblendete oder deaktivierte
+Entitäten und Anzeige- oder Assist-Einstellungen der Entitäten sowie die Lichtsummen des Plant Monitor (das Tageslicht
+beginnt neu). Die Gieß-Vorhersage braucht nichts aus dem Plant Monitor: Plus lernt aus dem Verlauf des Feuchtesensors
+selbst, und der bleibt.
+
+Mit einer früheren Version von Plus umgezogen (bis 26.11.2, die Pflanzen noch selbst übernahm)? Für dich ändert sich
+nichts. Automationen und Skripte, die noch `plant.<name>` oder ein altes Gerät nutzen, stehen weiter unter Reparaturen.
 
 ## Entitäten
 
@@ -142,7 +157,7 @@ Geräteseite der Pflanze über die Knöpfe.
 
 ## Zustand und Probleme
 
-Wie im Plant Monitor, damit Automationen nach dem Umzug gleich weiterlaufen:
+Wie im Plant Monitor, damit Automationen nach dem Umstieg nur die neue Entitäts-ID brauchen:
 
 - Je Messgröße „zu niedrig“ (unter Min), „zu hoch“ (über Max) oder „OK“. Wer einmal zu niedrig ist, bleibt es, bis
   der Wert 5 % über der Grenze liegt (höchstens 5 % der Spanne); umgekehrt genauso – kein Hin und Her an der Grenze.
@@ -173,8 +188,8 @@ Aktion `pflanzenmonitor_plus.replace_sensor`: `meter_entity` (Messwert der Pflan
 
 1. Plus liest die stündliche Langzeitstatistik des Feuchtesensors der Pflanze (bis 120 Tage, höchstens einmal pro
    Stunde) und hängt den aktuellen Wert an. Plus liest auch den eigenen Spiegel des Sensors und nimmt den längeren
-   Verlauf (nach dem Umzug führt der Spiegel den des Plant Monitor weiter). Die übrigen Sensoren (Temperatur,
-   Luftfeuchte, Licht) braucht nur die KI-Zusammenfassung; von ihnen liest Plus 30 Tage.
+   Verlauf. Die übrigen Sensoren (Temperatur, Luftfeuchte, Licht) braucht nur die KI-Zusammenfassung; von ihnen liest
+   Plus 30 Tage.
 2. **Gießen erkennen:** Liegt der Höchstwert einer Stunde mindestens 10 Prozentpunkte über dem Tiefstwert der drei
    Stunden davor, ist das ein Anstieg. Stufen innerhalb von 12 Std. zählen als ein Ereignis. Nach Lücken im Verlauf
    (Sensor oder HA aus) wird nicht verglichen, und ein kurzer Ausreißer nach unten (viele Sensoren melden nach einem

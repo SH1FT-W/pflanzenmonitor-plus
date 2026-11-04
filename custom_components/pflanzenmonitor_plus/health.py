@@ -1,6 +1,6 @@
 """Reine Auswertung ohne HA: Messgrößen, Grenzwerte, Zustand einer Pflanze, Lichtsumme (DLI).
 
-Verhalten wie im Plant Monitor (HACS, Olen), damit Automationen und Karten nach dem Umzug gleich weiterlaufen:
+Verhalten wie im Plant Monitor (HACS, Olen), damit Automationen und Karten nach einem Umstieg gleich weiterlaufen:
 Zustand „ok“/„problem“, je Messgröße „Low“/„High“/„ok“ mit 5 % Spielraum, Licht nur „zu hell“ als Problem, DLI
 gegen den Vortag, Feuchte-Wartezeit nach dem Gießen (nur „zu nass“ wird so lange nicht gemeldet).
 """

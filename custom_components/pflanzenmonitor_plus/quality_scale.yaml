@@ -42,8 +42,8 @@ rules:
   entity-unique-id:
     status: done
     comment: >-
-      <Pflanze>-<key> für Messwerte/Grenzwerte/Zustand (wie im Plant Monitor, damit der Umzug die IDs behält),
-      <Pflanze>_<key> für Gelerntes; Pflanze = ID aus dem Plant Monitor bzw. des Unterpunkts.
+      <Pflanze>-<key> für Messwerte/Grenzwerte/Zustand, <Pflanze>_<key> für Gelerntes; Pflanze = ID des Unterpunkts
+      (nach einem Umzug mit einer Version bis 26.11.2 die Eintrags-ID aus dem Plant Monitor).
   has-entity-name: done
   runtime-data: done
   test-before-configure:
@@ -102,7 +102,7 @@ rules:
   docs-known-limitations: done
   docs-supported-devices:
     status: done
-    comment: Jeder Sensor mit passender Geräteklasse; Umzug aus dem Plant Monitor (HACS).
+    comment: Jeder Sensor mit passender Geräteklasse; Umstieg vom Plant Monitor (HACS) von Hand mit Anleitung.
   docs-supported-functions: done
   docs-troubleshooting: done
   docs-use-cases: done
@@ -132,16 +132,15 @@ rules:
   repair-issues:
     status: done
     comment: >-
-      Umzug aus dem Plant Monitor als behebbarer Hinweis mit Dialog; Automationen/Skripte, die danach noch alte
-      plant.*-IDs nutzen; offener KI-Vorschlag für Grenzwerte bzw. Pflegeplan mit Dialog (Übernehmen/Ablehnen). Alle
+      Hinweis mit Anleitung, solange der Plant Monitor eingerichtet ist; Automationen/Skripte, die nach einem Umzug
+      (bis 26.11.2) noch alte plant.*-IDs nutzen; offener KI-Vorschlag für Grenzwerte bzw. Pflegeplan mit Dialog (Übernehmen/Ablehnen). Alle
       verschwinden von selbst.
   stale-devices:
     status: done
     comment: >-
       Beim Einrichten werden Entitäten und Geräte entfernt, die es nicht mehr geben soll (Sensor abgewählt, KI oder
-      Wetter abgewählt, Pflanze nach drinnen, Pflegekalender aus; Kalender, Pflege-Knöpfe und Pflegeplan-Hinweise
-      auch, solange der Plant Monitor noch Pflanzen hat); gelöschte Unterpunkte nehmen Gerät und Entitäten mit. Solange der Plant
-      Monitor noch Pflanzen hat, wird nichts weggeräumt (an dessen Geräten hängen Entitäten von Plus).
+      Wetter abgewählt, Pflanze nach drinnen, Pflegekalender aus mit Kalender, Pflege-Knöpfen und
+      Pflegeplan-Hinweisen); gelöschte Unterpunkte nehmen Gerät und Entitäten mit.
 
   # Platinum
   async-dependency:

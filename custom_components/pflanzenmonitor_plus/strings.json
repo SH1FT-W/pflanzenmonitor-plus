@@ -6,7 +6,7 @@
     "step": {
       "user": {
         "title": "Pflanzenmonitor Plus",
-        "description": "Monitors your plants, learns from the soil moisture history when they were watered and when they need water again, and optionally lets an AI suggest better limits. All fields are optional. Add plants afterwards with \"Add plant\" (or move them over from Plant Monitor under Repairs).",
+        "description": "Monitors your plants, learns from the soil moisture history when they were watered and when they need water again, and optionally lets an AI suggest better limits. All fields are optional. Add plants afterwards with \"Add plant\" (coming from Plant Monitor: see the README).",
         "data": {
           "ai_task": "AI for limit suggestions",
           "weather": "Weather",
@@ -604,21 +604,9 @@
         }
       }
     },
-    "migrate": {
-      "title": "Move plants over from Plant Monitor",
-      "fix_flow": {
-        "step": {
-          "confirm": {
-            "title": "Move plants from Plant Monitor",
-            "description": "Moves these plants: {plants}.\n\nTaken over: sensors, the current limits, species, picture, which readings count as problem, the wait after watering, room, labels, names, icons and display settings. Entity IDs stay the same (history continues), only `plant.bogenhanf` becomes `sensor.bogenhanf` (same states ok/problem and attributes). What Plus has learned and the AI history stay.\n\nAfterwards the plants are **removed from Plant Monitor**. Automations, scripts and dashboards that use `plant.…` must then use the new ID `sensor.…`; Plus lists the automations and scripts under Repairs. After that, Plant Monitor can be uninstalled in HACS."
-          }
-        },
-        "abort": {
-          "nothing_to_migrate": "There are no plants in Plant Monitor (anymore).",
-          "legacy_not_loaded": "Plant Monitor is not running (disabled or failed to start). Only a running Plant Monitor has the current limits – start it (or restart Home Assistant) and try again. Nothing was changed.",
-          "legacy_unload_failed": "Plant Monitor could not be stopped. Restart Home Assistant and try again. Nothing was removed."
-        }
-      }
+    "plant_monitor_installed": {
+      "title": "Plant Monitor is still set up",
+      "description": "Pflanzenmonitor Plus does not take over anything from Plant Monitor. To move a plant over: note its settings, delete it in Plant Monitor first (this frees its entity IDs), then add it in Pflanzenmonitor Plus with the same name, the real sensors and no room, and replace `plant.…` with the new status entity `sensor.…` in automations and dashboards. The guide (Learn more) has all steps.\n\nThis notice disappears once Plant Monitor has no entries anymore (checked when Pflanzenmonitor Plus is loaded, for example after a restart)."
     },
     "references": {
       "title": "Automations still use the old plant entities",
@@ -680,12 +668,6 @@
     },
     "sensor_not_found": {
       "message": "The sensor {entity} does not exist."
-    },
-    "legacy_not_loaded": {
-      "message": "Plant Monitor is not running (disabled or failed to start). Only a running Plant Monitor has the current limits – start it (or restart Home Assistant) and try again. Nothing was changed."
-    },
-    "legacy_unload_failed": {
-      "message": "Plant Monitor could not be stopped. Restart Home Assistant and try again. Nothing was removed."
     },
     "not_a_plant": {
       "message": "{entity} does not belong to a plant of Pflanzenmonitor Plus."

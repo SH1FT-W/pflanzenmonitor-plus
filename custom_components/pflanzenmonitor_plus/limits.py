@@ -12,7 +12,7 @@ from homeassistant.helpers.storage import Store
 from . import health
 from .const import DOMAIN
 
-# Kurz warten, damit mehrere Werte (KI-Vorschlag, Umzug) in einem Schreibvorgang landen
+# Kurz warten, damit mehrere Werte (z. B. ein KI-Vorschlag) in einem Schreibvorgang landen
 SAVE_DELAY = 1
 
 
@@ -51,7 +51,7 @@ class Limits:
             listener()
 
     async def async_save(self) -> None:
-        """Sofort speichern (Umzug: der neu geladene Eintrag liest danach vom Datenträger)."""
+        """Sofort speichern (beim Entladen: der neu geladene Eintrag liest danach vom Datenträger)."""
         await self._store.async_save(self._data())
 
     async def async_remove(self) -> None:

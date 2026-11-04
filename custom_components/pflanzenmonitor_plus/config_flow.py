@@ -86,7 +86,7 @@ def _schema(current: dict[str, Any]) -> vol.Schema:
 
 
 class PlusConfigFlow(ConfigFlow, domain=DOMAIN):
-    """Ein Eintrag; Pflanzen kommen als Unterpunkte dazu (oder per Umzug aus dem Plant Monitor)."""
+    """Ein Eintrag; Pflanzen kommen als Unterpunkte dazu („Pflanze hinzufügen“)."""
 
     VERSION = 1
 
@@ -114,9 +114,6 @@ class PlusOptionsFlow(OptionsFlow):
 
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> ConfigFlowResult:
         if user_input is not None:
-            # Bis zum Umzug steht „draußen“ noch in den Optionen (Liste der plant.*-Entitäten) – nicht verlieren
-            if outdoor := self.config_entry.options.get(CONF_OUTDOOR):
-                user_input = {**user_input, CONF_OUTDOOR: outdoor}
             return self.async_create_entry(data=user_input)
         return self.async_show_form(step_id="init", data_schema=_schema(dict(self.config_entry.options)))
 

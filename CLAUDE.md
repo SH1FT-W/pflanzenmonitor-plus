@@ -1,8 +1,9 @@
 # Pflanzenmonitor Plus – Projektregeln
 
 HA-Integration (`custom_components/pflanzenmonitor_plus`, Domain `pflanzenmonitor_plus`), SH1FT-W/pflanzenmonitor-plus.
-Eigenständige Pflanzen-Integration (ersetzt den Plant Monitor, HACS, Olen, Domain `plant`, GPL-3.0; dessen Pflanzen
-zieht ein Reparatur-Dialog um). Lizenz Apache 2.0: **keinen Code aus dem Plant Monitor übernehmen**, nur Verhalten
+Eigenständige Pflanzen-Integration (ersetzt den Plant Monitor, HACS, Olen, Domain `plant`, GPL-3.0; Umstieg von Hand
+nach README, Plus fasst den Plant Monitor nie an: hacs/default-Review, Prüfliste Punkt 8; der automatische Umzug bis
+26.11.2 ist raus). Lizenz Apache 2.0: **keinen Code aus dem Plant Monitor übernehmen**, nur Verhalten
 nachbauen (NOTICE).
 
 - Repo ist **öffentlich**: nichts Persönliches ins Repo (keine Namen, echten Entitäts-/Eintrags-IDs, Heimnetz-Details,
@@ -31,17 +32,18 @@ nachbauen (NOTICE).
 ## Aufbau
 - Rein, ohne HA (zuerst hier testen): `model.py` (Anstiege, Zyklen, Vorhersage), `health.py` (Zustand wie Plant Monitor,
   VPD, Lichtsumme), `advice.py` (KI-Anfrage, Antwortformat, Schutzregeln), `care.py` (Pflegeplan).
-- Pflanzen = Unterpunkte (Subentries, Typ `plant`) des einen Eintrags (`plants.py`); `key` = umgezogen: Entry-ID im
-  Plant Monitor, sonst subentry_id. Store-Schlüssel und unique_ids hängen am `key`.
+- Pflanzen = Unterpunkte (Subentries, Typ `plant`) des einen Eintrags (`plants.py`); `key` = subentry_id (nach Umzug
+  bis 26.11.2: Entry-ID im Plant Monitor). Store-Schlüssel und unique_ids hängen am `key`.
 - `live.py` Spiegel/PPFD/DLI/Logbuch, `limits.py` Grenzwerte (number-Entitäten zeigen sie nur), `coordinator.py` Lernen
   aus Statistik, Wetter, KI-Kontext, `advisor.py` KI-Vorschläge, `careplan.py` + `calendar.py` Pflegekalender,
-  `tasks.py` Gieß-Aufgaben, `migrate.py` Umzug, `trigger.py`/`condition.py`/`automation.py` Auslöser/Bedingungen.
+  `tasks.py` Gieß-Aufgaben, `plant_monitor.py` Hinweise (Plant Monitor eingerichtet, alte plant.*-IDs),
+  `trigger.py`/`condition.py`/`automation.py` Auslöser/Bedingungen.
 
 ## Warum es so ist (steht nicht im Code)
 - Gewohnheit ist NUR Info (viele gießen weit vor Bedarf); Ziel der Vorhersage ist die Untergrenze.
-- unique_ids wie im Plant Monitor, damit der Umzug die IDs behält – nie ändern.
-- Umzug: Unterpunkte + Registereinträge mit alten IDs OHNE await anlegen, dann einmal neu laden (Update-Listener
-  laufen eager!). Automationen mit alten IDs bekommen den Hinweis „references“.
+- unique_ids wie im Plant Monitor (früher für den Umzug) – nie ändern, sonst verlieren umgezogene Nutzer ihre Entitäten.
+- Nie wieder Daten des Plant Monitor lesen/übernehmen/löschen (Frenck lehnt das ab). Automationen mit alten IDs aus
+  früheren Umzügen bekommen weiter den Hinweis „references“ (liest nur `entry.data["migrated"]`).
 - Trigger/Conditions zielen auf Zustands-Entitäten über die Registry, nicht nur Domain sensor. „Veraltet“ aus
   `last_reported` (auch gleicher Wert zählt als Meldung).
 - KI-Schutzregeln NUR im Code ändern, nie dem Prompt überlassen. Echter Test gegen Claude: Bogenhanf max 40 → 70

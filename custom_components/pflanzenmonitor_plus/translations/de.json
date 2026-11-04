@@ -6,7 +6,7 @@
     "step": {
       "user": {
         "title": "Pflanzenmonitor Plus",
-        "description": "Überwacht deine Pflanzen, lernt aus dem Bodenfeuchte-Verlauf, wann gegossen wurde und wann sie wieder Wasser brauchen, und lässt auf Wunsch eine KI bessere Grenzwerte vorschlagen. Alle Felder sind optional. Pflanzen danach mit „Pflanze hinzufügen“ anlegen (oder unter Reparaturen aus dem Plant Monitor übernehmen).",
+        "description": "Überwacht deine Pflanzen, lernt aus dem Bodenfeuchte-Verlauf, wann gegossen wurde und wann sie wieder Wasser brauchen, und lässt auf Wunsch eine KI bessere Grenzwerte vorschlagen. Alle Felder sind optional. Pflanzen danach mit „Pflanze hinzufügen“ anlegen (vom Plant Monitor kommend: siehe README).",
         "data": {
           "ai_task": "KI für Grenzwert-Vorschläge",
           "weather": "Wetter",
@@ -604,21 +604,9 @@
         }
       }
     },
-    "migrate": {
-      "title": "Pflanzen aus dem Plant Monitor übernehmen",
-      "fix_flow": {
-        "step": {
-          "confirm": {
-            "title": "Pflanzen aus dem Plant Monitor übernehmen",
-            "description": "Übernimmt diese Pflanzen: {plants}.\n\nMit dabei: Sensoren, die aktuellen Grenzwerte, Art, Bild, welche Messwerte als Problem zählen, die Wartezeit nach dem Gießen, Raum, Labels, Namen, Symbole und Anzeige-Einstellungen. Die Entitäts-IDs bleiben gleich (der Verlauf läuft weiter), nur aus `plant.bogenhanf` wird `sensor.bogenhanf` (gleiche Zustände ok/problem und Attribute). Was Plus gelernt hat und der KI-Verlauf bleiben erhalten.\n\nDanach werden die Pflanzen **aus dem Plant Monitor entfernt**. Automationen, Skripte und Dashboards mit `plant.…` müssen dann die neue ID `sensor.…` nutzen; Automationen und Skripte listet Plus unter Reparaturen auf. Anschließend lässt sich der Plant Monitor in HACS deinstallieren."
-          }
-        },
-        "abort": {
-          "nothing_to_migrate": "Im Plant Monitor gibt es (keine) Pflanzen mehr.",
-          "legacy_not_loaded": "Der Plant Monitor läuft nicht (deaktiviert oder Fehler beim Start). Nur ein laufender Plant Monitor kennt die aktuellen Grenzwerte – ihn starten (oder Home Assistant neu starten) und noch einmal versuchen. Es wurde nichts geändert.",
-          "legacy_unload_failed": "Der Plant Monitor ließ sich nicht anhalten. Home Assistant neu starten und noch einmal versuchen. Es wurde nichts entfernt."
-        }
-      }
+    "plant_monitor_installed": {
+      "title": "Der Plant Monitor ist noch eingerichtet",
+      "description": "Pflanzenmonitor Plus übernimmt nichts aus dem Plant Monitor. So ziehst du eine Pflanze um: ihre Einstellungen notieren, sie zuerst im Plant Monitor löschen (das gibt ihre Entitäts-IDs frei), dann in Pflanzenmonitor Plus mit demselben Namen, den echten Sensoren und ohne Raum anlegen und in Automationen und Dashboards `plant.…` durch die neue Zustands-Entität `sensor.…` ersetzen. Alle Schritte stehen in der Anleitung (Mehr erfahren, englisch; auf Deutsch in README.de.md).\n\nDer Hinweis verschwindet, sobald der Plant Monitor keine Einträge mehr hat (geprüft beim Laden von Pflanzenmonitor Plus, z. B. nach einem Neustart)."
     },
     "references": {
       "title": "Automationen nutzen noch die alten Pflanzen-Entitäten",
@@ -680,12 +668,6 @@
     },
     "sensor_not_found": {
       "message": "Den Sensor {entity} gibt es nicht."
-    },
-    "legacy_not_loaded": {
-      "message": "Der Plant Monitor läuft nicht (deaktiviert oder Fehler beim Start). Nur ein laufender Plant Monitor kennt die aktuellen Grenzwerte – ihn starten (oder Home Assistant neu starten) und noch einmal versuchen. Es wurde nichts geändert."
-    },
-    "legacy_unload_failed": {
-      "message": "Der Plant Monitor ließ sich nicht anhalten. Home Assistant neu starten und noch einmal versuchen. Es wurde nichts entfernt."
     },
     "not_a_plant": {
       "message": "{entity} gehört zu keiner Pflanze von Pflanzenmonitor Plus."

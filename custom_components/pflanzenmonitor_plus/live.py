@@ -280,8 +280,6 @@ class Live:
         self._store: Store[dict[str, Any]] = Store(hass, 1, f"{DOMAIN}.{entry_id}.live")
         self.plants: dict[str, PlantLive] = {}
         self._started = False
-        # Umzug: Stand für Pflanzen, die erst nach dem Neuladen da sind
-        self._seeded: dict[str, dict[str, Any]] = {}
         # Speichern angesetzt (async_delay_save verschiebt bei jedem Aufruf, Sensoren melden aber ständig)
         self._pending = False
 
@@ -309,15 +307,11 @@ class Live:
 
     def _data(self) -> dict[str, Any]:
         self._pending = False
-        return {"plants": self._seeded | {key: plant.dump() for key, plant in self.plants.items()}}
-
-    def seed(self, key: str, data: dict[str, Any]) -> None:
-        """Stand einer Pflanze vorgeben, die erst nach dem Neuladen geladen wird (Umzug)."""
-        self._seeded[key] = data
+        return {"plants": {key: plant.dump() for key, plant in self.plants.items()}}
 
     async def async_flush(self) -> None:
         """Beim Entladen sofort speichern (sonst ginge der verzögerte Stand beim Neuladen verloren)."""
-        if self._started or self._seeded:
+        if self._started:
             # Danach nichts mehr ansetzen: ein später gespeicherter alter Stand überschriebe den neu geladenen
             self._started = False
             await self._store.async_save(self._data())

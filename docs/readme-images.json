@@ -4,7 +4,7 @@
     "name": "Pflanzenmonitor Plus",
     "eyebrow": "For Home Assistant",
     "lead": "Your plants, <em>understood.</em>",
-    "sub": "Status and limits for every plant, a watering forecast learned from its own history and AI-suggested limits you approve. Moves Plant Monitor plants over in one step.",
+    "sub": "Status and limits for every plant, a watering forecast learned from its own history and AI-suggested limits you approve. Runs on Home Assistant's own statistics.",
     "pills": [
       [
         "Local, no cloud"

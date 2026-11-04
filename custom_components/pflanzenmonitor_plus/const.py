@@ -6,7 +6,7 @@ from datetime import timedelta
 from typing import Final
 
 DOMAIN: Final = "pflanzenmonitor_plus"
-# Der Plant Monitor (HACS, Olen/homeassistant-plant) registriert sich unter der Domain „plant“; nur für den Umzug
+# Plant Monitor (HACS, Olen/homeassistant-plant) uses the domain `plant`; only to show the notice while it is set up
 LEGACY_DOMAIN: Final = "plant"
 # Unterpunkt je Pflanze
 SUBENTRY_PLANT: Final = "plant"
@@ -26,7 +26,7 @@ CONF_IMAGE: Final = "image"
 CONF_AREA: Final = "area"
 CONF_PROBLEMS: Final = "problems"
 CONF_GRACE: Final = "moisture_grace"
-# Schlüssel der Pflanze (umgezogen: Config-Entry-ID im Plant Monitor, damit Gelerntes und KI-Verlauf bleiben)
+# Schlüssel der Pflanze (nach einem Umzug mit einer früheren Version: Eintrags-ID im Plant Monitor)
 CONF_KEY: Final = "key"
 
 UPDATE_INTERVAL: Final = timedelta(minutes=10)

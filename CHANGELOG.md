@@ -1,5 +1,20 @@
 # Changelog
 
+## 26.11.3 – unreleased
+
+- **Breaking: no more automatic move from Plant Monitor.** Pflanzenmonitor Plus no longer reads, changes or removes
+  anything of Plant Monitor (HACS review hacs/default). The repair "Move plants over from Plant Monitor" is gone;
+  while Plant Monitor is still set up, a notice under Repairs links to the new guide
+  ([Moving from Plant Monitor](README.md#moving-from-plant-monitor)): note the plant's settings, delete it in Plant
+  Monitor first (frees its entity IDs), add it in Plus with the same name, the real sensors and no room, replace
+  `plant.<name>` with `sensor.<name>` (and readings whose IDs differ). Plants moved with an earlier version stay as they are, and the notice
+  about automations that still use old `plant.*` IDs stays too. Plus also no longer follows renames of `plant.*`
+  entities.
+- README, project page and title picture: moving over is described as a few steps per plant.
+- NOTICE and the bug form follow: Plus is an alternative to Plant Monitor, not a takeover.
+- Tests: notice while Plant Monitor is set up (its entry, device and entity stay untouched), no code reads Plant
+  Monitor's data, the old `outdoor` list no longer follows renames, old IDs after an earlier move.
+
 ## 26.11.2 – 02.11.2026
 
 - **Care calendar is now an option, off by default.** Turn it on under *Configure → Care calendar*. Off means no

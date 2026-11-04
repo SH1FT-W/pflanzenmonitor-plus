@@ -106,7 +106,7 @@ class PlusCoordinator(DataUpdateCoordinator[dict[str, PlantData]]):
         self.rain_sensor: str | None = entry.options.get(CONF_RAIN_SENSOR)
         self._stats: dict[str, list[model.Sample]] = {}
         self._stats_hour: datetime | None = None
-        # Quelle des Verlaufs je echtem Sensor (er selbst oder der Spiegel von Plus, der nach dem Umzug den Verlauf
+        # Quelle des Verlaufs je echtem Sensor (er selbst oder der Spiegel von Plus, der nach einem Umzug den Verlauf
         # des Plant Monitor weiterführt)
         self.sources: dict[str, str] = {}
         # Tiefstwert der letzten Stunden je Feuchtesensor: springt der aktuelle Wert darüber, sofort neu rechnen
@@ -159,7 +159,7 @@ class PlusCoordinator(DataUpdateCoordinator[dict[str, PlantData]]):
             for p in self.plants.values():
                 context |= {p.sensors[m] for m in CONTEXT if m in p.sensors}
         own = moisture | context
-        # Den echten Sensor und seinen Spiegel lesen und den längeren Verlauf nehmen: der Spiegel führt nach dem Umzug
+        # Den echten Sensor und seinen Spiegel lesen und den längeren Verlauf nehmen: der Spiegel führt nach einem Umzug
         # den des Plant Monitor weiter, ein neu gekoppelter echter Sensor hat dagegen oft nur wenige Tage.
         external: dict[str, str] = {}
         for p in self.plants.values():

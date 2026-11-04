@@ -363,7 +363,7 @@ class Advisor:
                 )
             else:
                 ir.async_delete_issue(self.hass, DOMAIN, issue_id)
-        # Repairs of plants that are gone (e.g. removed while Plant Monitor still blocks the cleanup at setup)
+        # Repairs of plants that are gone (e.g. a plant removed while Plus was not loaded)
         for domain, issue_id in list(ir.async_get(self.hass).issues):
             if (
                 domain == DOMAIN
