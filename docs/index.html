@@ -248,7 +248,7 @@ footer .fine { flex-basis: 100%; line-height: 1.6; }
       <a href="#features"><span class="en">Features</span><span class="de">Funktionen</span></a>
       <a href="#learning"><span class="en">Learning</span><span class="de">Lernen</span></a>
       <a href="#move"><span class="en">Plant Monitor</span><span class="de">Plant Monitor</span></a>
-      <a href="#entities" class="opt"><span class="en">Entities</span><span class="de">Entitäten</span></a>
+      <a href="#needs" class="opt"><span class="en">What you need</span><span class="de">Was du brauchst</span></a>
       <a href="#faq" class="opt"><span class="en">Good to know</span><span class="de">Gut zu wissen</span></a>
       <a href="https://github.com/SH1FT-W/pflanzenmonitor-plus">GitHub</a>
     </div>
@@ -272,17 +272,14 @@ footer .fine { flex-basis: 100%; line-height: 1.6; }
       <a class="btn ghost" href="https://github.com/SH1FT-W/pflanzenmonitor-plus#readme"><span class="en">Read the README</span><span class="de">Zur Anleitung</span></a>
     </div>
     <p class="meta reveal d3">
-      <span class="pill"><i></i><span id="hl-version">Version 26.10.1</span></span>
+      <span class="pill"><i></i><span id="hl-version">Version 26.11.3</span></span>
       <span class="en">Home Assistant 2026.9 or newer &middot; English and German &middot; Apache 2.0</span><span class="de">Home Assistant 2026.9 oder neuer &middot; Deutsch und Englisch &middot; Apache 2.0</span>
     </p>
 
     <div class="stage reveal d3">
       <picture>
         <source media="(prefers-color-scheme: dark)" srcset="images/readme-title-dark.webp">
-        <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="images/readme-title-dark.webp">
         <img class="photo" src="images/readme-title-light.webp" width="2560" height="1280" alt="Pflanzenmonitor Plus: Your plants, understood. The feature overview of the project page in a window.">
-      </picture>
       </picture>
     </div>
   </div>
@@ -303,6 +300,7 @@ footer .fine { flex-basis: 100%; line-height: 1.6; }
       <div class="tile reveal d1"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 16.6A5 5 0 0 0 18 7h-1.3A8 8 0 1 0 4 15.3"/><path d="M8 19v2M8 13v2M16 19v2M16 13v2M12 21v2M12 15v2"/></svg></div><h3><span class="en">Rain and frost outdoors</span><span class="de">Regen und Frost draußen</span></h3><p><span class="en">Rain does not count as watering. "Rain expected" and "Frost risk" from the hourly forecast against the plant's minimum temperature.</span><span class="de">Regen zählt nicht als Gießen. „Regen erwartet“ und „Frostgefahr“ aus der stündlichen Vorhersage gegen die Mindesttemperatur der Pflanze.</span></p></div>
       <div class="tile reveal d2"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></div><h3><span class="en">Automations</span><span class="de">Automationen</span></h3><p><span class="en">43 triggers and 35 conditions: a problem started, a reading became too low or too high, a sensor became stale. Target plants by area or label.</span><span class="de">43 Auslöser und 35 Bedingungen: ein Problem beginnt, ein Messwert wird zu niedrig oder zu hoch, ein Sensor veraltet. Pflanzen auch über Raum oder Label wählen.</span></p></div>
     </div>
+    <p class="cap reveal"><span class="en"><strong>New in 26.11:</strong> watering tasks on a to-do list and an optional care calendar. <a href="https://github.com/SH1FT-W/pflanzenmonitor-plus/blob/main/CHANGELOG.md">Every change in the changelog</a></span><span class="de"><strong>Neu in 26.11:</strong> Gieß-Aufgaben auf einer To-do-Liste und ein optionaler Pflegekalender. <a href="https://github.com/SH1FT-W/pflanzenmonitor-plus/blob/main/CHANGELOG.md">Alle Änderungen im Changelog</a></span></p>
   </div>
 </section>
 
@@ -346,23 +344,26 @@ footer .fine { flex-basis: 100%; line-height: 1.6; }
   </div>
 </section>
 
-<section id="entities">
+<section id="needs">
   <div class="wrap">
     <div class="head center reveal">
-      <p class="eyebrow"><span class="en">Entities</span><span class="de">Entitäten</span></p>
-      <h2><span class="en">Everything on<br>the plant's device.</span><span class="de">Alles auf dem<br>Gerät der Pflanze.</span></h2>
+      <p class="eyebrow"><span class="en">What you need for what</span><span class="de">Was du wofür brauchst</span></p>
+      <h2><span class="en">Start with one sensor.<br>Add the rest later.</span><span class="de">Mit einem Sensor anfangen.<br>Den Rest später.</span></h2>
     </div>
     <table class="tbl reveal">
-      <thead><tr><th><span class="en">Entity</span><span class="de">Entität</span></th><th><span class="en">What it shows</span><span class="de">Was sie zeigt</span></th></tr></thead>
+      <thead><tr><th><span class="en">Feature</span><span class="de">Funktion</span></th><th><span class="en">Needs</span><span class="de">Braucht</span></th></tr></thead>
       <tbody>
-        <tr><td><span class="en">Plant (status)</span><span class="de">Pflanze (Zustand)</span></td><td><span class="en">OK or problem, the status of every reading, the problems with value and limits, the species.</span><span class="de">OK oder Problem, der Zustand jedes Messwerts, die Probleme mit Wert und Grenzen, die Art.</span></td></tr>
-        <tr><td><span class="en">Readings</span><span class="de">Messwerte</span></td><td><span class="en">Soil moisture, temperature, soil temperature, humidity, illuminance, conductivity, CO2 from your sensors; VPD, PPFD and daily light.</span><span class="de">Bodenfeuchte, Temperatur, Bodentemperatur, Luftfeuchte, Helligkeit, Leitfähigkeit, CO2 von deinen Sensoren; VPD, PPFD und Tageslicht.</span></td></tr>
-        <tr><td><span class="en">Limits</span><span class="de">Grenzwerte</span></td><td><span class="en">Min and max for every measurement and the lux-to-PPFD factor.</span><span class="de">Min und Max je Messgröße und der Lux-zu-PPFD-Faktor.</span></td></tr>
-        <tr><td><span class="en">Watering</span><span class="de">Gießen</span></td><td><span class="en">Water in, watering due, last watered, drying rate, learning status.</span><span class="de">Gießen in, Gießen fällig, zuletzt gegossen, Abtrocknung, Lernstand.</span></td></tr>
-        <tr><td><span class="en">Outdoors</span><span class="de">Draußen</span></td><td><span class="en">Rain expected, frost risk.</span><span class="de">Regen erwartet, Frostgefahr.</span></td></tr>
-        <tr><td><span class="en">AI (optional)</span><span class="de">KI (optional)</span></td><td><span class="en">The suggestion with "old → new" and reasons, buttons to accept, reject, undo and ask.</span><span class="de">Der Vorschlag mit „alt → neu“ und Gründen, Knöpfe zum Übernehmen, Ablehnen, Zurücknehmen und Fragen.</span></td></tr>
+        <tr><td><span class="en">Status, readings, limits, logbook, automations</span><span class="de">Zustand, Messwerte, Grenzwerte, Logbuch, Automationen</span></td><td><span class="en">Any sensors of the plant</span><span class="de">Beliebige Sensoren der Pflanze</span></td></tr>
+        <tr><td><span class="en">VPD, PPFD, daily light</span><span class="de">VPD, PPFD, Tageslicht</span></td><td><span class="en">Temperature and humidity, or a light sensor</span><span class="de">Temperatur und Luftfeuchte, oder einen Lichtsensor</span></td></tr>
+        <tr><td><span class="en">Water in X days, last watered</span><span class="de">Gießen in X Tagen, zuletzt gegossen</span></td><td><span class="en">A soil moisture sensor with long-term statistics</span><span class="de">Einen Bodenfeuchtesensor mit Langzeitstatistik</span></td></tr>
+        <tr><td><span class="en">Rain is not watering</span><span class="de">Regen ist kein Gießen</span></td><td><span class="en">Outdoors: a rain sensor in mm/h</span><span class="de">Draußen: einen Regensensor in mm/h</span></td></tr>
+        <tr><td><span class="en">Rain expected, frost risk</span><span class="de">Regen erwartet, Frostgefahr</span></td><td><span class="en">Outdoors: a weather entity with an hourly forecast</span><span class="de">Draußen: eine Wetter-Entität mit stündlicher Vorhersage</span></td></tr>
+        <tr><td><span class="en">AI suggestions</span><span class="de">KI-Vorschläge</span></td><td><span class="en">An AI task entity, for example Claude</span><span class="de">Eine KI-Aufgaben-Entität, zum Beispiel Claude</span></td></tr>
+        <tr><td><span class="en">Watering tasks</span><span class="de">Gieß-Aufgaben</span></td><td><span class="en">A to-do list, chosen in the options</span><span class="de">Eine To-do-Liste, in den Optionen gewählt</span></td></tr>
+        <tr><td><span class="en">Care calendar</span><span class="de">Pflegekalender</span></td><td><span class="en">The option, off by default</span><span class="de">Die Option, Standard aus</span></td></tr>
       </tbody>
     </table>
+    <p class="cap reveal"><span class="en">Every entity with its attributes is in the <a href="https://github.com/SH1FT-W/pflanzenmonitor-plus#entities">README</a>.</span><span class="de">Alle Entitäten mit ihren Attributen stehen in der <a href="https://github.com/SH1FT-W/pflanzenmonitor-plus/blob/main/README.de.md#entitaeten">Anleitung</a>.</span></p>
   </div>
 </section>
 
@@ -392,10 +393,8 @@ footer .fine { flex-basis: 100%; line-height: 1.6; }
         <ul class="req">
           <li><span class="name">Home Assistant 2026.9+</span><span class="tg"><span class="en">Required</span><span class="de">Nötig</span></span></li>
           <li><span class="name"><span class="en">A soil moisture sensor per plant</span><span class="de">Ein Bodenfeuchtesensor je Pflanze</span></span><span class="tg"><span class="en">For learning</span><span class="de">Fürs Lernen</span></span></li>
-          <li><span class="name"><span class="en">Temperature, humidity, light sensors</span><span class="de">Temperatur-, Luftfeuchte-, Lichtsensoren</span></span><span class="tg opt"><span class="en">Optional</span><span class="de">Optional</span></span></li>
-          <li><span class="name"><span class="en">An AI task entity (e.g. Claude)</span><span class="de">Eine KI-Aufgaben-Entität (z. B. Claude)</span></span><span class="tg opt"><span class="en">Optional</span><span class="de">Optional</span></span></li>
-          <li><span class="name"><span class="en">Weather and rain sensor for plants outdoors</span><span class="de">Wetter und Regensensor für Pflanzen draußen</span></span><span class="tg opt"><span class="en">Optional</span><span class="de">Optional</span></span></li>
         </ul>
+        <p class="note"><span class="en">Everything else is optional, see <a href="#needs">what you need for what</a>.</span><span class="de">Alles andere ist optional, siehe <a href="#needs">was du wofür brauchst</a>.</span></p>
       </div>
       <div class="panel full reveal">
         <h3><span class="en">Without the Marketplace</span><span class="de">Ohne Marketplace</span></h3>

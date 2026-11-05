@@ -1,376 +1,233 @@
-<p align="center"><img src="custom_components/pflanzenmonitor_plus/brand/icon.png" width="96" alt="Pflanzenmonitor Plus"></p>
+<div align="center">
+
+<img src="custom_components/pflanzenmonitor_plus/brand/icon.png" width="96" alt="Pflanzenmonitor Plus">
 
 # Pflanzenmonitor Plus
 
-[English](README.md) · [Website](https://sh1ft-w.github.io/pflanzenmonitor-plus) · [Changelog (englisch)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FSH1FT-W%2Fpflanzenmonitor-plus%2Fmain%2Fcustom_components%2Fpflanzenmonitor_plus%2Fmanifest.json&query=%24.version&label=Version&style=flat-square&color=2E7D32&labelColor=111111)](https://github.com/SH1FT-W/pflanzenmonitor-plus/releases/latest)
+[![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.9%2B-2E7D32?style=flat-square&labelColor=111111&logo=homeassistant&logoColor=white)](https://www.home-assistant.io)
+[![Marketplace](https://img.shields.io/badge/Marketplace-benutzerdefiniert-2E7D32?style=flat-square&labelColor=111111)](https://hacs.xyz)
 
-Pflanzen-Integration für Home Assistant: überwacht jede Pflanze an ihren Grenzwerten, lernt aus dem
-Bodenfeuchte-Verlauf, wann gegossen wurde und wann sie wieder Wasser braucht, und lässt auf Wunsch eine KI passende
-Grenzwerte vorschlagen. Sie kann alles, was der [Plant Monitor](https://github.com/Olen/homeassistant-plant) (Marketplace)
-kann; der Umstieg sind wenige Schritte je Pflanze ([Anleitung](#umzug-aus-dem-plant-monitor)).
+<a href="https://sh1ft-w.github.io/pflanzenmonitor-plus"><b>Website</b></a>&emsp;<a href="#installation">Installation</a>&emsp;<a href="#einrichtung">Einrichtung</a>&emsp;<a href="#umzug-aus-dem-plant-monitor">Umzug aus dem Plant Monitor</a>&emsp;<a href="#entitaeten">Entitäten</a>&emsp;<a href="CHANGELOG.md">Changelog (englisch)</a>&emsp;<a href="README.md">English</a>
 
-- **Zustand je Pflanze** („OK“/„Problem“) wie `plant.*` im Plant Monitor, mit denselben Attributen
-  (`problems`, `moisture_status` usw., `species`) – Vorlagen und Karten, die diese lesen, laufen weiter; die
-  Flower Card (`custom:flower-card`) braucht das Backend des Plant Monitor und wird nicht unterstützt
-- **Messwerte** der echten Sensoren auf dem Gerät der Pflanze: Bodenfeuchte, Temperatur, Bodentemperatur,
-  Luftfeuchte, Helligkeit (lx oder PPFD), Leitfähigkeit, CO2; dazu **VPD**, **PPFD**, **Lichtsumme** und
-  **Tageslicht (DLI)** heute, gestern und der letzten 24 Std.
-- **Grenzwerte** (Min/Max je Messgröße, Lux-zu-PPFD-Faktor) als Einstellungen auf der Geräteseite; je Messgröße
-  wählbar, ob sie als Problem zählt; **Wartezeit nach dem Gießen** gegen Fehlalarme „zu nass“
-- **Logbuch:** Beginn und Ende jedes Problems
-- **Automationen:** eigene Auslöser und Bedingungen („Pflanze hat ein Problem“, „Bodenfeuchtigkeit zu niedrig
-  geworden“, „Sensor veraltet“ …) und die Aktion „Sensor tauschen“
-- **Gießen in X Tagen**: Vorhersage aus früheren Gießzyklen derselben Pflanze, umgerechnet auf das heutige
-  Abtrocknungstempo (im Herbst trocknet es langsamer als im Sommer)
-- **Zuletzt gegossen**: wird automatisch erkannt, sobald die Feuchte sprunghaft steigt; kein Knopf, nichts eintragen
-- **Abtrocknung** in Prozentpunkten pro Tag und **Lernstand** („Lernt noch“, bis zwei Gießzyklen beobachtet sind)
-- **KI-Vorschläge für Grenzwerte** (optional): Ist eine Pflanze gelernt, schlägt eine KI über die HA-eigene
-  KI-Aufgabe (`ai_task`, z. B. Claude) passende Grenzwerte nach Pflanzenart vor – mit Begründung. Nichts ändert sich,
-  bis du übernimmst; jede Übernahme lässt sich zurücknehmen.
-- **Pflanzen draußen**: Regen zählt nicht als Gießen; dazu die Sensoren „Regen erwartet“ (≥ 1 mm in 12 Std.) und
-  „Frostgefahr“ (Vorhersage der nächsten 48 Std. unter der Mindesttemperatur der Pflanze)
-- **Gieß-Aufgaben** (optional): Ist eine Pflanze fällig, landet eine Aufgabe wie „Yucca gießen“ auf einer
-  To-do-Liste deiner Wahl und wird nach dem Gießen von selbst abgehakt
-- **Pflegekalender** (optional): Kalender „Pflanzenpflege“ mit Dünge- (Saison und Abstand je Pflanze, Winterpause) und
-  Umtopf-Terminen; die Knöpfe „Gedüngt“ und „Umgetopft“ schieben sie weiter. Mit KI einmal je Jahreszeit ein
-  Pflegeplan je Art als Vorschlag
-- **Hinweise unter Reparaturen**: neuer KI-Vorschlag (mit Übernehmen/Ablehnen direkt im Dialog), Hinweis, solange der
-  Plant Monitor noch eingerichtet ist, Automationen, die nach einem Umzug noch alte `plant.*`-Entitäten nutzen
+</div>
 
-Alles läuft lokal; nur die optionalen KI-Vorschläge gehen an die KI, die du in Home Assistant eingerichtet hast.
-Keine zusätzlichen Pakete. OpenPlantbook wird (noch) nicht unterstützt.
+<br/>
 
-> [!NOTE]
-> Pflanzenmonitor Plus ist ein eigenständiges Projekt. Es ist mit dem Plant Monitor (Olen/homeassistant-plant)
-> kompatibel, enthält aber keinen Code daraus und gehört nicht dazu. Lizenz: [Apache 2.0](LICENSE).
+Pflanzenmonitor Plus überwacht jede Pflanze in Home Assistant an ihren Grenzwerten, lernt aus dem Bodenfeuchte-Verlauf, **wann gegossen wurde und wann sie wieder Wasser braucht**, und lässt auf Wunsch eine KI passende Grenzwerte zur Pflanzenart vorschlagen. Alles läuft lokal aus der Statistik von Home Assistant; nur die optionalen KI-Anfragen gehen an die KI, die du eingerichtet hast.
 
-## Voraussetzungen
+Plus kann, was der [Plant Monitor](https://github.com/Olen/homeassistant-plant) kann, ist aber eine eigene Integration und übernimmt nichts daraus: Der Umstieg sind [wenige Schritte je Pflanze](#umzug-aus-dem-plant-monitor). Die Zustands-Entität heißt `sensor.<name>` statt `plant.<name>`, die Flower Card wird nicht unterstützt.
 
-- Home Assistant 2026.9 oder neuer, Recorder aktiv (Standard)
-- Je Pflanze ein Bodenfeuchtesensor fürs Lernen und die Gieß-Vorhersage (alle anderen Sensoren sind optional)
-- Für Pflanzen draußen optional: eine Wetter-Entität mit stündlicher Vorhersage und ein Regensensor
-- Für KI-Vorschläge optional: eine KI-Aufgaben-Entität (`ai_task`, z. B. über die Anthropic- oder
-  OpenAI-Integration)
+## Was du wofür brauchst
 
+| Funktion | Braucht |
+|:--|:--|
+| Zustand je Pflanze (OK oder Problem), Messwerte, Grenzwerte, Logbuch, Automationen | Beliebige Sensoren der Pflanze |
+| VPD, PPFD und Tageslicht | Temperatur und Luftfeuchte, oder einen Lichtsensor |
+| Gießen in X Tagen, zuletzt gegossen (erkennt es selbst), Abtrocknung | Einen Bodenfeuchtesensor mit Langzeitstatistik (`state_class: measurement`) |
+| Regen zählt nicht als Gießen | Draußen: einen Regensensor in mm/h |
+| Regen erwartet, Frostgefahr | Draußen: eine Wetter-Entität mit stündlicher Vorhersage |
+| Grenzwerte von einer KI vorgeschlagen, du gibst frei | Eine KI-Aufgaben-Entität (`ai_task`, zum Beispiel aus der Anthropic- oder OpenAI-Integration) |
+| Gieß-Aufgaben auf einer To-do-Liste | Eine To-do-Liste, in den Optionen gewählt |
+| Pflegekalender fürs Düngen und Umtopfen | Die Option *Pflegekalender* (Standard aus); mit KI ein Pflegeplan je Jahreszeit |
+
+**Neu in 26.11:** Gieß-Aufgaben auf einer To-do-Liste und ein optionaler Pflegekalender. Plus zieht Pflanzen nicht mehr selbst aus dem Plant Monitor um; dafür gibt es eine Anleitung. Alle Änderungen stehen im [Changelog](CHANGELOG.md) (englisch).
+
+<a id="installation"></a>
 ## Installation
 
-Der Marketplace liegt unter Einstellungen → Marketplace. Vor Home Assistant 2026.11 heißt er noch HACS.
+[![Im Marketplace öffnen](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=SH1FT-W&repository=pflanzenmonitor-plus&category=integration)
 
-1. Im Marketplace nach **Pflanzenmonitor Plus** suchen und herunterladen. Noch nicht in der Suche? Dann zuerst über das
-   Drei-Punkte-Menü **Benutzerdefinierte Repositories** öffnen und `https://github.com/SH1FT-W/pflanzenmonitor-plus`
-   mit dem Typ **Integration** hinzufügen. Ohne Marketplace: den Ordner `custom_components/pflanzenmonitor_plus` aus dem
-   [neuesten Release](https://github.com/SH1FT-W/pflanzenmonitor-plus/releases/latest) nach
-   `/config/custom_components/` kopieren.
-2. Home Assistant neu starten.
-3. *Einstellungen → Geräte & Dienste → Integration hinzufügen → Pflanzenmonitor Plus*.
-4. Pflanzen anlegen: *Pflanzenmonitor Plus → Pflanze hinzufügen* – vom Plant Monitor kommend siehe unten.
+Unter **Einstellungen > Marketplace** (vor Home Assistant 2026.11 heißt er HACS) nach **Pflanzenmonitor Plus** suchen, herunterladen und Home Assistant neu starten. Noch nicht in der Suche? Dann zuerst `https://github.com/SH1FT-W/pflanzenmonitor-plus` unter **Drei-Punkte-Menü > Benutzerdefinierte Repositories** mit dem Typ **Integration** hinzufügen.
 
-### Einstellungen des Eintrags
+<details>
+<summary>Von Hand installieren</summary>
 
-Alle Felder sind optional und später unter *Pflanzenmonitor Plus → Konfigurieren* änderbar. Es gibt genau einen
-Eintrag; die Pflanzen hängen als Unterpunkte darunter.
+1. Das [neueste Release](https://github.com/SH1FT-W/pflanzenmonitor-plus/releases/latest) herunterladen.
+2. Den Ordner `custom_components/pflanzenmonitor_plus` nach `/config/custom_components/` kopieren und Home Assistant neu starten.
 
-| Feld | Bedeutung |
-|---|---|
-| KI für Grenzwert-Vorschläge | KI-Aufgaben-Entität. Vorgeschlagen wird die erste vorhandene. Leer = keine KI-Vorschläge (und keine Knöpfe). |
-| Wetter | Wetter-Entität mit stündlicher Vorhersage. Vorgeschlagen wird die erste vorhandene. Nur für Pflanzen draußen. |
-| To-do-Liste fürs Gießen | To-do-Entität (z. B. die Einkaufsliste oder eine lokale To-do-Liste). Leer = keine Gieß-Aufgaben (Standard). Siehe [Gieß-Aufgaben](#giess-aufgaben). |
-| Pflegekalender | Kalender „Pflanzenpflege“, die Knöpfe „Gedüngt“/„Umgetopft“ und (mit KI) die Pflegeplan-Vorschläge. Standard aus. Ausschalten entfernt Kalender und Knöpfe; die gespeicherten Pflege-Termine bleiben fürs Wiedereinschalten erhalten. Siehe [Pflegekalender](#pflegekalender). |
-| Regensensor | Gemessene Regenintensität in mm/h (Geräteklasse Niederschlagsintensität). Damit unterscheidet Plus bei Pflanzen draußen Regen vom Gießen. Ohne Regensensor – oder bevor er Verlauf hat – gelten Anstiege draußen als „unbekannt“. Mengen-Sensoren („Regen heute“) eignen sich nicht: sie bleiben nach einem Schauer bis Mitternacht über 0. |
+</details>
 
-### Pflanze anlegen und ändern
+<a id="einrichtung"></a>
+## Einrichtung
 
-*Pflanze hinzufügen* fragt in vier Schritten; *⋮ → Neu konfigurieren* an der Pflanze ändert dieselben Angaben (der
-Raum gilt dann über das Gerät).
+Du brauchst Home Assistant 2026.9 oder neuer mit Recorder (Standard).
 
-| Schritt | Felder |
-|---|---|
-| Pflanze | Name, Art (z. B. „Dracaena trifasciata“; hilft der KI, steht als Modell am Gerät), Raum, Bild (URL oder `/local/…`) |
-| Sensoren | Bodenfeuchte, Lufttemperatur, Bodentemperatur, Luftfeuchte, Helligkeit (lx oder PPFD), Leitfähigkeit, CO2; „Draußen“ (bei Räumen wie Terrasse, Balkon, Garten vorgewählt) |
-| Probleme | Welche Messwerte als Problem zählen (Standard: alle außer VPD), Wartezeit nach dem Gießen in Minuten |
-| Pflege (nur mit Pflegekalender) | Düngen alle N Tage, Düngesaison von/bis Monat, Umtopfen alle N Jahre (Standard: März bis September alle 21 Tage, Umtopfen alle 2 Jahre; Südhalbkugel September bis März) |
+1. **Integration hinzufügen.** **Einstellungen > Geräte & Dienste > Integration hinzufügen > Pflanzenmonitor Plus**. Es gibt genau einen Eintrag; die Pflanzen hängen darunter.
+2. **Optionen wählen** (alle optional, später unter **Konfigurieren**): die KI für Grenzwert-Vorschläge, eine Wetter-Entität, eine To-do-Liste fürs Gießen, den Pflegekalender, einen Regensensor. Der Regensensor muss die Intensität in mm/h messen; Mengen-Sensoren („Regen heute“) bleiben bis Mitternacht über 0.
+3. **Pflanze hinzufügen.** **Pflanzenmonitor Plus > Pflanze hinzufügen** fragt in vier Schritten: Name, Art (hilft der KI), Raum und Bild; die Sensoren und ob sie draußen steht; welche Messwerte als Problem zählen und die Wartezeit nach dem Gießen; mit Pflegekalender den Pflegeplan. **Drei-Punkte-Menü > Neu konfigurieren** ändert dasselbe später.
 
-Plus legt nur Entitäten zu vorhandenen Sensoren an. Wird ein Sensor abgewählt, verschwinden seine Entitäten; seine
-Grenzwerte bleiben gespeichert. Wird ein Sensor in HA umbenannt, zieht Plus das nach.
+Plus legt nur Entitäten zu vorhandenen Sensoren an. Ein abgewählter Sensor nimmt seine Entitäten mit, seine Grenzwerte bleiben gespeichert. Benennst du einen Sensor um, zieht Plus das nach.
 
-### Umzug aus dem Plant Monitor
+<a id="umzug-aus-dem-plant-monitor"></a>
+## Umzug aus dem Plant Monitor
 
-Pflanzenmonitor Plus übernimmt nichts aus dem Plant Monitor: Es liest, ändert und entfernt dessen Pflanzen nicht.
-Solange der Plant Monitor noch eingerichtet ist, zeigt *Einstellungen → Reparaturen* einen Hinweis mit Link auf diese
-Anleitung. Jede Pflanze ziehst du von Hand um:
+Plus liest, ändert und entfernt nichts vom Plant Monitor. Solange er eingerichtet ist, zeigt **Einstellungen > Reparaturen** einen Hinweis mit Link hierher. Jede Pflanze ziehst du von Hand um:
 
-1. Notieren, was im Plant Monitor für die Pflanze eingestellt ist: Sensoren, Grenzwerte (seine Min/Max-Entitäten),
-   Art, Bild, welche Messwerte als Problem zählen, die Wartezeit nach dem Gießen und den Raum.
-2. Die Pflanze im Plant Monitor löschen: *Einstellungen → Geräte & Dienste → Plant Monitor*, die Pflanze,
-   Drei-Punkte-Menü, **Löschen**. Damit werden ihre Entitäts-IDs frei; zuerst löschen, sonst bekommt Plus IDs mit
-   `_2` am Ende, und die bleiben. Der alte Verlauf bleibt in Home Assistant unter den alten IDs.
-3. In Pflanzenmonitor Plus **Pflanze hinzufügen** mit demselben Namen und den **echten Sensoren** (die der Plant
-   Monitor genutzt hat), **Raum leer lassen**: mit Raum stellt Home Assistant ihn jeder neuen Entitäts-ID voran. Den
-   Raum danach am Gerät der Pflanze setzen, die IDs bleiben. Dann die Grenzwerte an den Grenzwert-Entitäten setzen
-   (oder von der KI vorschlagen lassen) und den Rest im Pflanzen-Dialog.
-4. Die Entitäts-IDs am Gerät der Pflanze prüfen. Die Zustands-Entität heißt `sensor.<name>` statt `plant.<name>`
-   (gleiche Zustände `ok`/`problem` und Attribute): in Automationen, Skripten und Dashboards ersetzen. Messwerte und
-   Grenzwerte bekommen dieselben IDs wie vorher, wo die Namen übereinstimmen (dann läuft ihr Verlauf weiter). Ältere
-   Pflanzen des Plant Monitor haben in einem nicht englisch eingestellten Home Assistant englische IDs behalten
-   (`sensor.<pflanze>_soil_moisture`), Plus benennt sie in deiner Sprache: diese auch ersetzen.
-5. Sind alle Pflanzen im Plant Monitor gelöscht, ihn im Marketplace entfernen und Home Assistant neu starten. Der
-   Hinweis unter Reparaturen verschwindet.
+1. **Einstellungen der Pflanze notieren** im Plant Monitor: Sensoren, Grenzwerte (seine Min- und Max-Entitäten), Art, Bild, welche Messwerte als Problem zählen, die Wartezeit nach dem Gießen und den Raum.
+2. **Die Pflanze zuerst im Plant Monitor löschen.** Damit werden ihre Entitäts-IDs frei; sonst bekommt Plus IDs mit `_2` am Ende, und die bleiben. Der alte Verlauf bleibt unter den alten IDs.
+3. **In Plus hinzufügen** mit demselben Namen und den echten Sensoren, die der Plant Monitor genutzt hat, und **Raum leer lassen**: Mit Raum stellt Home Assistant ihn jeder neuen Entitäts-ID voran. Den Raum danach am Gerät setzen, dann die Grenzwerte.
+4. **`plant.<name>` ersetzen** durch `sensor.<name>` in Automationen, Skripten und Dashboards (gleiche Zustände und Attribute). Messwerte und Grenzwerte behalten ihre IDs, wo die Namen übereinstimmen. Ältere Pflanzen in einem nicht englisch eingestellten Home Assistant hatten englische IDs (`sensor.<pflanze>_soil_moisture`); Plus benennt sie in deiner Sprache, also diese auch ersetzen.
+5. **Den Plant Monitor entfernen** im Marketplace, sobald alle Pflanzen umgezogen sind, und neu starten. Der Hinweis verschwindet.
 
-Automatisch übernommen wird nichts: alles aus Schritt 1, dazu Namen, Symbole, Labels, ausgeblendete oder deaktivierte
-Entitäten und Anzeige- oder Assist-Einstellungen der Entitäten sowie die Lichtsummen des Plant Monitor (das Tageslicht
-beginnt neu). Die Gieß-Vorhersage braucht nichts aus dem Plant Monitor: Plus lernt aus dem Verlauf des Feuchtesensors
-selbst, und der bleibt.
+Übernommen wird nichts: Entitätsnamen, Symbole, Labels, ausgeblendete oder deaktivierte Entitäten und die Lichtsummen des Plant Monitor beginnen neu. Die Gieß-Vorhersage lernt aus der Statistik des echten Feuchtesensors, und die bleibt. Mit Plus bis 26.11.2 umgezogen, das Pflanzen noch selbst übernahm? Für dich ändert sich nichts; Automationen, die noch `plant.<name>` nutzen, stehen weiter unter Reparaturen.
 
-Mit einer früheren Version von Plus umgezogen (bis 26.11.2, die Pflanzen noch selbst übernahm)? Für dich ändert sich
-nichts. Automationen und Skripte, die noch `plant.<name>` oder ein altes Gerät nutzen, stehen weiter unter Reparaturen.
-
+<a id="entitaeten"></a>
 ## Entitäten
 
-Alle Entitäten erscheinen auf dem Gerät der Pflanze. Die Entitäts-IDs hängen von Sprache und Raum ab (z. B.
-`sensor.schlafzimmer_bogenhanf_giessen_in`) – für Automationen auf der Geräteseite nachsehen.
+Alle auf dem Gerät der Pflanze. Die IDs hängen von Sprache und Raum ab (zum Beispiel `sensor.schlafzimmer_bogenhanf_giessen_in`); auf der Geräteseite nachsehen.
 
-| Entität | Wert | Zusatzangaben |
-|---|---|---|
-| *Pflanzenname* (Zustand) | OK · Problem · unbekannt (kein Messwert) | Art, je Messgröße Zustand (zu niedrig/zu hoch/OK), Probleme (Messgröße, Zustand, Wert, Grenzen) |
-| Bodenfeuchtigkeit, Temperatur, Bodentemperatur, Luftfeuchtigkeit, Beleuchtungsstärke, Leitfähigkeit, CO2 | Wert des echten Sensors (Einheit von dort); nach einem Neustart bis zu 10 Min. der letzte Wert, bis der Sensor wieder meldet | Quellsensor |
-| Dampfdruckdefizit (VPD) | kPa aus Temperatur und Luftfeuchte | – |
-| Tageslicht (DLI) | mol/m² seit Mitternacht | Gestern |
-| PPFD, Lichtsumme gesamt, Licht letzte 24 Std. (Diagnose, ausgeblendet) | mol/(s·m²) bzw. mol/m² | – |
-| Max/Min je Messgröße, Lux-zu-PPFD-Faktor (Einstellungen) | Grenzwerte; Temperaturen in der Systemeinheit | – |
-| Gießen fällig | Zeitpunkt (HA zeigt „in 5 Tagen“); fällig = heute 0 Uhr | – |
-| Gießen in | Tage bis zur Untergrenze, 0 = heute (für Automationen) | Fällig am, Untergrenze, Grundlage (frühere Zyklen oder aktuelles Tempo) |
-| Zuletzt gegossen | Zeitpunkt | draußen: letzter Regen, Regenverlauf (vorhanden / noch keiner) |
-| Abtrocknung (Diagnose) | %/Tag der letzten 72 Std.; in den ersten 24 Std. nach dem Gießen unbekannt | – |
-| Lernstand (Diagnose) | Keine Daten · Lernt noch · Gelernt | Beobachtete Zyklen, benötigte Zyklen, „meist gegossen bei“ |
-| Regen erwartet, Frostgefahr (nur draußen, mit Wetter) | an/aus | Menge, bis · Tiefstwert, Zeitpunkt, Mindesttemperatur der Pflanze |
-| KI-Vorschlag (nur mit KI) | Noch keiner · Wartet auf Freigabe · Grenzwerte passen · Übernommen · Abgelehnt · Zurückgenommen | Zusammenfassung, je Grenzwert „alt → neu“ (ggf. „Ziel …, schrittweise“) und Grund, Sicherheit, Pflanzenart, gefragt, nächste Prüfung, zuletzt übernommen, letzter Fehler |
-| Knöpfe (nur mit KI) | Vorschlag übernehmen · Vorschlag ablehnen (nur bei offenem Vorschlag) · Vorschlag zurücknehmen (nur direkt nach dem Übernehmen) · KI jetzt fragen | – |
-| Gedüngt, Umgetopft (Knöpfe, jede Pflanze, mit Pflegekalender) | Setzt heute als letztes Düngen/Umtopfen; der nächste Termin im Pflegekalender rückt weiter | – |
-| Pflanzenpflege (Kalender, einer für alle Pflanzen, mit Pflegekalender) | Dünge- und Umtopf-Termine als Ganztagstermine | – |
+| Entität | Zeigt |
+|:--|:--|
+| *Pflanzenname* (Zustand) | OK, Problem, oder unbekannt ohne Messwert. Attribute wie `plant.*` im Plant Monitor: Art, Zustand je Messgröße, Probleme |
+| Bodenfeuchtigkeit, Temperatur, Bodentemperatur, Luftfeuchtigkeit, Beleuchtungsstärke, Leitfähigkeit, CO2 | Den Wert des echten Sensors. Attribut: Quellsensor |
+| Dampfdruckdefizit, Tageslicht (DLI) | kPa aus Temperatur und Luftfeuchte; mol/m² seit Mitternacht, gestern als Attribut |
+| Max und Min je Messgröße, Lux-zu-PPFD-Faktor | Die Grenzwerte, als Einstellungen auf der Geräteseite |
+| Gießen in, Gießen fällig | Tage bis zur Untergrenze (0 = heute) und das Datum |
+| Zuletzt gegossen | Erkannt an einem Sprung der Bodenfeuchte. Draußen auch der letzte Regen |
+| Regen erwartet, Frostgefahr | Draußen mit Wetter: mindestens 1 mm in 12 Stunden; Vorhersage der nächsten 48 Stunden unter der Mindesttemperatur der Pflanze |
+| KI-Vorschlag, mit Knöpfen | Der offene Vorschlag mit „alt zu neu“ und Grund je Grenzwert. Knöpfe: Übernehmen, Ablehnen, Zurücknehmen, KI jetzt fragen |
 
-Feuchte und Lernen brauchen den Bodenfeuchtesensor; ohne ihn gibt es nur Zustand, Messwerte und Grenzwerte.
+<details>
+<summary>Diagnose-Entitäten, Pflegekalender, Aktionen und Ereignisse</summary>
 
-**Wo man Vorschläge sieht:** Jeder offene Vorschlag erscheint unter *Einstellungen → Reparaturen* als
-„<Pflanze>: neuer KI-Vorschlag für die Grenzwerte“. Antippen öffnet einen Dialog mit Zusammenfassung, Gründen und
-Sicherheit – dort direkt **Übernehmen** oder **Ablehnen**. Danach verschwindet der Eintrag. Dasselbe geht auf der
-Geräteseite der Pflanze über die Knöpfe.
+- **Diagnose:** Abtrocknung (%/Tag über 72 Stunden), Lernstand (keine Daten, lernt noch, gelernt nach zwei Gießzyklen), PPFD, Lichtsumme gesamt, Licht der letzten 24 Stunden.
+- **Pflegekalender** (Option): Kalender **Pflanzenpflege** (`calendar.pflanzenpflege`, englisch `calendar.plant_care`) mit Dünge- und Umtopf-Terminen als Ganztagstermine, dazu je Pflanze die Knöpfe **Gedüngt** und **Umgetopft**.
+- **Aktionen:** `pflanzenmonitor_plus.replace_sensor` (`meter_entity`, `new_sensor`; leer entfernt ihn) und `pflanzenmonitor_plus.care_done` (`plant_entity`, `care`: `fertilized` oder `repotted`, optional `date`).
+- **Ereignis:** `pflanzenmonitor_plus_suggestion` bei jedem neuen offenen KI-Vorschlag (`entity_id`, `summary`, `changes`).
+- **Auslöser und Bedingungen** für die Zustands-Entität, auch über Raum oder Label: Problem erkannt oder behoben; je Messgröße zu niedrig, zu hoch oder OK; je Sensor veraltet (nicht verfügbar oder standardmäßig 24 Stunden ohne Meldung) oder meldet wieder.
 
-## Zustand und Probleme
-
-Wie im Plant Monitor, damit Automationen nach dem Umstieg nur die neue Entitäts-ID brauchen:
-
-- Je Messgröße „zu niedrig“ (unter Min), „zu hoch“ (über Max) oder „OK“. Wer einmal zu niedrig ist, bleibt es, bis
-  der Wert 5 % über der Grenze liegt (höchstens 5 % der Spanne); umgekehrt genauso – kein Hin und Her an der Grenze.
-- Die Pflanze hat ein **Problem**, wenn eine Messgröße, die als Problem zählt, zu niedrig oder zu hoch ist.
-  Helligkeit zählt nur, wenn es zu hell ist (dunkel ist es jede Nacht). Tageslicht wird gegen den Vortag geprüft;
-  0 (nichts gemessen) gilt als OK. Liefert der Lichtsensor schon PPFD, gibt es keine lx-Prüfung.
-- **Wartezeit nach dem Gießen:** Springt die Bodenfeuchte um 10 Punkte oder mehr, zählt „zu nass“ so lange nicht als
-  Problem (der Zustand der Messgröße zeigt es trotzdem).
-- Temperaturen werden in °C verglichen, auch wenn ein Sensor °F liefert.
-- Ein ausgefallener Sensor macht kein Problem und beendet keines; im Logbuch steht das Ende erst, wenn er wieder
-  einen Wert im Bereich meldet.
-
-## Automationen
-
-Auslöser (Ziel: die Zustands-Entität einer oder mehrerer Pflanzen, auch über Raum oder Label):
-
-- Pflanze hat ein Problem · Pflanze wieder OK
-- je Messgröße: zu niedrig geworden · zu hoch geworden · wieder OK (Bodenfeuchtigkeit, Leitfähigkeit, Temperatur,
-  Luftfeuchtigkeit, CO2, Bodentemperatur, Beleuchtungsstärke, Tageslicht, VPD)
-- je Sensor: veraltet (nicht verfügbar oder so lange ohne Meldung, Standard 24 Std.) · meldet wieder
-
-Bedingungen: Pflanze hat ein Problem · je Messgröße ist zu niedrig/zu hoch/OK · je Sensor veraltet.
-
-Aktion `pflanzenmonitor_plus.replace_sensor`: `meter_entity` (Messwert der Pflanze, z. B. ihre Bodenfeuchtigkeit),
-`new_sensor` (neuer echter Sensor; leer = entfernen). Plus lädt danach neu.
-
-## So wird gelernt
-
-1. Plus liest die stündliche Langzeitstatistik des Feuchtesensors der Pflanze (bis 120 Tage, höchstens einmal pro
-   Stunde) und hängt den aktuellen Wert an. Plus liest auch den eigenen Spiegel des Sensors und nimmt den längeren
-   Verlauf. Die übrigen Sensoren (Temperatur, Luftfeuchte, Licht) braucht nur die KI-Zusammenfassung; von ihnen liest
-   Plus 30 Tage.
-2. **Gießen erkennen:** Liegt der Höchstwert einer Stunde mindestens 10 Prozentpunkte über dem Tiefstwert der drei
-   Stunden davor, ist das ein Anstieg. Stufen innerhalb von 12 Std. zählen als ein Ereignis. Nach Lücken im Verlauf
-   (Sensor oder HA aus) wird nicht verglichen, und ein kurzer Ausreißer nach unten (viele Sensoren melden nach einem
-   Neustart kurz 0) zählt nicht. Auch ein einzelner Ausreißer nach oben (eine Stunde mit Höchstwert 100 bei normalem
-   Mittel) zählt nicht: ein Anstieg gilt erst, wenn das Stundenmittel oder das der Folgestunde deutlich über dem
-   Ausgangswert liegt. Steigt die Feuchte zwischendurch so stark, rechnet Plus sofort neu; „Zuletzt gegossen“ bekommt
-   den Beginn der Stunde, in der das Gießen erkannt wurde.
-3. **Zyklus** = von einem Gießen bis zum nächsten, mindestens 24 Std. Ab zwei Zyklen gilt die Pflanze als gelernt.
-4. **Vorhersage:** Für die letzten drei Zyklen misst Plus, wie lange die Erde vom heutigen Stand bis zur Untergrenze
-   brauchte (Median). Das wird mit dem Verhältnis „Tempo damals ÷ Tempo heute“ über dieselben 72 Std. vor diesem Stand
-   umgerechnet (höchstens Faktor 3). Ohne passenden Zyklus: aktuelles Tempo.
-5. **Ziel** ist die Untergrenze der Bodenfeuchte der Pflanze. Die Gießgewohnheit (Median der Feuchte vor den letzten
-   Gießereignissen) zeigt Plus nur als Info.
-
-Im Rückblick-Test an echten Daten (7 Zimmerpflanzen, 120 Tage) lag die Vorhersage typischerweise 1 bis 3 Tage daneben.
-
-**Grenze: Umtopfen, neuer Sensor, neuer Standort.** Plus lernt aus allen Zyklen der letzten 120 Tage und kann nicht
-wissen, dass sich die Pflanze geändert hat. Nach dem Umtopfen (anderes Substrat, größerer Topf), einem neu gesetzten
-Sensor oder einem Umzug ans Fenster passen die alten Zyklen eine Weile nicht; die Vorhersage gleicht sich über das
-Tempo-Verhältnis an, wird aber erst nach zwei neuen Zyklen wieder verlässlich. Ein „Lernen zurücksetzen“ je Pflanze
-gibt es noch nicht.
-
-## KI-Vorschläge
-
-1. **Wann:** sobald eine Pflanze „Gelernt“ ist, danach höchstens alle 30 Tage automatisch (je 10-Minuten-Durchlauf
-   höchstens eine Pflanze). „KI jetzt fragen“ fragt sofort. Nach einem Fehler frühestens nach 6 Std. erneut. Trägst du
-   die Pflanzenart ein oder änderst sie, fragt Plus beim nächsten Durchlauf neu. Ein offener Vorschlag wartet 30 Tage
-   auf deine Entscheidung; danach bewertet Plus die Pflanze neu und ersetzt ihn (Attribut „expired“ am KI-Vorschlag
-   zeigt, wann der ersetzte gefragt wurde). Nach dem Update auf
-   1.1 fragt Plus alle gelernten Pflanzen einmal neu (ein offener Vorschlag aus 1.0 wird dabei ersetzt).
-2. **Was die KI bekommt:** Name, Art (falls eingetragen), Raum, drinnen/draußen, Monat, Land, aktuelle
-   Grenzwerte, gelernte Zahlen (Zyklen, meist gegossen bei, Feuchte nach dem Gießen, Tage zwischen dem Gießen, Tempo)
-   und Tiefst-/Mittel-/Höchstwerte der letzten 30 Tage (Bodenfeuchte, Luft- und Bodentemperatur, Luftfeuchte), dazu
-   für das Licht die Tageshöchstwerte und das Tageslicht (DLI) je Tag aus demselben Helligkeitssensor. Keine Orte,
-   keine Personen.
-3. **Was sie liefert:** Unter- und Obergrenze für Bodenfeuchte, Temperatur, Bodentemperatur, Luftfeuchte, Helligkeit
-   und Tageslicht (DLI) – nur Grenzwerte, zu denen die Pflanze einen Sensor hat
-   (CO2 und VPD nicht), je einen Satz Begründung und eine Sicherheit. Helligkeit und DLI hängen davon ab, wo der
-   Sensor sitzt (oft ein Raumsensor, nicht an der Pflanze) – deshalb richtet die KI sie am gemessenen Verlauf aus. Die Zusammenfassung baut Plus selbst aus
-   den Werten nach den Schutzregeln. Tipp: die Pflanzenart eintragen – ohne sie rät die KI aus dem
-   Namen, die Sicherheit ist dann höchstens „mittel“.
-4. **Schutzregeln (im Code, nicht im Prompt):** je Vorschlag höchstens ±15 Punkte Feuchte/Luftfeuchte, ±5 °C,
-   ±2000 lx (min) bzw. ±20000 lx (max) Helligkeit, ±5 bzw. ±10 DLI; feste Bereiche je Wert (z. B. Feuchte 5–100 %,
-   Mindesttemperatur −15 bis 25 °C); jede Untergrenze mit Abstand unter ihrer Obergrenze (Feuchte/Luftfeuchte 10,
-   Temperaturen 5 °C, Helligkeit 2000 lx, DLI 2), sonst bleiben beide Werte des Paars. **Erster Schritt frei:** neue
-   Werte seit 1.1 (alles außer Bodenfeuchte und Mindesttemperatur), die Plus noch nie geschrieben hat, stehen meist noch
-   auf Startwerten – sie darf die KI einmal in einem Schritt ersetzen (im Dialog „erstmals eingestellt“); danach
-   gelten auch für sie die Schritte. Ein Wert, den du seit der letzten Anfrage von Hand geändert hast, gilt als
-   eingestellt und wird nur noch schrittweise angepasst. Temperaturgrenzen rechnet Plus immer in °C; liefert der
-   Helligkeitssensor schon PPFD, gibt es keine lx-Grenzen (DLI schon).
-   Größere Änderungen gehen schrittweise: der Vorschlag nennt das Ziel der KI
-   („Ziel 65 %, schrittweise“), und nach dem Übernehmen eines begrenzten Schritts fragt Plus schon nach 7 statt 30 Tagen
-   nach dem nächsten.
-5. **Freigabe:** „Vorschlag übernehmen“ prüft die Schutzregeln erneut gegen die Werte von jetzt (wurde inzwischen von
-   Hand etwas geändert, passiert nichts – dann neu fragen), schreibt die Werte in die Grenzwerte der Pflanze und
-   merkt sich die alten. „Vorschlag zurücknehmen“ stellt sie wieder her, solange seitdem niemand die Werte geändert hat.
-   Achtung: eine höhere Mindesttemperatur kann sofort ein Problem und „Frostgefahr“ auslösen.
-6. **Licht:** Helligkeit max wird mit dem aktuellen Wert verglichen, Helligkeit min zählt nicht als Problem.
-   Tageslicht (DLI) wird gegen den Vortag geprüft; Tageslicht min 0 heißt: keine Warnung bei wenig Licht.
-   Der Verlauf deckt nur 30 Tage ab; die KI soll für hellere Jahreszeiten Luft lassen. Zieht der Helligkeitssensor um,
-   passt der Verlauf erst nach einigen Wochen wieder.
-
-Bei jedem neuen offenen Vorschlag feuert das Ereignis `pflanzenmonitor_plus_suggestion`
-(`entity_id` der Zustands-Entität der Pflanze, `summary`, `changes`) – zum Beispiel für eine Benachrichtigung.
+</details>
 
 ## Beispiele
 
-Erinnerung am Morgen, wenn eine Pflanze heute dran ist:
+Eine Benachrichtigung, wenn eine Pflanze seit 30 Minuten Aufmerksamkeit braucht:
 
 ```yaml
 triggers:
-  - trigger: time
-    at: "08:00:00"
-conditions:
-  - condition: numeric_state
-    entity_id: sensor.schlafzimmer_bogenhanf_giessen_in
-    below: 1
+  - trigger: pflanzenmonitor_plus.problem_detected
+    target:
+      label_id: pflanzen
+    options:
+      behavior: each
+      for:
+        minutes: 30
 actions:
-  - action: notify.mobile_app_iphone
+  - action: notify.mobile_app_handy
     data:
-      message: "Bogenhanf heute gießen"
+      message: "{{ trigger.to_state.name }} braucht Aufmerksamkeit"
 ```
 
-Pflanze draußen: Gießen auslassen, wenn Regen kommt – Bedingung „Regen erwartet“ der Pflanze ist aus.
-
-Benachrichtigung bei neuem KI-Vorschlag:
-
-```yaml
-triggers:
-  - trigger: event
-    event_type: pflanzenmonitor_plus_suggestion
-actions:
-  - action: notify.mobile_app_iphone
-    data:
-      title: "Neuer Vorschlag für {{ state_attr(trigger.event.data.entity_id, 'friendly_name') }}"
-      message: "{{ trigger.event.data.summary }}"
-```
-
-<a id="giess-aufgaben"></a>
-## Gieß-Aufgaben
-
-Optional, standardmäßig aus: unter *Konfigurieren → To-do-Liste fürs Gießen* eine Liste wählen.
-
-- Sobald „Gießen in“ heute erreicht (oder die Pflanze überfällig ist), legt Plus eine Aufgabe wie „Yucca gießen“ an,
-  mit Fälligkeitsdatum, wenn die Liste das kann.
-- Je Pflanze gibt es höchstens eine offene Aufgabe, auch über Neustarts; steht eine offene Aufgabe mit demselben Titel
-  schon auf der Liste, übernimmt Plus sie statt eine zweite anzulegen.
-- Steigt die Bodenfeuchte wieder (Gießen, draußen auch Regen), hakt Plus die Aufgabe selbst ab – sobald die
-  Stundenstatistik den Anstieg bestätigt (ein bis zwei Stunden später), damit ein einzelner Ausreißer sie nicht schließt.
-- Gleichnamige Pflanzen bekommen je eine eigene Aufgabe.
-- Hakst du sie selbst ab oder löschst sie, respektiert Plus das: keine neue Aufgabe für diese Pflanze, bis sie
-  gegossen wurde und wieder fällig ist.
-- Pflanzen ohne Bodenfeuchtesensor bekommen keine Aufgaben. Wechselst du die Liste oder schaltest die Option ab,
-  bleiben Aufgaben auf der alten Liste stehen.
-
-<a id="pflegekalender"></a>
-## Pflegekalender
-
-Optional, Standard aus: unter *Konfigurieren → Pflegekalender* einschalten. Aus heißt: kein Kalender, keine
-Pflege-Knöpfe, keine KI-Anfragen für den Pflegeplan und keine Pflegeplan-Hinweise unter Reparaturen; die Aktion
-`care_done` meldet, dass der Pflegekalender aus ist. Die gespeicherten Termine (`<entry>.care`) bleiben, Wiedereinschalten
-verliert also nichts.
-
-Der Kalender **Pflanzenpflege** (`calendar.pflanzenpflege`) zeigt je Pflanze:
-
-- **Düngen:** in der Düngesaison alle N Tage nach dem letzten Düngen; außerhalb der Saison nichts (Winterpause), der
-  nächste Termin ist dann der erste Tag der Saison. Noch nie gedüngt: heute (in der Saison).
-- **Umtopfen:** alle N Jahre im ersten Monat der Saison (Frühjahr). Noch nie umgetopft: nächstes Frühjahr. Überfällig
-  außerhalb des Frühjahrs: nächstes Frühjahr.
-
-Überfällige Termine bleiben auf heute stehen. Die Knöpfe **Gedüngt** und **Umgetopft** auf der Geräteseite setzen
-heute als letztes Datum; die Aktion `pflanzenmonitor_plus.care_done` macht dasselbe für ein beliebiges Datum (Felder
-`plant_entity`, `care`: `fertilized`/`repotted`, `date`), z. B. aus einem Skript nach einer Düngerunde. Den Plan je
-Pflanze stellst du im Pflanzen-Dialog ein (Schritt *Pflege*).
-
-**KI-Pflegeplan (mit KI-Aufgaben-Entität):** einmal je Jahreszeit (meteorologisch: Winter, Frühling, Sommer, Herbst)
-fragt Plus die KI je Pflanze nach einem Pflegeplan (Saison, Abstand, Umtopfen) – anhand von Name, Art,
-drinnen/draußen, Halbkugel, Land und Monat (je 10-Minuten-Durchlauf höchstens eine Pflanze, nach einem Fehler
-frühestens nach 6 Std.). Weicht er vom bisherigen Plan ab, erscheint unter *Einstellungen → Reparaturen* „neuer
-KI-Vorschlag für den Pflegeplan“ mit bisherigem und vorgeschlagenem Plan und Begründung; **Übernehmen** schreibt ihn in
-die Pflanze (Plus lädt neu), **Ablehnen** behält den Plan bis zur nächsten Jahreszeit. Die Werte begrenzt der Code
-(Abstand 7–90 Tage, Umtopfen alle 1–10 Jahre).
+<details>
+<summary>Erinnerung am Morgen, wenn im Pflegekalender etwas fällig ist</summary>
 
 ```yaml
-# Erinnerung am Morgen, wenn heute etwas fällig ist
 triggers:
   - trigger: calendar
     event: start
     entity_id: calendar.pflanzenpflege
 actions:
-  - action: notify.mobile_app_iphone
+  - action: notify.mobile_app_handy
     data:
       message: "{{ trigger.calendar_event.summary }}"
 ```
 
-## Bekannte Grenzen
+</details>
 
-- Kleine Nachgüsse unter 10 Prozentpunkten werden nicht als Gießen erkannt.
-- Die Vorhersage braucht Verlauf: direkt nach dem Einrichten zeigt „Gießen in“ meist nur das aktuelle Tempo; in den
-  ersten 24 Std. nach dem Gießen gibt es kein Tempo (überschüssiges Wasser läuft ab).
-- Draußen ohne Regensensor (oder vor dessen ersten Daten) bleiben Anstiege „unbekannt“; „Zuletzt gegossen“ bleibt dann
-  leer, die Vorhersage funktioniert trotzdem.
-- Bodenfeuchte-Prozente verschiedener Sensoren und Substrate sind nicht vergleichbar; gelernt wird je Pflanze.
-- KI-Vorschläge kosten je Anfrage etwas bei deinem KI-Anbieter (eine Anfrage je Pflanze und Monat). Die KI kann sich
-  irren – deshalb die Schutzregeln und die Freigabe.
-- Der Pflegekalender zeigt Termine erst ab heute; vergangenes Düngen steht nicht darin.
+## Deine Daten
 
-## Fehlersuche
+- **Lokal.** Lernen und Vorhersage nutzen die Statistik von Home Assistant. Keine zusätzlichen Pakete.
+- **Die KI bekommt** Name, Art, Raum, drinnen oder draußen, Monat, Land, Grenzwerte, gelernte Zahlen und 30 Tage Messwerte. Keine Orte, keine Personen.
+- **Die Diagnose** zeigt je Pflanze die erkannten Gießereignisse, gelernten Werte, Grenzwerte und den letzten KI-Vorschlag.
 
-- **„Keine Daten“:** Der Feuchtesensor hat (noch) keine Langzeitstatistik. Er braucht `state_class: measurement`;
-  Statistik entsteht stündlich.
-- **„Gießen in“ unbekannt:** Noch kein Verlauf oder die Erde trocknet gerade nicht ab (erste 24 Std. nach dem Gießen).
-- **Zustand „unbekannt“:** Kein Sensor der Pflanze meldet einen Wert; Messwert-Entitäten und „Quellsensor“ prüfen.
-- **KI-Vorschlag bleibt „Noch keiner“:** Die Pflanze ist noch nicht gelernt, oder die KI hat nicht geantwortet
-  (Attribut „Letzter Fehler“). „KI jetzt fragen“ zeigt den Fehler direkt an.
-- **Diagnose:** *Pflanzenmonitor Plus → ⋮ → Diagnose herunterladen* zeigt je Pflanze alle erkannten Anstiege, die
-  Quelle des Verlaufs, die gelernten Werte, Grenzwerte, Live-Stand und den letzten KI-Vorschlag.
+## Gut zu wissen
 
-## Entfernen
+- Kleine Nachgüsse unter 10 Prozentpunkten werden nicht als Gießen erkannt. Direkt nach dem Einrichten nutzt „Gießen in“ nur das aktuelle Abtrocknungstempo; im Rückblick-Test an 7 Zimmerpflanzen über 120 Tage lag die gelernte Vorhersage typischerweise 1 bis 3 Tage daneben.
+- Nach dem Umtopfen, einem neuen Sensor oder einem neuen Standort passen die alten Zyklen eine Weile nicht. Verlässlich wird die Vorhersage nach zwei neuen Zyklen; ein „Lernen zurücksetzen“ gibt es noch nicht.
+- Die KI kann sich irren. Schutzregeln im Code begrenzen jeden Schritt, nichts ändert sich ohne deine Freigabe, und jede Änderung lässt sich zurücknehmen. Jede Anfrage kostet etwas bei deinem KI-Anbieter (etwa eine je Pflanze und Monat).
+- Draußen ohne Regensensor bleiben Anstiege unbekannt und „Zuletzt gegossen“ leer; die Vorhersage funktioniert trotzdem.
+- OpenPlantbook wird (noch) nicht unterstützt.
 
-*Einstellungen → Geräte & Dienste → Pflanzenmonitor Plus → ⋮ → Löschen*. Pflanzen, Geräte, Entitäten, Hinweise und
-gespeicherte Daten (Grenzwerte, Live-Stand, KI-Vorschläge, Pflege-Termine, Gieß-Aufgaben) werden entfernt; Aufgaben,
-die schon auf einer To-do-Liste stehen, bleiben dort. Eine einzelne Pflanze entfernt
-*⋮ → Löschen* an ihrem Unterpunkt. Danach den Ordner `custom_components/pflanzenmonitor_plus` löschen und neu starten.
+<details>
+<summary>Zustand und Probleme</summary>
+
+Wie im Plant Monitor, damit Automationen nur die neue Entitäts-ID brauchen:
+
+- Jede Messgröße ist zu niedrig, zu hoch oder OK. Zurück geht es erst 5 % hinter der Grenze (höchstens 5 % der Spanne), kein Hin und Her.
+- Die Pflanze hat ein Problem, wenn eine Messgröße, die zählt, außerhalb liegt. Helligkeit zählt nur, wenn es zu hell ist (dunkel ist es jede Nacht). Tageslicht wird gegen den Vortag geprüft. Mit einem PPFD-Lichtsensor gibt es keine lx-Prüfung.
+- Springt die Bodenfeuchte um 10 Punkte oder mehr, zählt „zu nass“ während der Wartezeit nach dem Gießen nicht.
+- Temperaturen werden in °C verglichen, auch von °F-Sensoren. Ein ausgefallener Sensor macht kein Problem und beendet keines.
+
+</details>
+
+<details>
+<summary>So wird gelernt</summary>
+
+1. Plus liest bis zu 120 Tage der stündlichen Statistik des Feuchtesensors, höchstens einmal pro Stunde.
+2. **Gießen** ist ein Anstieg um mindestens 10 Punkte gegenüber dem Tiefstwert der drei Stunden davor. Stufen innerhalb von 12 Stunden zählen als eines; Lücken, kurze Einbrüche auf 0 und einzelne Ausreißer zählen nicht.
+3. Ein **Zyklus** reicht von einem Gießen bis zum nächsten, mindestens 24 Stunden. Ab zwei Zyklen ist die Pflanze gelernt.
+4. **Vorhersage:** Für die letzten drei Zyklen, wie lange die Erde vom heutigen Stand bis zur Untergrenze brauchte (Median), umgerechnet mit dem Abtrocknungstempo damals und heute (höchstens Faktor 3). Ohne passenden Zyklus das aktuelle Tempo.
+5. **Ziel** ist die Untergrenze der Bodenfeuchte. Die Gießgewohnheit zeigt Plus nur als Info.
+
+</details>
+
+<details>
+<summary>KI-Vorschläge</summary>
+
+1. **Wann:** sobald eine Pflanze gelernt ist, danach höchstens alle 30 Tage, eine Pflanze je 10-Minuten-Durchlauf. „KI jetzt fragen“ fragt sofort. Ein offener Vorschlag wartet 30 Tage auf dich, dann wird er ersetzt.
+2. **Was sie liefert:** Grenzwerte für Bodenfeuchte, Temperatur, Bodentemperatur, Luftfeuchte, Helligkeit und Tageslicht (nur die mit Sensor), je einen Grund und eine Sicherheit. Ohne Pflanzenart ist die Sicherheit höchstens „mittel“.
+3. **Schutzregeln im Code:** je Vorschlag höchstens ±15 Punkte Feuchte oder Luftfeuchte, ±5 °C, ±2000 lx (min) bzw. ±20000 lx (max), ±5 bzw. ±10 Tageslicht; feste Bereiche je Wert und ein Abstand zwischen jeder Unter- und Obergrenze. Werte, die Plus noch nie geschrieben hat, dürfen einmal in einem Schritt ersetzt werden. Größere Änderungen gehen schrittweise, der nächste Schritt nach 7 statt 30 Tagen. Draußen geht die Mindesttemperatur nie unter −5 °C (Luft) bzw. 0 °C (Boden).
+4. **Freigabe:** Übernehmen prüft die Regeln erneut gegen die Werte von jetzt und merkt sich die alten zum Zurücknehmen. Eine höhere Mindesttemperatur kann sofort ein Problem und „Frostgefahr“ auslösen.
+
+Neue Vorschläge erscheinen auch unter **Einstellungen > Reparaturen**, mit Übernehmen und Ablehnen im Dialog.
+
+</details>
+
+<details>
+<summary>Gieß-Aufgaben und Pflegekalender</summary>
+
+**Gieß-Aufgaben:** Erreicht „Gießen in“ heute, legt Plus eine Aufgabe wie „Yucca gießen“ auf der gewählten Liste an, mit Fälligkeitsdatum, wenn die Liste das kann. Höchstens eine offene Aufgabe je Pflanze, auch über Neustarts. Plus hakt sie ab, sobald die Stundenstatistik den Anstieg bestätigt (ein bis zwei Stunden später). Hakst du sie selbst ab oder löschst sie, kommt die nächste erst, wenn die Pflanze gegossen wurde und wieder fällig ist. Pflanzen ohne Bodenfeuchtesensor bekommen keine Aufgaben.
+
+**Pflegekalender:** Düngen alle N Tage in der Saison (Winterpause), Umtopfen alle N Jahre im ersten Monat der Saison. Standard März bis September alle 21 Tage, Umtopfen alle 2 Jahre; Südhalbkugel September bis März. Überfällige Termine bleiben auf heute. Mit KI fragt Plus einmal je Jahreszeit nach einem Pflegeplan je Pflanze und zeigt einen abweichenden unter Reparaturen (Abstand 7 bis 90 Tage, Umtopfen alle 1 bis 10 Jahre). Ausschalten entfernt Kalender und Knöpfe; die gespeicherten Termine bleiben.
+
+</details>
+
+<details>
+<summary>Fehlersuche</summary>
+
+- **„Keine Daten“:** Der Feuchtesensor hat noch keine Langzeitstatistik. Er braucht `state_class: measurement`.
+- **„Gießen in“ unbekannt:** Noch kein Verlauf, oder die Erde trocknet gerade nicht ab (erste 24 Stunden nach dem Gießen).
+- **Zustand unbekannt:** Kein Sensor der Pflanze meldet einen Wert. Messwert-Entitäten und ihren Quellsensor prüfen.
+- **KI-Vorschlag bleibt „Noch keiner“:** Die Pflanze ist noch nicht gelernt, oder die KI hat nicht geantwortet (Attribut „Letzter Fehler“). „KI jetzt fragen“ zeigt den Fehler direkt.
+
+Wenn du ein [Issue](https://github.com/SH1FT-W/pflanzenmonitor-plus/issues) öffnest, häng bitte die Diagnose an (**Pflanzenmonitor Plus > Drei-Punkte-Menü > Diagnose herunterladen**).
+
+</details>
+
+<details>
+<summary>Entfernen</summary>
+
+1. **Einstellungen > Geräte & Dienste > Pflanzenmonitor Plus > Drei-Punkte-Menü > Löschen**. Pflanzen, Geräte, Entitäten, Hinweise und gespeicherte Daten gehen; Aufgaben, die schon auf einer To-do-Liste stehen, bleiben. Eine einzelne Pflanze entfernt **Drei-Punkte-Menü > Löschen** an ihrem Unterpunkt.
+2. Im Marketplace entfernen (oder `/config/custom_components/pflanzenmonitor_plus` löschen) und Home Assistant neu starten.
+
+</details>
+
+<details>
+<summary>Entwicklung</summary>
+
+```bash
+python -m pytest tests -q -p no:logging --cov=custom_components.pflanzenmonitor_plus
+uvx ruff check . && uvx ruff format --check .
+uvx mypy@2.3.1 --python-executable <venv>/bin/python
+python tools/pruefe-uebersetzungen.py    # strings.json gegen translations/*.json
+```
+
+Testpakete: `pip install -r requirements_test.txt`. GitHub Actions prüft dasselbe, dazu HACS-Prüfung und hassfest. Worauf sich der Code bei Home Assistant verlässt, steht in [`docs/ha-annahmen.md`](docs/ha-annahmen.md). Quality Scale: [selbst geprüft](custom_components/pflanzenmonitor_plus/quality_scale.yaml).
+
+</details>
+
+## Lizenz
+
+[Apache License 2.0](LICENSE), Copyright 2026 SH1FT-W. Zum Plant Monitor siehe [`NOTICE`](NOTICE).
+
+<sub>Pflanzenmonitor Plus ist ein eigenständiges Projekt. Es ist mit dem Plant Monitor (Olen/homeassistant-plant) kompatibel, enthält aber keinen Code daraus und gehört nicht dazu.</sub>

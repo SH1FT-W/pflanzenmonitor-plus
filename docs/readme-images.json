@@ -72,49 +72,5 @@
       "win": "#111A13",
       "bar": "#17231A"
     }
-  },
-  "cards": {
-    "features": [
-      {
-        "icon": "flower-outline",
-        "title": "Status like plant.*",
-        "text": "OK or problem per plant, with problems, the status of every reading and the species, so templates keep working."
-      },
-      {
-        "icon": "gauge",
-        "title": "Every reading on the plant",
-        "text": "Soil moisture, temperature, soil temperature, humidity, illuminance or PPFD, conductivity and CO2, plus VPD, PPFD and daily light."
-      },
-      {
-        "icon": "tune-variant",
-        "title": "Limits you set",
-        "text": "Min and max for every measurement, 5 % hysteresis, which readings count as a problem, a wait after watering."
-      },
-      {
-        "icon": "water-outline",
-        "title": "Water in X days",
-        "text": "A forecast from the plant's own past cycles, scaled to how fast the soil dries today."
-      },
-      {
-        "icon": "watering-can-outline",
-        "title": "Last watered, detected",
-        "text": "A jump in soil moisture is a watering. Nothing to press, nothing to enter."
-      },
-      {
-        "icon": "creation-outline",
-        "title": "AI suggestions you approve",
-        "text": "Limits for the species with reasons, safety rules in code, undo any time."
-      },
-      {
-        "icon": "weather-snowy-rainy",
-        "title": "Rain and frost outdoors",
-        "text": "Rain does not count as watering; frost risk from the hourly forecast."
-      },
-      {
-        "icon": "lightning-bolt-outline",
-        "title": "Automations",
-        "text": "Problem detected, a reading became too low or too high, a sensor became stale: 43 triggers, 35 conditions."
-      }
-    ]
   }
 }

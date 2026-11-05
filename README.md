@@ -5,219 +5,104 @@
   <img src="docs/images/readme-title-light.webp" alt="Pflanzenmonitor Plus: Your plants, understood. Every plant with its status, readings and limits in Home Assistant, a watering forecast learned from its own history and AI-suggested limits you approve." />
 </picture>
 
-<p>The plant integration for Home Assistant that learns: status and limits for every plant,<br/>
-a watering forecast from each plant's own history, AI-suggested limits you approve.</p>
-
 [![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FSH1FT-W%2Fpflanzenmonitor-plus%2Fmain%2Fcustom_components%2Fpflanzenmonitor_plus%2Fmanifest.json&query=%24.version&label=version&style=flat-square&color=2E7D32&labelColor=111111)](https://github.com/SH1FT-W/pflanzenmonitor-plus/releases/latest)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.9%2B-2E7D32?style=flat-square&labelColor=111111&logo=homeassistant&logoColor=white)](https://www.home-assistant.io)
 [![Marketplace](https://img.shields.io/badge/Marketplace-custom%20repository-2E7D32?style=flat-square&labelColor=111111)](https://hacs.xyz)
-[![IoT class](https://img.shields.io/badge/iot-calculated-2E7D32?style=flat-square&labelColor=111111)](https://developers.home-assistant.io/docs/creating_integration_manifest/#iot-class)
-[![Quality scale](https://img.shields.io/badge/quality%20scale-self--assessed-2E7D32?style=flat-square&labelColor=111111)](custom_components/pflanzenmonitor_plus/quality_scale.yaml)
-[![License](https://img.shields.io/badge/license-Apache%202.0-2E7D32?style=flat-square&labelColor=111111)](LICENSE)
 
-<p><a href="https://sh1ft-w.github.io/pflanzenmonitor-plus"><b>Website</b></a> &nbsp;·&nbsp; <a href="#features">Features</a> &nbsp;·&nbsp; <a href="#installation">Install</a> &nbsp;·&nbsp; <a href="#moving-from-plant-monitor">Moving from Plant Monitor</a> &nbsp;·&nbsp; <a href="#entities">Entities</a> &nbsp;·&nbsp; <a href="#automations">Automations</a> &nbsp;·&nbsp; <a href="#troubleshooting">Troubleshooting</a> &nbsp;·&nbsp; <a href="CHANGELOG.md">Changelog</a> &nbsp;·&nbsp; <a href="README.de.md">Deutsch</a></p>
+<a href="https://sh1ft-w.github.io/pflanzenmonitor-plus"><b>Website</b></a>&emsp;<a href="#installation">Install</a>&emsp;<a href="#set-up">Set up</a>&emsp;<a href="#moving-from-plant-monitor">Moving from Plant Monitor</a>&emsp;<a href="#entities">Entities</a>&emsp;<a href="CHANGELOG.md">Changelog</a>&emsp;<a href="README.de.md">Deutsch</a>
 
 </div>
 
 <br/>
 
-Pflanzenmonitor Plus watches every plant against its limits, learns from the soil moisture history when it was watered
-and when it needs water again, and optionally lets an AI suggest limits that fit the species. It does everything
-[Plant Monitor](https://github.com/Olen/homeassistant-plant) does; moving over is a few steps per plant
-([guide](#moving-from-plant-monitor)).
+Pflanzenmonitor Plus watches every plant in Home Assistant against its limits, learns from the soil moisture history **when it was watered and when it needs water again**, and optionally lets an AI suggest limits that fit the species. Everything runs locally from Home Assistant's own statistics; only the optional AI requests go to the AI you set up.
 
-Everything runs locally from Home Assistant's own statistics. Only the optional AI suggestions go to the AI you set up
-in Home Assistant. No extra packages.
+It does what [Plant Monitor](https://github.com/Olen/homeassistant-plant) does, but it is a separate integration and takes nothing over from it: moving is [a few steps per plant](#moving-from-plant-monitor). The status entity is `sensor.<name>` instead of `plant.<name>`, and the Flower Card is not supported.
 
-> [!NOTE]
-> Pflanzenmonitor Plus is an independent project. It is compatible with Plant Monitor (Olen/homeassistant-plant) but
-> contains none of its code and is not affiliated with it.
+## What you need for what
 
-<br/>
+| Feature | Needs |
+|:--|:--|
+| Status per plant (OK or problem), readings, limits, logbook, automations | Any sensors of the plant |
+| VPD, PPFD and daily light | Temperature and humidity, or a light sensor |
+| Water in X days, last watered (detected by itself), drying rate | A soil moisture sensor with long-term statistics (`state_class: measurement`) |
+| Rain does not count as watering | Outdoors: a rain sensor in mm/h |
+| Rain expected, frost risk | Outdoors: a weather entity with an hourly forecast |
+| Limits suggested by an AI, you approve | An AI task entity (`ai_task`, for example from the Anthropic or OpenAI integration) |
+| Watering tasks on a to-do list | A to-do list, chosen in the options |
+| Care calendar for fertilizing and repotting | The option *Care calendar* (off by default); with AI, a care plan per season |
 
-<a id="features"></a>
-## Features
-
-<!-- cards:features -->
-<table>
-<tr><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/flower-outline-dark.svg"><img src="docs/images/icons/flower-outline-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Status like plant.*</b><br>OK or problem per plant, with problems, the status of every reading and the species, so templates keep working.</td><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/gauge-dark.svg"><img src="docs/images/icons/gauge-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Every reading on the plant</b><br>Soil moisture, temperature, soil temperature, humidity, illuminance or PPFD, conductivity and CO2, plus VPD, PPFD and daily light.</td></tr>
-<tr><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/tune-variant-dark.svg"><img src="docs/images/icons/tune-variant-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Limits you set</b><br>Min and max for every measurement, 5 % hysteresis, which readings count as a problem, a wait after watering.</td><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/water-outline-dark.svg"><img src="docs/images/icons/water-outline-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Water in X days</b><br>A forecast from the plant's own past cycles, scaled to how fast the soil dries today.</td></tr>
-<tr><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/watering-can-outline-dark.svg"><img src="docs/images/icons/watering-can-outline-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Last watered, detected</b><br>A jump in soil moisture is a watering. Nothing to press, nothing to enter.</td><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/creation-outline-dark.svg"><img src="docs/images/icons/creation-outline-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>AI suggestions you approve</b><br>Limits for the species with reasons, safety rules in code, undo any time.</td></tr>
-<tr><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/weather-snowy-rainy-dark.svg"><img src="docs/images/icons/weather-snowy-rainy-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Rain and frost outdoors</b><br>Rain does not count as watering; frost risk from the hourly forecast.</td><td width="50%" valign="top"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/icons/lightning-bolt-outline-dark.svg"><img src="docs/images/icons/lightning-bolt-outline-light.svg" width="22" height="22" align="absmiddle" alt=""></picture> <b>Automations</b><br>Problem detected, a reading became too low or too high, a sensor became stale: 43 triggers, 35 conditions.</td></tr>
-</table>
-<!-- /cards:features -->
-
-- **Status like `plant.*`:** each plant gets one status entity (`ok` / `problem`) with the attributes Plant Monitor
-  templates read (`problems`, `moisture_status` and friends, `species`), so templates and cards that read these keep
-  working. The Flower Card (`custom:flower-card`) needs Plant Monitor's own backend and is not supported.
-- **Readings and light:** the real sensors are mirrored on the plant's device; Plus adds VPD, PPFD, the total light
-  integral and the daily light integral (today, yesterday, last 24 hours).
-- **Limits:** min/max for every measurement and the lux-to-PPFD factor, as settings on the device page. Choose per
-  measurement whether it counts as a problem; a wait after watering keeps "too wet" quiet.
-- **Logbook:** start and end of every problem.
-- **Water in X days:** a forecast from earlier watering cycles of the same plant, scaled to today's drying rate (in
-  autumn soil dries more slowly than in summer).
-- **Last watered** is detected as soon as the moisture jumps; there is nothing to press or enter.
-- **Drying rate** in percentage points per day and a **learning status** ("Still learning" until two full watering
-  cycles were seen, then "Learned").
-- **AI suggestions for limits** (optional): once a plant is learned, an AI through Home Assistant's own AI task
-  (`ai_task`, e.g. Claude) suggests limits for the species, with reasons. Nothing changes until you accept; every
-  change can be undone.
-- **Plants outdoors:** rain does not count as watering; "Rain expected" (≥ 1 mm in 12 h) and "Frost risk" (forecast
-  for the next 48 h below the plant's minimum temperature).
-- **Watering tasks** (optional): when a plant is due, a task like "Water Yucca" lands on a to-do list of your choice,
-  completed by itself once the plant has been watered.
-- **Care calendar** (optional): a calendar "Plant care" with fertilizing (season and interval per plant, winter pause) and
-  repotting dates; the buttons "Fertilized" and "Repotted" move them on. With AI, a care plan per species is suggested
-  once per season.
-- **Repairs:** new AI suggestions (accept or reject right in the dialog), a notice while Plant Monitor is still set up,
-  and automations that still use old `plant.*` entities after a move.
-
-## Requirements
-
-- Home Assistant 2026.9 or newer with the recorder (default)
-- A soil moisture sensor per plant for learning and the watering forecast (all other sensors are optional)
-- Outdoors, optionally: a weather entity with an hourly forecast and a rain sensor
-- For AI suggestions, optionally: an AI task entity (`ai_task`, e.g. from the Anthropic or OpenAI integration)
+**New in 26.11:** watering tasks on a to-do list and an optional care calendar. Plus no longer moves plants from Plant Monitor by itself; there is a guide instead. Every change is in the [changelog](CHANGELOG.md).
 
 <a id="installation"></a>
-## Installation
-
-### Marketplace
-
-The Marketplace is under Settings → Marketplace. On Home Assistant before 2026.11 it is still called HACS.
+## Install
 
 [![Open in the Marketplace](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=SH1FT-W&repository=pflanzenmonitor-plus&category=integration)
 
-1. In the Marketplace, search for **Pflanzenmonitor Plus** (or click **Open in the Marketplace** above), download it and restart Home Assistant.
+Search for **Pflanzenmonitor Plus** under **Settings > Marketplace** (called HACS before Home Assistant 2026.11), download it and restart Home Assistant. Not in the search yet? Add `https://github.com/SH1FT-W/pflanzenmonitor-plus` under **three dots > Custom repositories** with the type **Integration** first.
 
-Not in the search yet? Then add it as a custom repository first: in the Marketplace open the three dots menu, choose **Custom repositories** and add `https://github.com/SH1FT-W/pflanzenmonitor-plus` with the type **Integration**.
-
-### Manual
+<details>
+<summary>Install by hand</summary>
 
 1. Download the [latest release](https://github.com/SH1FT-W/pflanzenmonitor-plus/releases/latest).
-2. Copy the folder `custom_components/pflanzenmonitor_plus` into `/config/custom_components/` and restart Home
-   Assistant.
+2. Copy `custom_components/pflanzenmonitor_plus` into `/config/custom_components/` and restart Home Assistant.
 
-## Setup
+</details>
 
-*Settings → Devices & services → Add integration → Pflanzenmonitor Plus.* There is exactly one entry; the plants
-are listed under it. All fields are optional and can be changed later under *Configure*.
+<a id="set-up"></a>
+## Set up
 
-| Field | Meaning |
-|---|---|
-| AI for limit suggestions | AI task entity. The first one is suggested. Empty = no AI suggestions (and no buttons). |
-| Weather | Weather entity with an hourly forecast. The first one is suggested. Only for plants outdoors. |
-| To-do list for watering | To-do entity (e.g. the shopping list or a local to-do list). Empty = no watering tasks (default). See [Watering tasks](#watering-tasks). |
-| Care calendar | Calendar "Plant care", the buttons "Fertilized"/"Repotted" and (with AI) the care plan suggestions. Off by default. Turning it off removes the calendar and the buttons; the stored care dates stay for turning it on again. See [Care calendar](#care-calendar). |
-| Rain sensor | Measured rain intensity in mm/h (device class precipitation intensity). Lets Plus tell rain from watering outdoors. Without it, or before it has history, rises outdoors count as unknown. Amount sensors ("rain today") do not work: they stay above 0 until midnight after a shower. |
+You need Home Assistant 2026.9 or newer with the recorder (the default).
 
-### Add or edit a plant
+1. **Add the integration.** **Settings > Devices & services > Add integration > Pflanzenmonitor Plus**. There is exactly one entry; the plants are listed under it.
+2. **Choose the options** (all optional, later under **Configure**): the AI for limit suggestions, a weather entity, a to-do list for watering, the care calendar, a rain sensor. Use a rain sensor that measures intensity in mm/h; amount sensors ("rain today") stay above 0 until midnight.
+3. **Add a plant.** **Pflanzenmonitor Plus > Add plant** asks in four steps: name, species (helps the AI), room and picture; the sensors and whether it is outdoors; which readings count as a problem and the wait after watering; with the care calendar on, the care plan. **Three dots > Reconfigure** changes the same later.
 
-*Pflanzenmonitor Plus → Add plant* asks in four steps; *⋮ → Reconfigure* on the plant changes the same things (the
-room then lives on the device).
-
-| Step | Fields |
-|---|---|
-| Plant | Name, species (e.g. "Dracaena trifasciata"; helps the AI and is shown as model on the device), room, picture (URL or `/local/…`) |
-| Sensors | Soil moisture, air temperature, soil temperature, air humidity, illuminance (lx or PPFD), conductivity, CO2; "Outdoors" (preselected for rooms like terrace, balcony or garden) |
-| Problems | Which readings count as a problem (default: all but VPD), wait after watering in minutes |
-| Care (only with the care calendar on) | Fertilize every N days, fertilizing season from/to month, repot every N years (default: March to September every 21 days, repot every 2 years; southern hemisphere September to March) |
-
-Plus only creates entities for sensors that are set. When you remove a sensor, its entities go away and its limits
-stay stored. When you rename a sensor in Home Assistant, Plus follows.
+Plus only creates entities for sensors that are set. A removed sensor takes its entities along, its limits stay stored. When you rename a sensor, Plus follows.
 
 <a id="moving-from-plant-monitor"></a>
 ## Moving from Plant Monitor
 
-Pflanzenmonitor Plus does not take over anything from Plant Monitor: it does not read, change or remove its plants.
-While Plant Monitor is still set up, *Settings → Repairs* shows a notice with a link to this guide. Move each plant by
-hand:
+Plus does not read, change or remove anything of Plant Monitor. While Plant Monitor is set up, **Settings > Repairs** shows a notice with a link here. Move each plant by hand:
 
-1. Note what you set for the plant in Plant Monitor: sensors, limits (its min/max entities), species, picture, which
-   readings count as a problem, the wait after watering and the room.
-2. Delete the plant in Plant Monitor: *Settings → Devices & services → Plant Monitor*, the plant, three dots menu,
-   **Delete**. This frees its entity IDs; do it first, otherwise Plus gets IDs ending in `_2` that stay. The old
-   history stays in Home Assistant under the old IDs.
-3. In Pflanzenmonitor Plus choose **Add plant** with the same name and the **real sensors** (the ones Plant Monitor
-   used), and **leave Room empty**: with a room, Home Assistant puts it in front of every new entity ID. Set the room
-   afterwards on the plant's device, the IDs stay. Then set the limits on the plant's limit entities (or let the AI
-   suggest them) and the rest in the plant dialog.
-4. Check the entity IDs on the plant's device. The status entity is `sensor.<name>` instead of `plant.<name>` (same
-   states `ok`/`problem` and attributes): replace it in automations, scripts and dashboards. Readings and limits get
-   the same IDs as before where the names match (then their history continues). Older Plant Monitor plants in a
-   Home Assistant that is not set to English kept English IDs (`sensor.<plant>_soil_moisture`), Plus names them in
-   your language: replace those too.
-5. When you have deleted all plants in Plant Monitor, remove it in the Marketplace and restart Home Assistant. The
-   notice under Repairs disappears.
+1. **Note the plant's settings** in Plant Monitor: sensors, limits (its min and max entities), species, picture, which readings count as a problem, the wait after watering and the room.
+2. **Delete the plant in Plant Monitor first.** This frees its entity IDs; otherwise Plus gets IDs ending in `_2` that stay. The old history stays under the old IDs.
+3. **Add it in Plus** with the same name and the real sensors Plant Monitor used, and **leave Room empty**: with a room, Home Assistant puts it in front of every new entity ID. Set the room on the device afterwards, then the limits.
+4. **Replace `plant.<name>`** with `sensor.<name>` in automations, scripts and dashboards (same states and attributes). Readings and limits keep their IDs where the names match. Older plants in a Home Assistant not set to English had English IDs (`sensor.<plant>_soil_moisture`); Plus names them in your language, so replace those too.
+5. **Remove Plant Monitor** in the Marketplace once all plants are moved, and restart. The notice disappears.
 
-Nothing is carried over automatically: everything from step 1, plus names, icons, labels, hidden or disabled entities
-and display or voice assistant settings of the entities, and Plant Monitor's light sums (daily light starts again).
-For the watering forecast Plus learns from the long-term statistics of the real moisture sensor, which stay; a
-sensor without statistics (no `state_class`) or only a few days of history needs some watering cycles first.
-
-Moved with an earlier version of Plus (up to 26.11.2, which moved plants itself)? Nothing changes for you. Automations
-and scripts that still use `plant.<name>` or an old device are still listed under Repairs.
+Nothing is carried over: entity names, icons, labels, hidden or disabled entities and Plant Monitor's light sums start fresh. The watering forecast learns from the real moisture sensor's statistics, which stay. Moved with Plus up to 26.11.2, which moved plants itself? Nothing changes; automations that still use `plant.<name>` stay listed under Repairs.
 
 <a id="entities"></a>
 ## Entities
 
-All entities appear on the plant's device. Entity IDs depend on language and room (e.g.
-`sensor.bedroom_snake_plant_water_in`); look them up on the device page for automations.
+All on the plant's device. IDs depend on language and room (for example `sensor.bedroom_snake_plant_water_in`); look them up on the device page.
 
-| Entity | Value | Attributes |
-|---|---|---|
-| *Plant name* (status) | OK · Problem · unknown (no reading) | Species, status of every measurement (too low / too high / OK), problems (measurement, status, value, limits) |
-| Soil moisture, temperature, soil temperature, air humidity, illuminance, conductivity, CO2 | Value of the real sensor (its unit); after a restart the last value for up to 10 minutes until the sensor reports again | Source sensor |
-| Vapour pressure deficit | kPa from temperature and humidity | – |
-| Daily light (DLI) | mol/m² since midnight | Yesterday |
-| PPFD, total light integral, light last 24 h (diagnostic, hidden) | mol/(s·m²) or mol/m² | – |
-| Max/Min per measurement, lux-to-PPFD factor (configuration) | Limits; temperatures in your unit system | – |
-| Watering due | Time (Home Assistant shows "in 5 days"); due = today 0:00 | – |
-| Water in | Days until the lower limit, 0 = today (for automations) | Due on, lower limit, basis (past cycles or current rate) |
-| Last watered | Time | outdoors: last rain, rain history (available / none yet) |
-| Drying rate (diagnostic) | %/day over the last 72 h; unknown in the first 24 h after watering | – |
-| Learning status (diagnostic) | No data · Still learning · Learned | Cycles seen, cycles needed, "usually watered at" |
-| Rain expected, frost risk (outdoors, with weather) | on/off | Amount, until · lowest temperature, time, plant minimum |
-| AI suggestion (with AI) | None yet · Waiting for approval · Limits fit · Accepted · Rejected · Undone | Summary, "old → new" and reason per limit, confidence, species, asked, next check, last accepted, last error |
-| Buttons (with AI) | Accept suggestion · Reject suggestion (only while one is open) · Undo suggestion (right after accepting) · Ask AI now | – |
-| Fertilized, Repotted (buttons, every plant, with care calendar) | Sets today as the last fertilizing/repotting; the next date in the care calendar moves on | – |
-| Plant care (calendar, one for all plants, with care calendar) | Fertilizing and repotting dates as all-day events | – |
+| Entity | Shows |
+|:--|:--|
+| *Plant name* (status) | OK, problem, or unknown without a reading. Attributes like Plant Monitor's `plant.*`: species, status per measurement, problems |
+| Soil moisture, temperature, soil temperature, humidity, illuminance, conductivity, CO2 | The real sensor's value. Attribute: source sensor |
+| Vapour pressure deficit, daily light (DLI) | kPa from temperature and humidity; mol/m² since midnight, yesterday as attribute |
+| Max and min per measurement, lux-to-PPFD factor | The limits, as settings on the device page |
+| Water in, watering due | Days until the lower limit (0 = today), and the date |
+| Last watered | Detected from a jump in soil moisture. Outdoors also the last rain |
+| Rain expected, frost risk | Outdoors with weather: at least 1 mm in 12 hours; the forecast for 48 hours below the plant's minimum temperature |
+| AI suggestion, with buttons | The open suggestion with "old to new" and a reason per limit. Buttons: Accept, Reject, Undo, Ask AI now |
 
-Moisture-based learning needs the soil moisture sensor; without it a plant has status, readings and limits only.
+<details>
+<summary>Diagnostic entities, care calendar, actions and events</summary>
 
-## Status and problems
+- **Diagnostic:** drying rate (%/day over 72 hours), learning status (no data, still learning, learned after two watering cycles), PPFD, total light integral, light in the last 24 hours.
+- **Care calendar** (option): calendar **Plant care** (`calendar.plant_care`, German `calendar.pflanzenpflege`) with fertilizing and repotting dates as all-day events, and per plant the buttons **Fertilized** and **Repotted**.
+- **Actions:** `pflanzenmonitor_plus.replace_sensor` (`meter_entity`, `new_sensor`; empty removes it) and `pflanzenmonitor_plus.care_done` (`plant_entity`, `care`: `fertilized` or `repotted`, optional `date`).
+- **Event:** `pflanzenmonitor_plus_suggestion` for every new open AI suggestion (`entity_id`, `summary`, `changes`).
+- **Triggers and conditions** for the plant's status entity, also by area or label: problem detected or cleared; per measurement too low, too high or OK; per sensor stale (unavailable or no report for 24 hours by default) or reporting again.
 
-Like Plant Monitor, so automations only need the new entity ID after moving over:
+</details>
 
-- Every measurement is "too low" (below min), "too high" (above max) or "OK". Once too low, it stays so until the value
-  is 5 % above the limit (at most 5 % of the range), and the other way round – no flapping at the limit.
-- A plant has a **problem** when a measurement that counts as a problem is too low or too high. Illuminance only counts
-  when it is too bright (it is dark every night). Daily light is checked against yesterday; 0 (nothing measured) is
-  OK. If the light sensor already measures PPFD, there is no lux check.
-- **Wait after watering:** if soil moisture jumps by 10 points or more, "too wet" does not count as a problem for that
-  long (the measurement's status still shows it).
-- Temperatures are compared in °C, also when a sensor reports °F.
-- A sensor that drops out neither starts nor ends a problem; the logbook reports the end only once it reports a value
-  in range again.
+## Examples
 
-<a id="automations"></a>
-## Automations
-
-Triggers (target: the status entity of one or more plants, also by area or label):
-
-- Plant problem detected · plant problem cleared
-- per measurement: became too low · became too high · became OK (soil moisture, conductivity, temperature, humidity,
-  CO2, soil temperature, illuminance, daily light, VPD)
-- per sensor: became stale (unavailable, or no report for a while, default 24 h; a report with the same value counts)
-  · reports again
-
-Conditions: plant has a problem · per measurement is too low / too high / OK · per sensor is stale.
-
-Action `pflanzenmonitor_plus.replace_sensor`: `meter_entity` (a reading of the plant, e.g. its soil moisture),
-`new_sensor` (the new real sensor; empty = remove). Plus reloads afterwards.
-
-Example – a notification when a plant has needed attention for 30 minutes:
+A notification when a plant has needed attention for 30 minutes:
 
 ```yaml
 triggers:
@@ -234,113 +119,10 @@ actions:
       message: "{{ trigger.to_state.name }} needs attention"
 ```
 
-## How learning works
-
-1. Plus reads the hourly long-term statistics of the plant's moisture sensor (up to 120 days, at most once an hour)
-   and appends the current value. It also reads its own mirror of that sensor and takes the longer history. The other
-   sensors (temperature, humidity, light) are only needed for the AI summary; Plus reads 30 days of them.
-2. **Detecting watering:** if the maximum of an hour is at least 10 percentage points above the minimum of the three
-   hours before, that is a rise. Steps within 12 hours count as one event. After gaps in the history (sensor or Home
-   Assistant off) nothing is compared, and a short dip (many sensors briefly report 0 after a restart) does not count.
-   A single spike (one hour with a maximum of 100 at a normal mean) does not count either: a rise only counts once the
-   hourly mean, or that of the next hour, is clearly above the starting value. If the moisture jumps like that in
-   between, Plus recalculates right away; "Last watered" gets the start of the hour in which the watering was seen.
-3. **Cycle** = from one watering to the next, at least 24 hours. A plant counts as learned after two cycles.
-4. **Forecast:** for the last three cycles Plus measures how long the soil took from today's level to the lower limit
-   (median), scaled by "rate then ÷ rate now" over the same 72 hours before that level (at most a factor of 3). Without
-   a matching cycle: the current rate.
-5. **Target** is the plant's lower soil moisture limit. The watering habit (median moisture before the last
-   waterings) is shown for information only.
-
-In a back test on real data (7 indoor plants, 120 days) the forecast was typically 1 to 3 days off.
-
-**Limit: repotting, a new sensor, a new place.** Plus learns from all cycles of the last 120 days and cannot know that
-the plant changed. After repotting (other substrate, bigger pot), a newly placed sensor or a move to the window the old
-cycles do not fit for a while; the forecast adapts through the rate ratio but is only reliable again after two new
-cycles. There is no "reset learning" per plant yet.
-
-## AI suggestions
-
-1. **When:** once a plant is "Learned", then automatically at most every 30 days (at most one plant per 10-minute
-   run). "Ask AI now" asks right away. After an error, at the earliest after 6 hours. When you enter or change the
-   species, Plus asks again on the next run. An open suggestion waits 30 days for your decision; after that Plus
-   assesses the plant again and replaces it (the attribute `expired` of the AI suggestion shows when the replaced one
-   was asked).
-2. **What the AI gets:** name, species (if set), room, indoors/outdoors, month, country, current limits, learned
-   numbers (cycles, usually watered at, moisture after watering, days between waterings, rate) and min/mean/max of the
-   last 30 days (soil moisture, air and soil temperature, humidity), plus for light the daily peaks and the daily light
-   per day from the same illuminance sensor. No locations, no people.
-3. **What it returns:** lower and upper limits for soil moisture, temperature, soil temperature, humidity,
-   illuminance and daily light – only limits the plant has a sensor for (not CO2 and VPD) – one sentence of reasoning
-   each and a confidence. Illuminance and daily light depend on where the sensor sits (often a room sensor, not at
-   the plant), so the AI aligns them with the measured history. Plus builds the summary itself from the values after
-   the safety rules. Tip: set the species – without it the AI guesses from the name and the confidence is at most
-   "medium".
-4. **Safety rules (in code, not in the prompt):** per suggestion at most ±15 points moisture/humidity, ±5 °C,
-   ±2000 lx (min) or ±20000 lx (max) illuminance, ±5 or ±10 daily light; fixed ranges per value (e.g. moisture
-   5–100 %, minimum temperature −15 to 25 °C); every lower limit with a gap below its upper limit (moisture/humidity 10,
-   temperatures 5 °C, illuminance 2000 lx, daily light 2), otherwise both values of the pair stay. **First step free:**
-   limits Plus never wrote (all but soil moisture and minimum temperature) are usually still start values – the AI may
-   replace them in one step once (shown as "set for the first time"); after that the steps apply to them too. A value
-   you changed by hand since the last request counts as set and is only adjusted step by step. Temperature limits are
-   always in °C; if the light sensor already measures PPFD, there are no lux limits (daily light still). Larger changes
-   go step by step: the suggestion names the AI's target ("target 65 %, step by step"), and after accepting a limited
-   step Plus asks for the next one after 7 instead of 30 days. Outdoors (pots), the minimum temperature never goes
-   below −5 °C (air) or 0 °C (soil), and outside the summer months max illuminance and max daily light are never
-   lowered.
-5. **Approval:** "Accept suggestion" checks the safety rules again against the values of now (if something was
-   changed by hand in the meantime, nothing happens – ask again), writes the values to the plant's limits and keeps the
-   old ones. "Undo suggestion" restores them as long as nobody changed the values since. Note: a higher minimum
-   temperature can raise a problem and "Frost risk" right away.
-
-Every new open suggestion fires the event `pflanzenmonitor_plus_suggestion` (`entity_id` of the plant's status
-entity, `summary`, `changes`) – for example for a notification.
-
-<a id="watering-tasks"></a>
-## Watering tasks
-
-Optional, off by default: choose a to-do list under *Configure → To-do list for watering*.
-
-- As soon as "Water in" reaches today (or the plant is overdue), Plus adds a task like "Water Yucca" (German: "Yucca
-  gießen"), with the due date if the list supports due dates.
-- There is at most one open task per plant, also across restarts; an open task with the same title that is already on
-  the list is taken over instead of adding a second one.
-- When the soil moisture rises again (a watering, or rain outdoors), Plus completes the task – once the hourly
-  statistics confirm the rise (one to two hours later), so a single outlier reading does not close it.
-- Plants with the same name each get their own task.
-- If you check the task off or delete it yourself, Plus respects that: no new task for this plant until it has been
-  watered and becomes due again.
-- Plants without a soil moisture sensor get no tasks. When you switch to another list or turn the option off, tasks
-  already on the old list stay there.
-
-<a id="care-calendar"></a>
-## Care calendar
-
-Optional, off by default: turn on *Configure → Care calendar*. Off means no calendar, no care buttons, no AI care plan
-requests and no care plan repairs; the action `care_done` reports that the care calendar is off. The stored dates
-(`<entry>.care`) stay, so turning it on again loses nothing.
-
-The calendar **Plant care** (`calendar.plant_care`, German `calendar.pflanzenpflege`) shows for every plant:
-
-- **Fertilize:** within the fertilizing season every N days after the last fertilizing; outside the season nothing
-  (winter pause), the next date is the first day of the season. Never fertilized: today (in season).
-- **Repot:** every N years in the first month of the season (spring). Never repotted: next spring. Overdue outside
-  spring: next spring.
-
-Overdue dates stay on today. The buttons **Fertilized** and **Repotted** on the plant's device page set today as the
-last date; the action `pflanzenmonitor_plus.care_done` does the same for any date (fields `plant_entity`, `care`:
-`fertilized`/`repotted`, `date`), e.g. from a script after a fertilizing round. The plan per plant is set in the plant
-dialog (step *Care*).
-
-**AI care plan (with an AI task entity):** once per season (meteorological: winter, spring, summer, autumn) Plus asks
-the AI for each plant for a care plan (season, interval, repotting) based on name, species, indoors/outdoors, hemisphere,
-country and month (at most one plant per 10-minute run, after an error not before 6 hours). If it differs from the
-current plan, *Settings → Repairs* shows "new AI suggestion for the care plan" with the current and the suggested plan
-and the reason; **Accept** writes it into the plant (and Plus reloads), **Reject** keeps the plan until the next
-season. Values are clamped in code (interval 7–90 days, repotting every 1–10 years).
+<details>
+<summary>Reminder in the morning when something is due in the care calendar</summary>
 
 ```yaml
-# Reminder in the morning when something is due today
 triggers:
   - trigger: calendar
     event: start
@@ -351,39 +133,88 @@ actions:
       message: "{{ trigger.calendar_event.summary }}"
 ```
 
-## Known limitations
+</details>
 
-- Small top-ups below 10 percentage points are not detected as watering.
-- The forecast needs history: right after setup "Water in" usually only shows the current rate; in the first 24 hours
-  after watering there is no rate (excess water drains).
-- Outdoors without a rain sensor (or before its first data) rises stay "unknown"; "Last watered" stays empty there,
-  the forecast still works.
-- Soil moisture percentages of different sensors and substrates are not comparable; learning is per plant.
-- AI suggestions cost a little at your AI provider per request (one request per plant and month). The AI can be
-  wrong – hence the safety rules and the approval.
-- The care calendar only shows dates from today on; past fertilizings are not listed.
+## Your data
+
+- **Local.** Learning and the forecast use Home Assistant's own statistics. No extra packages.
+- **The AI gets** name, species, room, indoors or outdoors, month, country, limits, learned numbers and 30 days of readings. No locations, no people.
+- **Diagnostics** show per plant the detected waterings, learned values, limits and the last AI suggestion.
+
+## Good to know
+
+- Small top-ups below 10 percentage points are not detected as watering. Right after setup "Water in" only uses the current drying rate; in a back test on 7 indoor plants over 120 days the learned forecast was typically 1 to 3 days off.
+- After repotting, a new sensor or a new place, the old cycles do not fit for a while. The forecast is reliable again after two new cycles; there is no "reset learning" yet.
+- The AI can be wrong. Safety rules in code limit every step, nothing changes until you accept, and every change can be undone. Each request costs a little at your AI provider (about one per plant and month).
+- Outdoors without a rain sensor, rises stay unknown and "Last watered" stays empty; the forecast still works.
 - OpenPlantbook is not supported (yet).
 
-<a id="troubleshooting"></a>
-## Troubleshooting
+<details>
+<summary>Status and problems</summary>
 
-- **"No data":** the moisture sensor has no long-term statistics (yet). It needs `state_class: measurement`;
-  statistics are created hourly.
-- **"Water in" unknown:** no history yet, or the soil is not drying right now (first 24 hours after watering).
-- **Status "unknown":** no sensor of the plant reports a value; check the reading entities and their "source sensor".
-- **AI suggestion stays "None yet":** the plant is not learned yet, or the AI did not answer (attribute "last
-  error"). "Ask AI now" shows the error directly.
-- **Diagnostics:** *Pflanzenmonitor Plus → ⋮ → Download diagnostics* shows per plant all detected rises, the source of
-  the history, the learned values, limits, live state and the last AI suggestion.
+Like Plant Monitor, so automations only need the new entity ID:
 
-## Removal
+- Every measurement is too low, too high or OK. It switches back only 5 % past the limit (at most 5 % of the range), so it does not flap.
+- A plant has a problem when a measurement that counts is out of range. Illuminance only counts when too bright (it is dark every night). Daily light is checked against yesterday. With a PPFD light sensor there is no lux check.
+- If soil moisture jumps by 10 points or more, "too wet" does not count for the wait after watering.
+- Temperatures are compared in °C, also from °F sensors. A sensor that drops out neither starts nor ends a problem.
 
-*Settings → Devices & services → Pflanzenmonitor Plus → ⋮ → Delete.* Plants, devices, entities, repairs and stored
-data (limits, live state, AI suggestions, care dates, watering tasks) are removed; tasks already on a to-do list stay
-there. To remove a single plant, use *⋮ → Delete* on its entry. Then
-delete the folder `custom_components/pflanzenmonitor_plus` and restart Home Assistant.
+</details>
 
-## Development
+<details>
+<summary>How learning works</summary>
+
+1. Plus reads up to 120 days of the moisture sensor's hourly statistics, at most once an hour.
+2. **Watering** is a rise of at least 10 points from the minimum of the three hours before. Steps within 12 hours count as one; gaps, short dips to 0 and single spikes do not count.
+3. A **cycle** runs from one watering to the next, at least 24 hours. Two cycles make a plant learned.
+4. **Forecast:** for the last three cycles, how long the soil took from today's level to the lower limit (median), scaled by the drying rate then and now (at most a factor of 3). Without a matching cycle, the current rate.
+5. The **target** is the lower soil moisture limit. The watering habit is shown for information only.
+
+</details>
+
+<details>
+<summary>AI suggestions</summary>
+
+1. **When:** once a plant is learned, then at most every 30 days, one plant per 10-minute run. "Ask AI now" asks right away. An open suggestion waits 30 days for you, then it is replaced.
+2. **What it returns:** limits for soil moisture, temperature, soil temperature, humidity, illuminance and daily light (only those with a sensor), a reason each and a confidence. Without a species the confidence is at most "medium".
+3. **Safety rules in code:** per suggestion at most ±15 points moisture or humidity, ±5 °C, ±2000 lx (min) or ±20000 lx (max), ±5 or ±10 daily light; fixed ranges per value and a gap between every lower and upper limit. Limits Plus never wrote may be replaced in one step once. Larger changes go step by step, the next one after 7 instead of 30 days. Outdoors the minimum temperature never goes below −5 °C (air) or 0 °C (soil).
+4. **Approval:** accepting checks the rules again against the values of now and keeps the old ones for undo. A higher minimum temperature can raise a problem and "Frost risk" right away.
+
+New suggestions also show under **Settings > Repairs**, with Accept and Reject in the dialog.
+
+</details>
+
+<details>
+<summary>Watering tasks and care calendar</summary>
+
+**Watering tasks:** when "Water in" reaches today, Plus adds a task like "Water Yucca" to the chosen list, with a due date if the list supports it. At most one open task per plant, also across restarts. Plus completes it once the hourly statistics confirm the rise (one to two hours later). If you check it off or delete it yourself, the next task comes only after the plant was watered and is due again. Plants without a soil moisture sensor get no tasks.
+
+**Care calendar:** fertilizing every N days within the season (winter pause), repotting every N years in the first month of the season. Default March to September every 21 days, repotting every 2 years; southern hemisphere September to March. Overdue dates stay on today. With AI, Plus asks once per season for a care plan per plant and shows a differing one under Repairs (interval 7 to 90 days, repotting every 1 to 10 years). Turning the option off removes calendar and buttons; the stored dates stay.
+
+</details>
+
+<details>
+<summary>Troubleshooting</summary>
+
+- **"No data":** the moisture sensor has no long-term statistics yet. It needs `state_class: measurement`.
+- **"Water in" unknown:** no history yet, or the soil is not drying (first 24 hours after watering).
+- **Status unknown:** no sensor of the plant reports a value. Check the reading entities and their source sensor.
+- **AI suggestion stays "None yet":** the plant is not learned yet, or the AI did not answer (attribute "last error"). "Ask AI now" shows the error directly.
+
+When you open an [issue](https://github.com/SH1FT-W/pflanzenmonitor-plus/issues), attach the diagnostics (**Pflanzenmonitor Plus > three dots > Download diagnostics**).
+
+</details>
+
+<details>
+<summary>Remove</summary>
+
+1. **Settings > Devices & services > Pflanzenmonitor Plus > three dots > Delete**. Plants, devices, entities, repairs and stored data go; tasks already on a to-do list stay. A single plant goes with **three dots > Delete** on its entry.
+2. Remove it in the Marketplace (or delete `/config/custom_components/pflanzenmonitor_plus`) and restart Home Assistant.
+
+</details>
+
+<details>
+<summary>Development</summary>
 
 ```bash
 python -m pytest tests -q -p no:logging --cov=custom_components.pflanzenmonitor_plus
@@ -392,10 +223,12 @@ uvx mypy@2.3.1 --python-executable <venv>/bin/python
 python tools/pruefe-uebersetzungen.py    # strings.json against translations/*.json
 ```
 
-Install the test requirements with `pip install -r requirements_test.txt`. The same checks run on GitHub Actions for
-every push and pull request, plus HACS validation and hassfest. What the code relies on in Home Assistant is listed in
-[`docs/ha-annahmen.md`](docs/ha-annahmen.md).
+Test requirements: `pip install -r requirements_test.txt`. GitHub Actions runs the same checks plus HACS validation and hassfest. What the code relies on in Home Assistant is listed in [`docs/ha-annahmen.md`](docs/ha-annahmen.md). Quality scale: [self-assessed](custom_components/pflanzenmonitor_plus/quality_scale.yaml).
+
+</details>
 
 ## License
 
 [Apache License 2.0](LICENSE), Copyright 2026 SH1FT-W. See [`NOTICE`](NOTICE) about Plant Monitor.
+
+<sub>Pflanzenmonitor Plus is an independent project. It is compatible with Plant Monitor (Olen/homeassistant-plant) but contains none of its code and is not affiliated with it.</sub>
