@@ -14,7 +14,7 @@
         "v"
       ],
       [
-        "HACS"
+        "Marketplace"
       ]
     ],
     "logo": "docs/images/readme-icon.png",
@@ -35,7 +35,8 @@
       "top": 92,
       "flat": true
     },
-    "nameSize": 46
+    "nameSize": 46,
+    "layout": "center"
   },
   "colors": {
     "light": {
