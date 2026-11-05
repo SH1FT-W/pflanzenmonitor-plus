@@ -7,7 +7,7 @@
 
 [![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FSH1FT-W%2Fpflanzenmonitor-plus%2Fmain%2Fcustom_components%2Fpflanzenmonitor_plus%2Fmanifest.json&query=%24.version&label=version&style=flat-square&color=2E7D32&labelColor=111111)](https://github.com/SH1FT-W/pflanzenmonitor-plus/releases/latest)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.9%2B-2E7D32?style=flat-square&labelColor=111111&logo=homeassistant&logoColor=white)](https://www.home-assistant.io)
-[![Marketplace](https://img.shields.io/badge/Marketplace-custom%20repository-2E7D32?style=flat-square&labelColor=111111)](https://hacs.xyz)
+[![Marketplace](https://img.shields.io/badge/Marketplace-default-2E7D32?style=flat-square&labelColor=111111)](https://hacs.xyz)
 
 <a href="https://sh1ft-w.github.io/pflanzenmonitor-plus"><b>Website</b></a>&emsp;<a href="#installation">Install</a>&emsp;<a href="#set-up">Set up</a>&emsp;<a href="#moving-from-plant-monitor">Moving from Plant Monitor</a>&emsp;<a href="#entities">Entities</a>&emsp;<a href="CHANGELOG.md">Changelog</a>&emsp;<a href="README.de.md">Deutsch</a>
 
@@ -39,7 +39,7 @@ It does what [Plant Monitor](https://github.com/Olen/homeassistant-plant) does, 
 
 [![Open in the Marketplace](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=SH1FT-W&repository=pflanzenmonitor-plus&category=integration)
 
-Search for **Pflanzenmonitor Plus** under **Settings > Marketplace** (called HACS before Home Assistant 2026.11), download it and restart Home Assistant. Not in the search yet? Add `https://github.com/SH1FT-W/pflanzenmonitor-plus` under **three dots > Custom repositories** with the type **Integration** first.
+Search for **Pflanzenmonitor Plus** under **Settings > Marketplace** (called HACS before Home Assistant 2026.11), download it and restart Home Assistant.
 
 <details>
 <summary>Install by hand</summary>

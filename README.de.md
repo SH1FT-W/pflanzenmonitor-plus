@@ -6,7 +6,7 @@
 
 [![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FSH1FT-W%2Fpflanzenmonitor-plus%2Fmain%2Fcustom_components%2Fpflanzenmonitor_plus%2Fmanifest.json&query=%24.version&label=Version&style=flat-square&color=2E7D32&labelColor=111111)](https://github.com/SH1FT-W/pflanzenmonitor-plus/releases/latest)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.9%2B-2E7D32?style=flat-square&labelColor=111111&logo=homeassistant&logoColor=white)](https://www.home-assistant.io)
-[![Marketplace](https://img.shields.io/badge/Marketplace-benutzerdefiniert-2E7D32?style=flat-square&labelColor=111111)](https://hacs.xyz)
+[![Marketplace](https://img.shields.io/badge/Marketplace-default-2E7D32?style=flat-square&labelColor=111111)](https://hacs.xyz)
 
 <a href="https://sh1ft-w.github.io/pflanzenmonitor-plus"><b>Website</b></a>&emsp;<a href="#installation">Installation</a>&emsp;<a href="#einrichtung">Einrichtung</a>&emsp;<a href="#umzug-aus-dem-plant-monitor">Umzug aus dem Plant Monitor</a>&emsp;<a href="#entitaeten">Entitäten</a>&emsp;<a href="CHANGELOG.md">Changelog (englisch)</a>&emsp;<a href="README.md">English</a>
 
@@ -38,7 +38,7 @@ Plus kann, was der [Plant Monitor](https://github.com/Olen/homeassistant-plant) 
 
 [![Im Marketplace öffnen](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=SH1FT-W&repository=pflanzenmonitor-plus&category=integration)
 
-Unter **Einstellungen > Marketplace** (vor Home Assistant 2026.11 heißt er HACS) nach **Pflanzenmonitor Plus** suchen, herunterladen und Home Assistant neu starten. Noch nicht in der Suche? Dann zuerst `https://github.com/SH1FT-W/pflanzenmonitor-plus` unter **Drei-Punkte-Menü > Benutzerdefinierte Repositories** mit dem Typ **Integration** hinzufügen.
+Unter **Einstellungen > Marketplace** (vor Home Assistant 2026.11 heißt er HACS) nach **Pflanzenmonitor Plus** suchen, herunterladen und Home Assistant neu starten.
 
 <details>
 <summary>Von Hand installieren</summary>
