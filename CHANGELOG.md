@@ -1,5 +1,9 @@
 # Changelog
 
+## 26.11.4 – 05.11.2026
+
+- README and project page: new layout, shorter and easier to scan, with one table at the core.
+
 ## 26.11.3 – 04.11.2026
 
 - **Breaking: no more automatic move from Plant Monitor.** Pflanzenmonitor Plus no longer reads, changes or removes
