@@ -2,14 +2,14 @@
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/images/readme-title-dark.webp" />
-  <img src="docs/images/readme-title-light.webp" alt="Pflanzenmonitor Plus: Your plants, understood." />
+  <img src="docs/images/readme-title-light.webp" alt="Pflanzenmonitor Plus: the plant integration that learns. Watering forecast. AI-suggested limits. Home Assistant statistics." />
 </picture>
 
 [![Version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FSH1FT-W%2Fpflanzenmonitor-plus%2Fmain%2Fcustom_components%2Fpflanzenmonitor_plus%2Fmanifest.json&query=%24.version&label=version&style=flat-square&color=2E7D32&labelColor=111111)](https://github.com/SH1FT-W/pflanzenmonitor-plus/releases/latest)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.9%2B-2E7D32?style=flat-square&labelColor=111111&logo=homeassistant&logoColor=white)](https://www.home-assistant.io)
 [![Marketplace](https://img.shields.io/badge/Marketplace-default-2E7D32?style=flat-square&labelColor=111111)](https://hacs.xyz)
 
-<a href="https://sh1ft-w.github.io/pflanzenmonitor-plus"><b>Website</b></a>&emsp;<a href="#installation">Install</a>&emsp;<a href="#set-up">Set up</a>&emsp;<a href="#moving-from-plant-monitor">Moving from Plant Monitor</a>&emsp;<a href="#entities">Entities</a>&emsp;<a href="CHANGELOG.md">Changelog</a>&emsp;<a href="README.de.md">Deutsch</a>
+<a href="https://sh1ft-w.github.io/pflanzenmonitor-plus"><b>Website</b></a>&emsp;<a href="#get-started">Get started</a>&emsp;<a href="#moving-from-plant-monitor">Moving from Plant Monitor</a>&emsp;<a href="#entities">Entities</a>&emsp;<a href="CHANGELOG.md">Changelog</a>&emsp;<a href="README.de.md">Deutsch</a>
 
 </div>
 
@@ -19,7 +19,7 @@ Pflanzenmonitor Plus watches every plant in Home Assistant against its limits, l
 
 It does what [Plant Monitor](https://github.com/Olen/homeassistant-plant) does, but it is a separate integration and takes nothing over from it: moving is [a few steps per plant](#moving-from-plant-monitor). The status entity is `sensor.<name>` instead of `plant.<name>`, and the Flower Card is not supported.
 
-## What you need for what
+## What you get
 
 | Feature | Needs |
 |:--|:--|
@@ -34,12 +34,19 @@ It does what [Plant Monitor](https://github.com/Olen/homeassistant-plant) does, 
 
 **New in 26.11:** watering tasks on a to-do list and an optional care calendar. Plus no longer moves plants from Plant Monitor by itself; there is a guide instead. Every change is in the [changelog](CHANGELOG.md).
 
-<a id="installation"></a>
-## Install
+<a id="get-started"></a><a id="installation"></a><a id="install"></a><a id="set-up"></a>
+## Get started
 
 [![Open in the Marketplace](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=SH1FT-W&repository=pflanzenmonitor-plus&category=integration)
 
-Search for **Pflanzenmonitor Plus** under **Settings > Marketplace** (called HACS before Home Assistant 2026.11), download it and restart Home Assistant.
+You need Home Assistant 2026.9 or newer with the recorder (the default).
+
+1. **Install it.** Search for **Pflanzenmonitor Plus** under **Settings > Marketplace** (called HACS before Home Assistant 2026.11), download it and restart Home Assistant.
+2. **Add the integration.** **Settings > Devices & services > Add integration > Pflanzenmonitor Plus**. There is exactly one entry; the plants are listed under it.
+3. **Choose the options** (all optional, later under **Configure**): the AI for limit suggestions, a weather entity, a to-do list for watering, the care calendar, a rain sensor. Use a rain sensor that measures intensity in mm/h; amount sensors ("rain today") stay above 0 until midnight.
+4. **Add a plant.** **Pflanzenmonitor Plus > Add plant** asks in four steps: name, species (helps the AI), room and picture; the sensors and whether it is outdoors; which readings count as a problem and the wait after watering; with the care calendar on, the care plan. **Three dots > Reconfigure** changes the same later.
+
+Plus only creates entities for sensors that are set. A removed sensor takes its entities along, its limits stay stored. When you rename a sensor, Plus follows.
 
 <details>
 <summary>Install by hand</summary>
@@ -48,17 +55,6 @@ Search for **Pflanzenmonitor Plus** under **Settings > Marketplace** (called HAC
 2. Copy `custom_components/pflanzenmonitor_plus` into `/config/custom_components/` and restart Home Assistant.
 
 </details>
-
-<a id="set-up"></a>
-## Set up
-
-You need Home Assistant 2026.9 or newer with the recorder (the default).
-
-1. **Add the integration.** **Settings > Devices & services > Add integration > Pflanzenmonitor Plus**. There is exactly one entry; the plants are listed under it.
-2. **Choose the options** (all optional, later under **Configure**): the AI for limit suggestions, a weather entity, a to-do list for watering, the care calendar, a rain sensor. Use a rain sensor that measures intensity in mm/h; amount sensors ("rain today") stay above 0 until midnight.
-3. **Add a plant.** **Pflanzenmonitor Plus > Add plant** asks in four steps: name, species (helps the AI), room and picture; the sensors and whether it is outdoors; which readings count as a problem and the wait after watering; with the care calendar on, the care plan. **Three dots > Reconfigure** changes the same later.
-
-Plus only creates entities for sensors that are set. A removed sensor takes its entities along, its limits stay stored. When you rename a sensor, Plus follows.
 
 <a id="moving-from-plant-monitor"></a>
 ## Moving from Plant Monitor
@@ -100,6 +96,7 @@ All on the plant's device. IDs depend on language and room (for example `sensor.
 
 </details>
 
+<a id="examples"></a>
 ## Examples
 
 A notification when a plant has needed attention for 30 minutes:
@@ -232,3 +229,11 @@ Test requirements: `pip install -r requirements_test.txt`. GitHub Actions runs t
 [Apache License 2.0](LICENSE), Copyright 2026 SH1FT-W. See [`NOTICE`](NOTICE) about Plant Monitor.
 
 <sub>Pflanzenmonitor Plus is an independent project. It is compatible with Plant Monitor (Olen/homeassistant-plant) but contains none of its code and is not affiliated with it.</sub>
+
+<br/>
+
+<div align="center">
+<a href="https://sh1ft-w.github.io"><img src="https://sh1ft-w.github.io/readme/footer.png" width="640" alt="All SH1FT-W projects"></a>
+<br/>
+<sub>More open source for Home Assistant and the Mac at <a href="https://sh1ft-w.github.io">sh1ft-w.github.io</a></sub>
+</div>

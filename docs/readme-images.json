@@ -1,5 +1,5 @@
 {
-  "$comment": "Content of the README pictures. Render with: node sh1ft-w.github.io/theme/v1/readme-images/render.mjs <this repo> (title, cards). The title's picture docs/images/title-shot-{light,dark}.png is rendered from docs/title-shot.html (an illustration with an invented plant) with playwright at 1100 px width and device scale 2. Palette from docs/index.html.",
+  "$comment": "Content of the README title. Render with sh1ft-w.github.io/theme/v2/readme-images (node render.mjs <this repo>): banner 1280 x 440 light and dark, social preview 1280 x 640. Used fields: title.name, title.line, title.lanes, title.logo, colors.*.bg/ink/ink2, colors.light.accent. The other fields are from the v1 title and no longer read.",
   "title": {
     "name": "Pflanzenmonitor Plus",
     "eyebrow": "For Home Assistant",
@@ -36,7 +36,13 @@
       "flat": true
     },
     "nameSize": 46,
-    "layout": "center"
+    "layout": "center",
+    "line": "The plant integration that learns.",
+    "lanes": [
+      "Watering forecast",
+      "AI-suggested limits",
+      "Home Assistant statistics"
+    ]
   },
   "colors": {
     "light": {

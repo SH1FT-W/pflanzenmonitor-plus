@@ -8,7 +8,7 @@
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2026.9%2B-2E7D32?style=flat-square&labelColor=111111&logo=homeassistant&logoColor=white)](https://www.home-assistant.io)
 [![Marketplace](https://img.shields.io/badge/Marketplace-default-2E7D32?style=flat-square&labelColor=111111)](https://hacs.xyz)
 
-<a href="https://sh1ft-w.github.io/pflanzenmonitor-plus"><b>Website</b></a>&emsp;<a href="#installation">Installation</a>&emsp;<a href="#einrichtung">Einrichtung</a>&emsp;<a href="#umzug-aus-dem-plant-monitor">Umzug aus dem Plant Monitor</a>&emsp;<a href="#entitaeten">Entitäten</a>&emsp;<a href="CHANGELOG.md">Changelog (englisch)</a>&emsp;<a href="README.md">English</a>
+<a href="https://sh1ft-w.github.io/pflanzenmonitor-plus"><b>Website</b></a>&emsp;<a href="#loslegen">Loslegen</a>&emsp;<a href="#umzug-aus-dem-plant-monitor">Umzug aus dem Plant Monitor</a>&emsp;<a href="#entitaeten">Entitäten</a>&emsp;<a href="CHANGELOG.md">Changelog (englisch)</a>&emsp;<a href="README.md">English</a>
 
 </div>
 
@@ -18,7 +18,7 @@ Pflanzenmonitor Plus überwacht jede Pflanze in Home Assistant an ihren Grenzwer
 
 Plus kann, was der [Plant Monitor](https://github.com/Olen/homeassistant-plant) kann, ist aber eine eigene Integration und übernimmt nichts daraus: Der Umstieg sind [wenige Schritte je Pflanze](#umzug-aus-dem-plant-monitor). Die Zustands-Entität heißt `sensor.<name>` statt `plant.<name>`, die Flower Card wird nicht unterstützt.
 
-## Was du wofür brauchst
+## Was du bekommst
 
 | Funktion | Braucht |
 |:--|:--|
@@ -33,12 +33,19 @@ Plus kann, was der [Plant Monitor](https://github.com/Olen/homeassistant-plant) 
 
 **Neu in 26.11:** Gieß-Aufgaben auf einer To-do-Liste und ein optionaler Pflegekalender. Plus zieht Pflanzen nicht mehr selbst aus dem Plant Monitor um; dafür gibt es eine Anleitung. Alle Änderungen stehen im [Changelog](CHANGELOG.md) (englisch).
 
-<a id="installation"></a>
-## Installation
+<a id="loslegen"></a><a id="installation"></a><a id="einrichtung"></a>
+## Loslegen
 
 [![Im Marketplace öffnen](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=SH1FT-W&repository=pflanzenmonitor-plus&category=integration)
 
-Unter **Einstellungen > Marketplace** (vor Home Assistant 2026.11 heißt er HACS) nach **Pflanzenmonitor Plus** suchen, herunterladen und Home Assistant neu starten.
+Du brauchst Home Assistant 2026.9 oder neuer mit Recorder (Standard).
+
+1. **Installieren.** Unter **Einstellungen > Marketplace** (vor Home Assistant 2026.11 heißt er HACS) nach **Pflanzenmonitor Plus** suchen, herunterladen und Home Assistant neu starten.
+2. **Integration hinzufügen.** **Einstellungen > Geräte & Dienste > Integration hinzufügen > Pflanzenmonitor Plus**. Es gibt genau einen Eintrag; die Pflanzen hängen darunter.
+3. **Optionen wählen** (alle optional, später unter **Konfigurieren**): die KI für Grenzwert-Vorschläge, eine Wetter-Entität, eine To-do-Liste fürs Gießen, den Pflegekalender, einen Regensensor. Der Regensensor muss die Intensität in mm/h messen; Mengen-Sensoren („Regen heute“) bleiben bis Mitternacht über 0.
+4. **Pflanze hinzufügen.** **Pflanzenmonitor Plus > Pflanze hinzufügen** fragt in vier Schritten: Name, Art (hilft der KI), Raum und Bild; die Sensoren und ob sie draußen steht; welche Messwerte als Problem zählen und die Wartezeit nach dem Gießen; mit Pflegekalender den Pflegeplan. **Drei-Punkte-Menü > Neu konfigurieren** ändert dasselbe später.
+
+Plus legt nur Entitäten zu vorhandenen Sensoren an. Ein abgewählter Sensor nimmt seine Entitäten mit, seine Grenzwerte bleiben gespeichert. Benennst du einen Sensor um, zieht Plus das nach.
 
 <details>
 <summary>Von Hand installieren</summary>
@@ -47,17 +54,6 @@ Unter **Einstellungen > Marketplace** (vor Home Assistant 2026.11 heißt er HACS
 2. Den Ordner `custom_components/pflanzenmonitor_plus` nach `/config/custom_components/` kopieren und Home Assistant neu starten.
 
 </details>
-
-<a id="einrichtung"></a>
-## Einrichtung
-
-Du brauchst Home Assistant 2026.9 oder neuer mit Recorder (Standard).
-
-1. **Integration hinzufügen.** **Einstellungen > Geräte & Dienste > Integration hinzufügen > Pflanzenmonitor Plus**. Es gibt genau einen Eintrag; die Pflanzen hängen darunter.
-2. **Optionen wählen** (alle optional, später unter **Konfigurieren**): die KI für Grenzwert-Vorschläge, eine Wetter-Entität, eine To-do-Liste fürs Gießen, den Pflegekalender, einen Regensensor. Der Regensensor muss die Intensität in mm/h messen; Mengen-Sensoren („Regen heute“) bleiben bis Mitternacht über 0.
-3. **Pflanze hinzufügen.** **Pflanzenmonitor Plus > Pflanze hinzufügen** fragt in vier Schritten: Name, Art (hilft der KI), Raum und Bild; die Sensoren und ob sie draußen steht; welche Messwerte als Problem zählen und die Wartezeit nach dem Gießen; mit Pflegekalender den Pflegeplan. **Drei-Punkte-Menü > Neu konfigurieren** ändert dasselbe später.
-
-Plus legt nur Entitäten zu vorhandenen Sensoren an. Ein abgewählter Sensor nimmt seine Entitäten mit, seine Grenzwerte bleiben gespeichert. Benennst du einen Sensor um, zieht Plus das nach.
 
 <a id="umzug-aus-dem-plant-monitor"></a>
 ## Umzug aus dem Plant Monitor
@@ -99,6 +95,7 @@ Alle auf dem Gerät der Pflanze. Die IDs hängen von Sprache und Raum ab (zum Be
 
 </details>
 
+<a id="beispiele"></a>
 ## Beispiele
 
 Eine Benachrichtigung, wenn eine Pflanze seit 30 Minuten Aufmerksamkeit braucht:
@@ -231,3 +228,11 @@ Testpakete: `pip install -r requirements_test.txt`. GitHub Actions prüft dassel
 [Apache License 2.0](LICENSE), Copyright 2026 SH1FT-W. Zum Plant Monitor siehe [`NOTICE`](NOTICE).
 
 <sub>Pflanzenmonitor Plus ist ein eigenständiges Projekt. Es ist mit dem Plant Monitor (Olen/homeassistant-plant) kompatibel, enthält aber keinen Code daraus und gehört nicht dazu.</sub>
+
+<br/>
+
+<div align="center">
+<a href="https://sh1ft-w.github.io"><img src="https://sh1ft-w.github.io/readme/footer.png" width="640" alt="Alle SH1FT-W-Projekte"></a>
+<br/>
+<sub>Mehr Open Source für Home Assistant und den Mac auf <a href="https://sh1ft-w.github.io">sh1ft-w.github.io</a></sub>
+</div>
