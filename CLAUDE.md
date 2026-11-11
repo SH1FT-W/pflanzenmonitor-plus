@@ -10,7 +10,7 @@ nachbauen (NOTICE).
   lokalen Pfade). Testdaten bleiben fiktiv.
 - README, CHANGELOG, Release-Notizen, Issue-Texte und Commit-Texte auf Englisch.
 - Lokal committen ok, Push und Releases nur nach Rückfrage. Die eigene HA-Installation nur auf ausdrücklichen Wunsch.
-- Jede Änderung = neue Version in `manifest.json` (Privat-Updates installiert über diese Version). Versionen über
+- Jede Änderung = neue Version in `manifest.json` (HACS bietet Updates über diese Version an). Versionen über
   `tools/next-version` (globale Regeln), Tag/Release-Titel ohne „v“.
 - Platin-Qualität halten: `quality_scale.yaml` bei jeder Änderung mitpflegen.
 
