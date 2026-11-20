@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 26.11.5 – 20.11.2026
 
 - A weather integration that never answers the hourly forecast no longer stalls Plus: after 30 seconds the run
   goes on without forecast (rain expected and frost risk stay unknown), so learning, "Water in", watering tasks and
