@@ -6,7 +6,7 @@
 
 Worauf sich dieses Repo bei Home Assistant verlässt. Bei jeder Änderung am Code mitpflegen.
 
-**Getestet mit:** HA 2026.9.3 · **Mindestversion:** siehe `hacs.json` / `manifest.json` (2026.9.0)
+**Getestet mit:** HA 2026.9.3 (CI), 2026.11.2 (lokal, 20.11.2026) · **Mindestversion:** siehe `hacs.json` / `manifest.json` (2026.9.0)
 
 ## Annahmen
 
@@ -26,7 +26,7 @@ Worauf sich dieses Repo bei Home Assistant verlässt. Bei jeder Änderung am Cod
 | `NumberEntity` mit `NumberDeviceClass.TEMPERATURE` und `°C` rechnet in die Systemeinheit um | `number.py` | `tests/test_live.py` `test_limits_from_number_entities` |
 | `automations_with_entity`/`scripts_with_entity` finden Automationen/Skripte zu einer Entitäts-ID | `plant_monitor.py` `_references` | `tests/test_plant_monitor.py` `test_references_after_an_earlier_move` |
 | Recorder `statistics_during_period(hass, start, None, ids, "hour", None, {"mean","min","max"})` | `coordinator.py` `_fetch` | Tests über `stats` |
-| `weather.get_forecasts` mit `type: hourly` und `return_response` | `coordinator.py` `_forecast` | `tests/test_init.py` |
+| `weather.get_forecasts` mit `type: hourly` und `return_response`; Antwort kann ausbleiben (Zeitgrenze 30 s, dann ohne Vorhersage) | `coordinator.py` `_forecast` | `tests/test_init.py` `test_forecast_unavailable`, `test_hanging_forecast_hits_timeout` |
 | Issue-Registry: `ir.async_get(hass).issues` ist ein Dict mit Schlüssel `(domain, issue_id)`; `async_delete_issue` ist bei fehlendem Eintrag ein No-op | `advisor.py` `sync_issues`/`_plant`, `repairs.py` `SuggestionRepair`, `__init__.py` `_remove_stale` | `tests/test_repairs.py` `test_issue_of_removed_plant_goes_away`, `test_accept_for_removed_plant` |
 | `ai_task.generate_data` mit `task_name`, `instructions`, `structure`, Antwort in `data` | `advisor.py` `_ask`, `careplan.py` `_ask` | `tests/test_advisor.py`, `tests/test_care_calendar.py` |
 | To-do-Aktionen `todo.get_items` (mit `return_response`, Antwort `{<entity>: {"items": [{summary, uid, status, due…}]}}`), `todo.add_item` (`item`, `due_date` nur bei `TodoListEntityFeature.SET_DUE_DATE_ON_ITEM`, sonst Fehler), `todo.update_item` (`item` = uid oder Titel, `status: completed`); `add_item` gibt keine uid zurück → danach über `get_items` suchen; Status-Werte `needs_action`/`completed` | `tasks.py` | `tests/test_tasks.py` |

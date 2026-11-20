@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from datetime import timedelta
 from typing import Any
 
@@ -308,3 +309,34 @@ async def test_rename_follows(hass: HomeAssistant, entry: MockConfigEntry) -> No
     assert entry.options["rain_sensor"] == "sensor.regen_neu"
     assert entry.runtime_data.plants["PLANTKAKTUS01"].moisture == "sensor.kaktus_feuchte"
     assert entry.state is ConfigEntryState.LOADED
+
+
+async def test_hanging_forecast_hits_timeout(hass: HomeAssistant, entry: MockConfigEntry, freezer: Any) -> None:
+    """A weather integration that never answers must not stall the run (and with it learning, tasks and AI)."""
+    from custom_components.pflanzenmonitor_plus.coordinator import FORECAST_TIMEOUT
+
+    await setup(hass, entry)
+    release = asyncio.Event()
+
+    async def hanging(_call: Any) -> dict[str, Any]:
+        await release.wait()
+        return {}
+
+    hass.services.async_register("weather", "get_forecasts", hanging, supports_response="only")  # type: ignore[arg-type]
+    coordinator = entry.runtime_data
+    refresh = hass.async_create_task(coordinator.async_refresh(), eager_start=False)
+    for _ in range(5):
+        await asyncio.sleep(0)
+    assert not refresh.done()
+    # The frozen clock also stops the event loop: only the jump lets the time limit run out
+    freezer.tick(timedelta(seconds=FORECAST_TIMEOUT + 1))
+    for _ in range(20):
+        await asyncio.sleep(0)
+    assert refresh.done()
+    await refresh
+    assert coordinator.last_update_success
+    frost = hass.states.get("binary_sensor.terrasse_olivenbaum_frostgefahr")
+    assert frost is not None
+    assert frost.state == "unknown"
+    release.set()
+    await hass.async_block_till_done()

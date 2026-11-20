@@ -5,11 +5,12 @@ Messwerte, Zustand und Lichtsumme laufen daneben live (live.py), die Grenzwerte 
 
 from __future__ import annotations
 
+import asyncio
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 import logging
 import math
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Final
 
 from homeassistant.components.recorder import get_instance
 from homeassistant.components.recorder.statistics import statistics_during_period
@@ -49,6 +50,8 @@ _LOGGER = logging.getLogger(__name__)
 
 # Übrige Messgrößen, deren Verlauf die KI-Zusammenfassung braucht
 CONTEXT = ("temperature", "soil_temperature", "humidity", "illuminance")
+# A weather integration that never answers must not hold up learning, tasks and AI suggestions
+FORECAST_TIMEOUT: Final = 30
 
 type PlusConfigEntry = ConfigEntry[PlusCoordinator]
 
@@ -184,15 +187,16 @@ class PlusCoordinator(DataUpdateCoordinator[dict[str, PlantData]]):
         if not self.weather or not any(p.outdoor for p in self.plants.values()):
             return None
         try:
-            response = await self.hass.services.async_call(
-                WEATHER_DOMAIN,
-                SERVICE_GET_FORECASTS,
-                {"entity_id": self.weather, "type": "hourly"},
-                blocking=True,
-                return_response=True,
-            )
-        except HomeAssistantError as err:
-            _LOGGER.debug("Keine stündliche Vorhersage von %s: %s", self.weather, err)
+            async with asyncio.timeout(FORECAST_TIMEOUT):
+                response = await self.hass.services.async_call(
+                    WEATHER_DOMAIN,
+                    SERVICE_GET_FORECASTS,
+                    {"entity_id": self.weather, "type": "hourly"},
+                    blocking=True,
+                    return_response=True,
+                )
+        except (HomeAssistantError, TimeoutError) as err:
+            _LOGGER.debug("Keine stündliche Vorhersage von %s: %s", self.weather, err or type(err).__name__)
             return None
         forecast = (response or {}).get(self.weather, {})
         items = forecast.get("forecast") if isinstance(forecast, dict) else None

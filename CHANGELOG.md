@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- A weather integration that never answers the hourly forecast no longer stalls Plus: after 30 seconds the run
+  goes on without forecast (rain expected and frost risk stay unknown), so learning, "Water in", watering tasks and
+  AI suggestions keep updating.
+
 ## 26.11.4 – 05.11.2026
 
 - README and project page: new layout, shorter and easier to scan, with one table at the core.
